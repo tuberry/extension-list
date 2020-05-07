@@ -1,0 +1,12 @@
+{
+  "description": "Simple gnome shell extension manager in top panel",
+  "name": "Extension List",
+  "gettext-domain": "extension-list",
+  "settings-schema": "org.gnome.shell.extensions.extension-list",
+  "shell-version": [
+    "3.36"
+  ],
+  "url": "https://github.com/tuberry/extension-list",
+  "uuid": "extension-list@tu.berry",
+  "version": 1
+}

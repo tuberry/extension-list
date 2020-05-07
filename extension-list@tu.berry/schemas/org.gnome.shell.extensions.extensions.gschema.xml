@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="gnome-shell-extensions-extension-list">
+    <schema path="/org/gnome/shell/extensions/extension-list/" id="org.gnome.shell.extensions.extension-list">
+        <key type="s" name="indicator-text">
+            <default>""</default>
+            <summary>indicator text</summary>
+        </key>
+    </schema>
+</schemalist>
