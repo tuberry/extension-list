@@ -21,12 +21,11 @@ class ExtensionList extends GObject.Object {
     }
 
     _addButton(txt) {
-        this._clicked = false; // update menu when first clicking
         this._button = new PanelMenu.Button(null);
         this._label = new St.Label({ text: txt, style_class: 'extension-list-indicator' });
         this._button.add_actor(this._label);
         Main.panel.addToStatusArea('extension-list@tu.berry', this._button);
-        this._clickedId = this._button.connect('button_press_event', () => { if(!this._clicked) this._updateMenu(), this._clicked = true; });
+        this._clickedId = this._button.connect('button_press_event', this._updateMenu.bind(this));
         this._updateMenu();
     }
 
