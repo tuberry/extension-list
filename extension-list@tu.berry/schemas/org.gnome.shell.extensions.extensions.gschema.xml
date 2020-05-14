@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="gnome-shell-extensions-extension-list">
     <schema path="/org/gnome/shell/extensions/extension-list/" id="org.gnome.shell.extensions.extension-list">
-        <key type="s" name="indicator-text">
-            <default>""</default>
-            <summary>indicator text</summary>
+        <key type="b" name="prefs-button">
+            <default>true</default>
+            <summary>show prefs button</summary>
+        </key>
+        <key type="b" name="url-button">
+            <default>true</default>
+            <summary>show url button</summary>
+        </key>
+        <key type="b" name="delete-button">
+            <default>true</default>
+            <summary>show delete button</summary>
         </key>
     </schema>
 </schemalist>

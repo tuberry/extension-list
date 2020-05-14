@@ -22,8 +22,5 @@ The DOT ornament means the extension is enabled.
 ## Acknowledgements
 * [extensions](https://github.com/tuberry/gnome-shell-extension-extensions): the idea
 
-## Note
-1. NO feature request.
-
 [license]:https://img.shields.io/badge/license-GPLv3-green.svg
 [EGO]:https://extensions.gnome.org/extension/3088/extension-list/

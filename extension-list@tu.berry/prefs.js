@@ -6,11 +6,12 @@ const { Gio, Gtk, GObject } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const _ = imports.gettext.domain(Me.metadata['gettext-domain']).gettext;
-
 const gsettings = ExtensionUtils.getSettings();
 
 var Fields = {
-    INDICATOR:  'indicator-text',
+    URL:    'url-button',
+    PREFS:  'prefs-button',
+    DELETE: 'delete-button',
 };
 
 const ExtensionList = GObject.registerClass(
@@ -31,41 +32,29 @@ class ExtensionList extends Gtk.Grid {
     }
 
     _bulidWidget() {
-        this._field_indicator = this._entryMaker('Exts', _('Unicode is acceptable, eg: \\uf123.'));
+        this._field_url    = new Gtk.Switch({ active: gsettings.get_boolean(Fields.URL) });
+        this._field_prefs  = new Gtk.Switch({ active: gsettings.get_boolean(Fields.PREFS) });
+        this._field_delete = new Gtk.Switch({ active: gsettings.get_boolean(Fields.DELETE) });
     }
 
     _bulidUI() {
         this._row = 0;
-        this._rowMaker(this._labelMaker(_('Indicator text')), this._field_indicator);
+        this._rowMaker(this._labelMaker(_('Prefs button')), this._field_prefs);
+        this._rowMaker(this._labelMaker(_('URL button')), this._field_url);
+        this._rowMaker(this._labelMaker(_('Delete button')), this._field_delete);
     }
 
     _bindValues() {
-        gsettings.bind(Fields.INDICATOR, this._field_indicator, 'text', Gio.SettingsBindFlags.DEFAULT);
+        gsettings.bind(Fields.URL,    this._field_url,    'active', Gio.SettingsBindFlags.DEFAULT);
+        gsettings.bind(Fields.PREFS,  this._field_prefs,  'active', Gio.SettingsBindFlags.DEFAULT);
+        gsettings.bind(Fields.DELETE, this._field_delete, 'active', Gio.SettingsBindFlags.DEFAULT);
     }
 
-    _rowMaker(x, y, z) {
+    _rowMaker(x, y) {
         let hbox = new Gtk.HBox({ hexpand: true });
-        if(z) {
-            hbox.pack_start(x, false, false, 10);
-            hbox.pack_start(y, true, true, 10);
-            hbox.pack_end(z, false, false, 10);
-        } else if(y) {
-            hbox.pack_start(x, true, true, 10);
-            hbox.pack_start(y, false, false, 10);
-        } else {
-            hbox.pack_start(x, true, true, 10);
-        }
+        hbox.pack_start(x, true, true, 10);
+        hbox.pack_start(y, false, false, 10);
         this.attach(hbox, 0, this._row++, 1, 1);
-    }
-
-    _entryMaker(x, y) {
-        return new Gtk.Entry({
-            placeholder_text: x,
-            secondary_icon_sensitive: true,
-            secondary_icon_tooltip_text: y,
-            secondary_icon_activatable: true,
-            secondary_icon_name: "dialog-information-symbolic",
-        });
     }
 
     _labelMaker(x) {
