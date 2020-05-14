@@ -2,10 +2,10 @@
 // by tuberry
 
 const Main = imports.ui.main;
+const Util = imports.misc.util;
+const { St, GObject } = imports.gi;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const { St, GObject } = imports.gi;
-const Util = imports.misc.util;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const gsettings = ExtensionUtils.getSettings();
@@ -37,7 +37,7 @@ class ExtensionList extends GObject.Object {
         item.connect('button-press-event', () => {
             item._ornament === PopupMenu.Ornament.NONE ? Main.extensionManager.enableExtension(uuid) : Main.extensionManager.disableExtension(uuid);
         });
-        item.add_child(new St.Label({ text: extension.metadata.name, x_expand: true }));
+        item.add_child(new St.Label({ text: (extension.type == ExtensionUtils.ExtensionType.SYSTEM &&  !this._delete ? '* ' : '') + extension.metadata.name, x_expand: true }));
         let hbox = new St.BoxLayout({ x_align: St.Align.END });
         let addButtonItem = (ok, icon, func) => {
             let button = new St.Button({
@@ -54,9 +54,9 @@ class ExtensionList extends GObject.Object {
             });
             hbox.add_child(button);
         }
-        if(this._prefs)  addButtonItem(extension.hasPrefs, 'emblem-system-symbolic', () => { Util.spawn(["gnome-extensions", "prefs", uuid]); });
+        if(this._prefs)  addButtonItem(extension.hasPrefs, 'emblem-system-symbolic', () => { Main.extensionManager.openExtensionPrefs(uuid, '', {}); });
         if(this._url)    addButtonItem(extension.metadata.url, 'mail-forward-symbolic', () => { Util.spawn(["gio", "open", extension.metadata.url]); });
-        if(this._delete) addButtonItem(true, 'edit-delete-symbolic', () => { Util.spawn(["gnome-extensions", "uninstall", uuid]); });
+        if(this._delete) addButtonItem(extension.type != ExtensionUtils.ExtensionType.SYSTEM, 'edit-delete-symbolic', () => { Util.spawn(["gnome-extensions", "uninstall", uuid]); this._updateMenu(); });
         item.add_child(hbox);
         return item;
     }
@@ -73,13 +73,13 @@ class ExtensionList extends GObject.Object {
     enable() {
         this._fetchSettings();
         this._addButton();
-        this._settingId = gsettings.connect('changed', this._fetchSettings.bind(this));
-        this._clickedId = this._button.connect('button-press-event', this._updateMenu.bind(this));
+        this._settingId = gsettings.connect('changed', () => { this._fetchSettings(); this._updateMenu(); });
+        this._stateChangeId = Main.extensionManager.connect('extension-state-changed', this._updateMenu.bind(this));
     }
 
     disable() {
-        if(this._clickedId) this._button.disconnect(this._clickedId), this._clickedId = 0;
         if(this._settingId) gsettings.disconnect(this._settingId), this._settingId = 0;
+        if(this._stateChangeId) Main.extensionManager.disconnect(this._stateChangeId), this._stateChangeId = 0;
         this._button.destroy();
     }
 });
