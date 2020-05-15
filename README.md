@@ -10,12 +10,12 @@ Simple gnome shell extension manager in top panel.
 Or manually:
 ```shell
 git clone git@github.com:tuberry/extension-list.git
-cp -r ./ss-subscriber/extension-list@tu.berry ~/.local/share/gnome-shell/extensions/
+cp -r ./extension-list/extension-list@tu.berry ~/.local/share/gnome-shell/extensions/
 ```
 
 ## Usage
 
-![image](https://user-images.githubusercontent.com/17917040/81276424-900c5980-9085-11ea-9b35-c68de35e2a73.png)
+![image](https://user-images.githubusercontent.com/17917040/82038147-af366700-96d5-11ea-815e-b0df401640f7.png)
 
 The DOT ornament means the extension is enabled.
 
