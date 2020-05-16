@@ -57,7 +57,7 @@ class ExtensionList extends GObject.Object {
         }
         if(this._prefs)  addButtonItem(ext.hasPrefs, 'emblem-system-symbolic', () => { Util.spawn(['gnome-extensions', 'prefs', ext.uuid]); });
         if(this._url)    addButtonItem(ext.metadata.url, 'mail-forward-symbolic', () => { Util.spawn(["gio", "open", ext.metadata.url]); });
-        if(this._delete) addButtonItem(ext.type != ExtensionUtils.ExtensionType.SYSTEM, 'edit-delete-symbolic', () => { Util.spawn(["gnome-extensions", "uninstall", uuid]); this._updateMenu(); });
+        if(this._delete) addButtonItem(ext.type != ExtensionUtils.ExtensionType.SYSTEM, 'edit-delete-symbolic', () => { Util.spawn(["gnome-extensions", "uninstall", ext.uuid]); this._updateMenu(); });
         item.add_child(hbox);
         return item;
     }
