@@ -77,7 +77,7 @@ class ExtensionList extends GObject.Object {
             button.connect('clicked', func);
             hbox.add_child(button);
         }
-        addButtonItem('application-x-addon-symbolic', () => { item._getTopMenu().close(); Util.spawn(['gnome-extensions-app']); });
+        addButtonItem('application-x-addon-symbolic', () => { item._getTopMenu().close(); Shell.AppSystem.get_default().lookup_app('org.gnome.Extensions.desktop').activate(); });
         addButtonItem('face-cool-symbolic', () => { gsettings.set_boolean(Fields.DISABLED, !this._disabled); });
         addButtonItem('emblem-system-symbolic', () => { gsettings.set_boolean(Fields.PREFS, !this._prefs); });
         addButtonItem('mail-forward-symbolic', () => { gsettings.set_boolean(Fields.URL, !this._url); });
