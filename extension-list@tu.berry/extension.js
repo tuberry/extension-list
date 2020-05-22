@@ -46,7 +46,7 @@ class ExtensionList extends GObject.Object {
         let hbox = new St.BoxLayout({ x_align: St.Align.START });
         let addButtonItem = (ok, icon, func) => {
             let button = new St.Button({
-                style_class: 'extension-list-setting-button',
+                style_class: 'extension-list-prefs-button extension-list-button',
                 child: new St.Icon({ icon_name: icon, style_class: 'popup-menu-icon', style: ok ? '' : 'color: transparent;', }),
             });
             button.connect('clicked', () => {
@@ -66,12 +66,13 @@ class ExtensionList extends GObject.Object {
     }
 
     _settingItem() {
-        let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item' });
+        let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item', hover: false });
         let hbox = new St.BoxLayout({ x_align: St.Align.START, x_expand: true });
         let addButtonItem = (icon, func) => {
             let button = new St.Button({
+                hover: true,
                 x_expand: true,
-                style_class: 'extension-list-prefs-button',
+                style_class: 'extension-list-setting-button extension-list-button',
                 child: new St.Icon({ icon_name: icon, style_class: 'popup-menu-icon', }),
             });
             button.connect('clicked', func);
