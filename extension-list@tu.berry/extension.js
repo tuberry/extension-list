@@ -3,10 +3,11 @@
 
 const Main = imports.ui.main;
 const Util = imports.misc.util;
-const { Shell, GLib, St, GObject } = imports.gi;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
+const { Shell, GLib, St, GObject } = imports.gi;
 
+const ExtensionDownloader = imports.ui.extensionDownloader;
 const ExtensionUtils = imports.misc.extensionUtils;
 const gsettings = ExtensionUtils.getSettings();
 const Me = ExtensionUtils.getCurrentExtension();
@@ -45,21 +46,21 @@ class ExtensionList extends GObject.Object {
         item.add_child(new St.Label({ text: (ext.type == ExtensionUtils.ExtensionType.SYSTEM &&  !this._delete ? '* ' : '') + ext.metadata.name, x_expand: true }));
         let hbox = new St.BoxLayout({ x_align: St.Align.START });
         let addButtonItem = (ok, icon, func) => {
-            let button = new St.Button({
+            let btn = new St.Button({
                 style_class: 'extension-list-prefs-button extension-list-button',
                 child: new St.Icon({ icon_name: icon, style_class: 'popup-menu-icon', style: ok ? '' : 'color: transparent;', }),
             });
-            button.connect('clicked', () => {
+            btn.connect('clicked', () => {
                 item._getTopMenu().close();
                 ok ? func() : toggle();
             });
-            hbox.add_child(button);
+            hbox.add_child(btn);
         }
         if(this._prefs)  addButtonItem(ext.hasPrefs, 'emblem-system-symbolic', () => { Util.spawn(['gnome-extensions', 'prefs', ext.uuid]); });
         if(this._url)    addButtonItem(ext.metadata.url, 'mail-forward-symbolic', () => { Util.spawn(["gio", "open", ext.metadata.url]); });
         if(this._delete) addButtonItem(ext.type != ExtensionUtils.ExtensionType.SYSTEM, 'edit-delete-symbolic', () => {
-            Util.spawn(["gnome-extensions", "uninstall", ext.uuid]);
-            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => { this._updateMenu(); return GLib.SOURCE_REMOVE; });
+            ExtensionDownloader.uninstallExtension(ext.uuid);
+            this._updateMenu();
         });
         item.add_child(hbox);
         return item;
@@ -69,20 +70,31 @@ class ExtensionList extends GObject.Object {
         let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item', hover: false });
         let hbox = new St.BoxLayout({ x_align: St.Align.START, x_expand: true });
         let addButtonItem = (icon, func) => {
-            let button = new St.Button({
+            let btn = new St.Button({
                 hover: true,
                 x_expand: true,
                 style_class: 'extension-list-setting-button extension-list-button',
                 child: new St.Icon({ icon_name: icon, style_class: 'popup-menu-icon', }),
             });
-            button.connect('clicked', func);
-            hbox.add_child(button);
+            btn.connect('clicked', func);
+            hbox.add_child(btn);
+        }
+        let singleton = (x, y, z) => {
+            gsettings.set_boolean(Fields.URL, y == 1);
+            gsettings.set_boolean(Fields.PREFS, x == 1);
+            gsettings.set_boolean(Fields.DELETE, z == 1);
         }
         addButtonItem('application-x-addon-symbolic', () => { item._getTopMenu().close(); Shell.AppSystem.get_default().lookup_app('org.gnome.Extensions.desktop').activate(); });
         addButtonItem('face-cool-symbolic', () => { gsettings.set_boolean(Fields.DISABLED, !this._disabled); });
-        addButtonItem('emblem-system-symbolic', () => { gsettings.set_boolean(Fields.PREFS, !this._prefs); });
-        addButtonItem('mail-forward-symbolic', () => { gsettings.set_boolean(Fields.URL, !this._url); });
-        addButtonItem('edit-delete-symbolic', () => { gsettings.set_boolean(Fields.DELETE, !this._delete); });
+        addButtonItem('emblem-system-symbolic', () => {
+            gsettings.get_boolean(Fields.DISABLED) ? singleton(1,0,0) : gsettings.set_boolean(Fields.PREFS, !this._prefs);
+        });
+        addButtonItem('mail-forward-symbolic', () => {
+            gsettings.get_boolean(Fields.DISABLED) ? singleton(0,1,0) : gsettings.set_boolean(Fields.URL, !this._url);
+        });
+        addButtonItem('edit-delete-symbolic', () => {
+            gsettings.get_boolean(Fields.DISABLED) ? singleton(0,0,1) : gsettings.set_boolean(Fields.DELETE, !this._delete);
+        });
         item.add_child(hbox);
         return item;
     }

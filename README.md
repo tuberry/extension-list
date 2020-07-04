@@ -1,5 +1,5 @@
 # extension-list
-Simple gnome shell extension manager in top panel.
+Simple gnome shell extension manager in top panel. Click the entry to enable/disable an extension.
 > Keep it simple. —— *stupid*<br>
 [![license]](/LICENSE)
 
@@ -17,7 +17,7 @@ cp -r ./extension-list/extension-list@tu.berry ~/.local/share/gnome-shell/extens
 
 ![image](https://user-images.githubusercontent.com/17917040/82038147-af366700-96d5-11ea-815e-b0df401640f7.png)
 
-The DOT ornament means the extension is enabled.
+The DOT ornament means the extension is enabled and you can click the menu item to enable/disable an extension.
 
 ## Acknowledgements
 * [extensions](https://github.com/tuberry/gnome-shell-extension-extensions): the idea
