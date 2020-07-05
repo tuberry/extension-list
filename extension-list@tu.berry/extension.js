@@ -80,20 +80,23 @@ class ExtensionList extends GObject.Object {
             hbox.add_child(btn);
         }
         let singleton = (x, y, z) => {
-            gsettings.set_boolean(Fields.URL, y == 1);
-            gsettings.set_boolean(Fields.PREFS, x == 1);
-            gsettings.set_boolean(Fields.DELETE, z == 1);
+            gsettings.set_boolean(Fields.URL, y);
+            gsettings.set_boolean(Fields.PREFS, x);
+            gsettings.set_boolean(Fields.DELETE, z);
         }
-        addButtonItem('application-x-addon-symbolic', () => { item._getTopMenu().close(); Shell.AppSystem.get_default().lookup_app('org.gnome.Extensions.desktop').activate(); });
+        addButtonItem('application-x-addon-symbolic', () => {
+            item._getTopMenu().close();
+            Shell.AppSystem.get_default().lookup_app('org.gnome.Extensions.desktop').activate();
+        });
         addButtonItem('face-cool-symbolic', () => { gsettings.set_boolean(Fields.DISABLED, !this._disabled); });
         addButtonItem('emblem-system-symbolic', () => {
-            gsettings.get_boolean(Fields.DISABLED) ? singleton(1,0,0) : gsettings.set_boolean(Fields.PREFS, !this._prefs);
+            this._disabled ? singleton(!this._prefs, false, false) : gsettings.set_boolean(Fields.PREFS, !this._prefs);
         });
         addButtonItem('mail-forward-symbolic', () => {
-            gsettings.get_boolean(Fields.DISABLED) ? singleton(0,1,0) : gsettings.set_boolean(Fields.URL, !this._url);
+            this._disabled ? singleton(false, !this._url, false) : gsettings.set_boolean(Fields.URL, !this._url);
         });
         addButtonItem('edit-delete-symbolic', () => {
-            gsettings.get_boolean(Fields.DISABLED) ? singleton(0,0,1) : gsettings.set_boolean(Fields.DELETE, !this._delete);
+            this._disabled ? singleton(false, false, !this._delete) : gsettings.set_boolean(Fields.DELETE, !this._delete);
         });
         item.add_child(hbox);
         return item;
