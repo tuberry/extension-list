@@ -5,7 +5,7 @@ const Main = imports.ui.main;
 const Util = imports.misc.util;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const { Shell, GLib, St, GObject } = imports.gi;
+const { Shell, GLib, St, GObject, Meta } = imports.gi;
 
 const ExtensionDownloader = imports.ui.extensionDownloader;
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -14,6 +14,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 
 const Fields = {
     URL:      'url-button',
+    DEBUG:    'debug-button',
     PREFS:    'prefs-button',
     DELETE:   'delete-button',
     DISABLED: 'hide-disabled',
@@ -88,6 +89,15 @@ class ExtensionList extends GObject.Object {
             item._getTopMenu().close();
             Shell.AppSystem.get_default().lookup_app('org.gnome.Extensions.desktop').activate();
         });
+        if(gsettings.get_boolean(Fields.DEBUG))
+            addButtonItem('applications-engineering-symbolic', () => {
+                item._getTopMenu().close();
+                if(Meta.is_wayland_compositor()) {
+                    Util.spawn(['dbus-run-session', '--', 'gnome-shell', '--nested', '--wayland']);
+                } else {
+                    Meta.restart(_("Restarting…"));
+                }
+            });
         addButtonItem('face-cool-symbolic', () => { gsettings.set_boolean(Fields.DISABLED, !this._disabled); });
         addButtonItem('emblem-system-symbolic', () => {
             this._disabled ? singleton(!this._prefs, false, false) : gsettings.set_boolean(Fields.PREFS, !this._prefs);

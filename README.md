@@ -19,6 +19,10 @@ cp -r ./extension-list/extension-list@tu.berry ~/.local/share/gnome-shell/extens
 
 The DOT ornament means the extension is enabled and you can click the menu item to enable/disable an extension.
 
+Also, here is a debug button for extension developers, which just restarts gnome shell on Xorg or launchs a nested [session](https://www.reddit.com/r/gnome/comments/eb4pn9/how_do_i_reload_a_gnome_shell_extension_during/) on Wayland. You can turn it on manually:
+```shell
+dconf write /org/gnome/shell/extensions/extension-list/debug-button true
+```
 ## Acknowledgements
 * [extensions](https://github.com/tuberry/gnome-shell-extension-extensions): the idea
 
