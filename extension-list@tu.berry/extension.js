@@ -7,8 +7,11 @@ const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const { Shell, GLib, St, GObject, Meta } = imports.gi;
 
-const ExtensionDownloader = imports.ui.extensionDownloader;
 const ExtensionUtils = imports.misc.extensionUtils;
+const ExtDownloader = imports.ui.extensionDownloader;
+const ExtManager = Main.extensionManager;
+const ExtState = ExtensionUtils.ExtensionState;
+const ExtType = ExtensionUtils.ExtensionType;
 const gsettings = ExtensionUtils.getSettings();
 const Me = ExtensionUtils.getCurrentExtension();
 
@@ -41,10 +44,10 @@ class ExtensionList extends GObject.Object {
 
     _menuItemMaker(ext) {
         let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item' });
-        item.setOrnament(ext.state === ExtensionUtils.ExtensionState.ENABLED && !this._disabled ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NONE);
-        let toggle = () => { item._ornament === PopupMenu.Ornament.NONE && !this._disabled ? Main.extensionManager.enableExtension(ext.uuid) : Main.extensionManager.disableExtension(ext.uuid); };
-        item.connect('button-press-event', toggle);
-        item.add_child(new St.Label({ text: (ext.type == ExtensionUtils.ExtensionType.SYSTEM &&  !this._delete ? '* ' : '') + ext.metadata.name, x_expand: true }));
+        item.setOrnament(ext.state == ExtState.ENABLED && !this._disabled ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NONE);
+        let toggle = () => { item._ornament == PopupMenu.Ornament.NONE && !this._disabled ? ExtManager.enableExtension(ext.uuid) : ExtManager.disableExtension(ext.uuid); };
+        item.connect('activate', () => { item._getTopMenu().close(); toggle(); });
+        item.add_child(new St.Label({ text: (ext.type == ExtType.SYSTEM &&  !this._delete ? '* ' : '') + ext.metadata.name, x_expand: true }));
         let hbox = new St.BoxLayout({ x_align: St.Align.START });
         let addButtonItem = (ok, icon, func) => {
             let btn = new St.Button({
@@ -59,8 +62,8 @@ class ExtensionList extends GObject.Object {
         }
         if(this._prefs)  addButtonItem(ext.hasPrefs, 'emblem-system-symbolic', () => { Util.spawn(['gnome-extensions', 'prefs', ext.uuid]); });
         if(this._url)    addButtonItem(ext.metadata.url, 'mail-forward-symbolic', () => { Util.spawn(["gio", "open", ext.metadata.url]); });
-        if(this._delete) addButtonItem(ext.type != ExtensionUtils.ExtensionType.SYSTEM, 'edit-delete-symbolic', () => {
-            ExtensionDownloader.uninstallExtension(ext.uuid);
+        if(this._delete) addButtonItem(ext.type != ExtType.SYSTEM, 'edit-delete-symbolic', () => {
+            ExtDownloader.uninstallExtension(ext.uuid);
             this._updateMenu();
         });
         item.add_child(hbox);
@@ -114,9 +117,9 @@ class ExtensionList extends GObject.Object {
 
     _updateMenu() {
         this._button.menu.removeAll();
-        let uuids = Main.extensionManager.getUuids().sort((x, y) => x.toLowerCase().localeCompare(y.toLowerCase()));
-        let extensions = uuids.map(x => Main.extensionManager.lookup(x));
-        if(this._disabled) extensions = extensions.filter(x => x.state === ExtensionUtils.ExtensionState.ENABLED);
+        let uuids = ExtManager.getUuids().sort((x, y) => x.toLowerCase().localeCompare(y.toLowerCase()));
+        let extensions = uuids.map(x => ExtManager.lookup(x));
+        if(this._disabled) extensions = extensions.filter(x => x.state === ExtState.ENABLED);
         extensions.forEach(x => { this._button.menu.addMenuItem(this._menuItemMaker(x)); });
         this._button.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem(''));
         this._button.menu.addMenuItem(this._settingItem());
@@ -126,12 +129,12 @@ class ExtensionList extends GObject.Object {
         this._fetchSettings();
         this._addButton();
         this._settingId = gsettings.connect('changed', () => { this._fetchSettings(); this._updateMenu(); });
-        this._stateChangeId = Main.extensionManager.connect('extension-state-changed', this._updateMenu.bind(this));
+        this._stateChangeId = ExtManager.connect('extension-state-changed', this._updateMenu.bind(this));
     }
 
     disable() {
         if(this._settingId) gsettings.disconnect(this._settingId), this._settingId = 0;
-        if(this._stateChangeId) Main.extensionManager.disconnect(this._stateChangeId), this._stateChangeId = 0;
+        if(this._stateChangeId) ExtManager.disconnect(this._stateChangeId), this._stateChangeId = 0;
         this._button.destroy();
     }
 });
