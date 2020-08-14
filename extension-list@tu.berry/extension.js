@@ -47,7 +47,11 @@ class ExtensionList extends GObject.Object {
         item.setOrnament(ext.state == ExtState.ENABLED && !this._disabled ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NONE);
         let toggle = () => { item._ornament == PopupMenu.Ornament.NONE && !this._disabled ? ExtManager.enableExtension(ext.uuid) : ExtManager.disableExtension(ext.uuid); };
         item.connect('activate', () => { item._getTopMenu().close(); toggle(); });
-        item.add_child(new St.Label({ text: (ext.type == ExtType.SYSTEM &&  !this._delete ? '* ' : '') + ext.metadata.name, x_expand: true }));
+        item.add_child(new St.Label({
+            x_expand: true,
+            style: ext.state == ExtState.ERROR ? 'color: red' : '',
+            text: (ext.type == ExtType.SYSTEM ? '* ' : '') + ext.metadata.name,
+        }));
         let hbox = new St.BoxLayout({ x_align: St.Align.START });
         let addButtonItem = (ok, icon, func) => {
             let btn = new St.Button({
@@ -60,7 +64,7 @@ class ExtensionList extends GObject.Object {
             });
             hbox.add_child(btn);
         }
-        if(this._prefs)  addButtonItem(ext.hasPrefs, 'emblem-system-symbolic', () => { Util.spawn(['gnome-extensions', 'prefs', ext.uuid]); });
+        if(this._prefs)  addButtonItem(ext.hasPrefs, 'emblem-system-symbolic', () => { ExtManager.openExtensionPrefs(ext.uuid, '', {}); });
         if(this._url)    addButtonItem(ext.metadata.url, 'mail-forward-symbolic', () => { Util.spawn(["gio", "open", ext.metadata.url]); });
         if(this._delete) addButtonItem(ext.type != ExtType.SYSTEM, 'edit-delete-symbolic', () => {
             ExtDownloader.uninstallExtension(ext.uuid);
