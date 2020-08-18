@@ -2,6 +2,10 @@
     /* max-width: 300px; */
 }
 
+.extension-list-scroll-menu {
+    /* max-height: 200px; */
+}
+
 .extension-list-prefs-button {
     padding: 0 5px;
 }

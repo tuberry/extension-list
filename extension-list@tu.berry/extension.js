@@ -23,6 +23,39 @@ const Fields = {
     DISABLED: 'hide-disabled',
 };
 
+var PopupScrollMenu = class extends PopupMenu.PopupMenuSection {
+    constructor() {
+        super();
+
+        this.actor = new St.ScrollView({
+            style: 'max-height: %dpx'.format(global.display.get_size()[1] - 100),
+            style_class: 'extension-list-scroll-menu',
+            hscrollbar_policy: St.PolicyType.NEVER,
+            vscrollbar_policy: St.PolicyType.NEVER,
+        });
+
+        this.actor.add_actor(this.box);
+        this.actor._delegate = this;
+        this.actor.clip_to_allocation = true;
+    }
+
+    _needsScrollbar() {
+        let [, topNaturalHeight] = this._getTopMenu().actor.get_preferred_height(-1);
+        //NOTE: return different results in consecutive opens if max-height is monitor's size (1080)
+        let topMaxHeight = this.actor.get_theme_node().get_max_height();
+
+        return topMaxHeight >= 0 && topNaturalHeight >= topMaxHeight;
+    }
+
+    open() {
+        this.emit('open-state-changed', true);
+
+        let needsScrollbar = this._needsScrollbar();
+        this.actor.vscrollbar_policy = needsScrollbar ? St.PolicyType.AUTOMATIC : St.PolicyType.NEVER;
+        needsScrollbar ? this.actor.add_style_pseudo_class('scrolled') : this.actor.remove_style_pseudo_class('scrolled');
+    }
+};
+
 const ExtensionList = GObject.registerClass(
 class ExtensionList extends GObject.Object {
     _init() {
@@ -121,10 +154,13 @@ class ExtensionList extends GObject.Object {
 
     _updateMenu() {
         this._button.menu.removeAll();
-        let uuids = ExtManager.getUuids().sort((x, y) => x.toLowerCase().localeCompare(y.toLowerCase()));
-        let extensions = uuids.map(x => ExtManager.lookup(x));
-        if(this._disabled) extensions = extensions.filter(x => x.state === ExtState.ENABLED);
-        extensions.forEach(x => { this._button.menu.addMenuItem(this._menuItemMaker(x)); });
+        let scroll = new PopupScrollMenu();
+        ExtManager.getUuids()
+            .sort((x, y) => x.toLowerCase().localeCompare(y.toLowerCase()))
+            .map(x => ExtManager.lookup(x))
+            .filter(x => !this._disabled || x.state === ExtState.ENABLED)
+            .forEach(x => { scroll.addMenuItem(this._menuItemMaker(x)); });
+        this._button.menu.addMenuItem(scroll);
         this._button.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem(''));
         this._button.menu.addMenuItem(this._settingItem());
     }
