@@ -62,11 +62,20 @@ class ExtensionList extends GObject.Object {
         super._init();
     }
 
-    _fetchSettings() {
-        this._url      = gsettings.get_boolean(Fields.URL);
-        this._prefs    = gsettings.get_boolean(Fields.PREFS);
-        this._delete   = gsettings.get_boolean(Fields.DELETE);
-        this._disabled = gsettings.get_boolean(Fields.DISABLED);
+    get _url() {
+        return gsettings.get_boolean(Fields.URL);
+    }
+
+    get _prefs() {
+        return gsettings.get_boolean(Fields.PREFS);
+    }
+
+    get _delete() {
+        return gsettings.get_boolean(Fields.DELETE);
+    }
+
+    get _disabled() {
+        return gsettings.get_boolean(Fields.DISABLED);
     }
 
     _addButton() {
@@ -120,11 +129,6 @@ class ExtensionList extends GObject.Object {
             btn.connect('clicked', func);
             hbox.add_child(btn);
         }
-        let singleton = (x, y, z) => {
-            gsettings.set_boolean(Fields.URL, y);
-            gsettings.set_boolean(Fields.PREFS, x);
-            gsettings.set_boolean(Fields.DELETE, z);
-        }
         addButtonItem('application-x-addon-symbolic', () => {
             item._getTopMenu().close();
             Shell.AppSystem.get_default().lookup_app('org.gnome.Extensions.desktop').activate();
@@ -138,18 +142,19 @@ class ExtensionList extends GObject.Object {
                     Meta.restart(_("Restarting…"));
                 }
             });
-        addButtonItem('face-cool-symbolic', () => { gsettings.set_boolean(Fields.DISABLED, !this._disabled); });
-        addButtonItem('emblem-system-symbolic', () => {
-            this._disabled ? singleton(!this._prefs, false, false) : gsettings.set_boolean(Fields.PREFS, !this._prefs);
-        });
-        addButtonItem('mail-forward-symbolic', () => {
-            this._disabled ? singleton(false, !this._url, false) : gsettings.set_boolean(Fields.URL, !this._url);
-        });
-        addButtonItem('edit-delete-symbolic', () => {
-            this._disabled ? singleton(false, false, !this._delete) : gsettings.set_boolean(Fields.DELETE, !this._delete);
-        });
+        addButtonItem('face-cool-symbolic', () => { gsettings.set_boolean(Fields.DISABLED, !this._disabled); this._updateMenu(); });
+        addButtonItem('emblem-system-symbolic', () => { this._singleton(!this._prefs, false, false); });
+        addButtonItem('mail-forward-symbolic', () => { this._singleton(false, !this._url, false); });
+        addButtonItem('edit-delete-symbolic', () => { this._singleton(false, false, !this._delete); });
         item.add_child(hbox);
         return item;
+    }
+
+    _singleton(x, y, z) {
+        gsettings.set_boolean(Fields.URL, y);
+        gsettings.set_boolean(Fields.PREFS, x);
+        gsettings.set_boolean(Fields.DELETE, z);
+        this._updateMenu();
     }
 
     _updateMenu() {
@@ -166,14 +171,11 @@ class ExtensionList extends GObject.Object {
     }
 
     enable() {
-        this._fetchSettings();
         this._addButton();
-        this._settingId = gsettings.connect('changed', () => { this._fetchSettings(); this._updateMenu(); });
         this._stateChangeId = ExtManager.connect('extension-state-changed', this._updateMenu.bind(this));
     }
 
     disable() {
-        if(this._settingId) gsettings.disconnect(this._settingId), this._settingId = 0;
         if(this._stateChangeId) ExtManager.disconnect(this._stateChangeId), this._stateChangeId = 0;
         this._button.destroy();
     }
