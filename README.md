@@ -11,8 +11,8 @@ Simple gnome shell extension manager in top panel. Click the entry to enable/dis
 
 Or manually:
 ```shell
-git clone git@github.com:tuberry/extension-list.git
-cp -r ./extension-list/extension-list@tu.berry ~/.local/share/gnome-shell/extensions/
+git clone https://github.com/tuberry/extension-list.git
+cd extension-list && make install
 ```
 
 ## Usage
