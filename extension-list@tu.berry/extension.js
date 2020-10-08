@@ -26,33 +26,31 @@ const Fields = {
 var PopupScrollMenu = class extends PopupMenu.PopupMenuSection {
     constructor() {
         super();
-
         this.actor = new St.ScrollView({
             style: 'max-height: %dpx'.format(global.display.get_size()[1] - 100),
             style_class: 'extension-list-scroll-menu',
             hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.NEVER,
+            clip_to_allocation: true,
         });
 
         this.actor.add_actor(this.box);
         this.actor._delegate = this;
-        this.actor.clip_to_allocation = true;
     }
 
     _needsScrollbar() {
         let [, topNaturalHeight] = this._getTopMenu().actor.get_preferred_height(-1);
-        //NOTE: return different results in consecutive opens if max-height is monitor's size (1080)
         let topMaxHeight = this.actor.get_theme_node().get_max_height();
 
         return topMaxHeight >= 0 && topNaturalHeight >= topMaxHeight;
     }
 
     open() {
-        this.emit('open-state-changed', true);
-
         let needsScrollbar = this._needsScrollbar();
         this.actor.vscrollbar_policy = needsScrollbar ? St.PolicyType.AUTOMATIC : St.PolicyType.NEVER;
         needsScrollbar ? this.actor.add_style_pseudo_class('scrolled') : this.actor.remove_style_pseudo_class('scrolled');
+
+        super.open();
     }
 };
 
@@ -89,26 +87,26 @@ class ExtensionList extends GObject.Object {
         item.setOrnament(ext.state == ExtState.ENABLED && !this._disabled ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NONE);
         let toggle = () => { item._ornament == PopupMenu.Ornament.NONE && !this._disabled ? ExtManager.enableExtension(ext.uuid) : ExtManager.disableExtension(ext.uuid); };
         item.connect('activate', () => { item._getTopMenu().close(); toggle(); });
-        item.add_child(new St.Label({
-            x_expand: true,
-            style: ext.state == ExtState.ERROR ? 'color: red' : '',
-            text: (ext.type == ExtType.SYSTEM ? '* ' : '') + ext.metadata.name,
-        }));
+        let label = new St.Label({ x_expand: true });
+        let text = (ext.type == ExtType.SYSTEM ? '* ' : '') + ext.metadata.name;
+        if(ext.state == ExtState.ERROR) {
+            label.clutter_text.set_markup('<span bgcolor="red">%s</span>'.format(text)); //NOTE: fgcolor has no effects
+        } else {
+            label.set_text(text);
+        } //NOTE: set_style => log complains --- cr_parser_new_from_buf: assertion 'a_buf && a_len' failed
+        item.add_child(label);
         let hbox = new St.BoxLayout({ x_align: St.Align.START });
-        let addButtonItem = (ok, icon, func) => {
+        let addButtonItem = (icon, func) => {
             let btn = new St.Button({
                 style_class: 'extension-list-prefs-button extension-list-button',
-                child: new St.Icon({ icon_name: icon, style_class: 'popup-menu-icon', style: ok ? '' : 'color: transparent;', }),
+                child: new St.Icon({ icon_name: icon, style_class: 'popup-menu-icon', }),
             });
-            btn.connect('clicked', () => {
-                item._getTopMenu().close();
-                ok ? func() : toggle();
-            });
+            btn.connect('clicked', () => { item._getTopMenu().close(); func(); });
             hbox.add_child(btn);
         }
-        if(this._prefs)  addButtonItem(ext.hasPrefs, 'emblem-system-symbolic', () => { ExtManager.openExtensionPrefs(ext.uuid, '', {}); });
-        if(this._url)    addButtonItem(ext.metadata.url, 'mail-forward-symbolic', () => { Util.spawn(["gio", "open", ext.metadata.url]); });
-        if(this._delete) addButtonItem(ext.type != ExtType.SYSTEM, 'edit-delete-symbolic', () => {
+        if(this._prefs && ext.hasPrefs) addButtonItem('emblem-system-symbolic', () => { ExtManager.openExtensionPrefs(ext.uuid, '', {}); });
+        if(this._url && ext.metadata.url) addButtonItem('mail-forward-symbolic', () => { Util.spawn(["gio", "open", ext.metadata.url]); });
+        if(this._delete && ext.type != ExtType.SYSTEM) addButtonItem('edit-delete-symbolic', () => {
             ExtDownloader.uninstallExtension(ext.uuid);
             this._updateMenu();
         });
