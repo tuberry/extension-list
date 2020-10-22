@@ -77,7 +77,7 @@ class ExtensionList extends GObject.Object {
     }
 
     _addButton() {
-        this._button = new PanelMenu.Button(null);
+        this._button = new PanelMenu.Button(0.0, null, false);
         this._button.add_actor(new St.Icon({ icon_name: 'application-x-addon-symbolic', style_class: 'system-status-icon' }));
         Main.panel.addToStatusArea(Me.metadata.uuid, this._button);
     }
@@ -87,14 +87,11 @@ class ExtensionList extends GObject.Object {
         item.setOrnament(ext.state == ExtState.ENABLED && !this._disabled ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NONE);
         let toggle = () => { item._ornament == PopupMenu.Ornament.NONE && !this._disabled ? ExtManager.enableExtension(ext.uuid) : ExtManager.disableExtension(ext.uuid); };
         item.connect('activate', () => { item._getTopMenu().close(); toggle(); });
-        let label = new St.Label({ x_expand: true });
-        let text = (ext.type == ExtType.SYSTEM ? '* ' : '') + ext.metadata.name;
-        if(ext.state == ExtState.ERROR) {
-            label.clutter_text.set_markup('<span bgcolor="red">%s</span>'.format(text)); //NOTE: fgcolor has no effects
-        } else {
-            label.set_text(text);
-        } //NOTE: set_style => log complains --- cr_parser_new_from_buf: assertion 'a_buf && a_len' failed
-        item.add_child(label);
+        item.add_child(new St.Label({
+            x_expand: true,
+            text: (ext.type == ExtType.SYSTEM ? '* ' : '') + ext.metadata.name,
+            style_class: 'extension-list-label%s'.format(ext.state == ExtState.ERROR ? '-error' : ''),
+        }));
         let hbox = new St.BoxLayout({ x_align: St.Align.START });
         let addButtonItem = (icon, func) => {
             let btn = new St.Button({

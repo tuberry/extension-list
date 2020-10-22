@@ -2,6 +2,10 @@
     /* max-width: 300px; */
 }
 
+.extension-list-label-error {
+    color: red;
+}
+
 .extension-list-scroll-menu {
     /* max-height: 200px; */
 }
