@@ -5,7 +5,6 @@
   "name": "Extension List",
   "settings-schema": "org.gnome.shell.extensions.extension-list",
   "shell-version": [
-    "3.36",
     "3.38"
   ],
   "url": "https://github.com/tuberry/extension-list",

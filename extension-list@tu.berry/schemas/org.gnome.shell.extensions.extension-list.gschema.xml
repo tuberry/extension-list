@@ -21,5 +21,13 @@
             <default>true</default>
             <summary>show debug button</summary>
         </key>
+        <key type="b" name="unpin-button">
+            <default>false</default>
+            <summary>show unpin button</summary>
+        </key>
+        <key type="as" name="unpin-list">
+            <default>[]</default>
+            <summary>list of unpinned extensions</summary>
+        </key>
     </schema>
 </schemalist>
