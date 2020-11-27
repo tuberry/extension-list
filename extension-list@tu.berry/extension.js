@@ -92,7 +92,7 @@ class ExtensionList extends GObject.Object {
 
     _addButton() {
         this._button = new PanelMenu.Button(0.0, null, false);
-        this._button.add_child(new St.Icon({ icon_name: 'application-x-addon-symbolic', style_class: 'system-status-icon' }));
+        this._button.add_actor(new St.Icon({ icon_name: 'application-x-addon-symbolic', style_class: 'system-status-icon' }));
         Main.panel.addToStatusArea(Me.metadata.uuid, this._button, 0, 'right');
     }
 
@@ -177,6 +177,7 @@ class ExtensionList extends GObject.Object {
         addButtonItem('application-x-addon-symbolic', () => {
             item._getTopMenu().close();
             Shell.AppSystem.get_default().lookup_app('org.gnome.Extensions.desktop').activate();
+            this._updateMenu();
         });
         if(gsettings.get_boolean(Fields.DEBUG))
             addButtonItem('applications-engineering-symbolic', () => { item._getTopMenu().close(); this._reloadShell(); });
