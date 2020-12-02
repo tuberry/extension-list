@@ -58,11 +58,11 @@ var PopupScrollMenu = class extends PopupMenu.PopupMenuSection {
 
 const ExtensionList = GObject.registerClass({
     Properties: {
-        'prefs':    GObject.param_spec_boolean('prefs',    '', '', false, GObject.ParamFlags.READWRITE),
-        'url':      GObject.param_spec_boolean('url',      '', '', false, GObject.ParamFlags.READWRITE),
-        'delete':   GObject.param_spec_boolean('delete',   '', '', false, GObject.ParamFlags.READWRITE),
-        'disabled': GObject.param_spec_boolean('disabled', '', '', false, GObject.ParamFlags.READWRITE),
-        'unpin':    GObject.param_spec_boolean('unpin',    '', '', false, GObject.ParamFlags.READWRITE),
+        'url':      GObject.param_spec_boolean('url', 'url', 'url', false, GObject.ParamFlags.READWRITE),
+        'prefs':    GObject.param_spec_boolean('prefs', 'prefs', 'prefs', false, GObject.ParamFlags.READWRITE),
+        'unpin':    GObject.param_spec_boolean('unpin', 'unpin', 'unpin', false, GObject.ParamFlags.READWRITE),
+        'delete':   GObject.param_spec_boolean('delete', 'delete', 'delete', false, GObject.ParamFlags.READWRITE),
+        'disabled': GObject.param_spec_boolean('disabled', 'disabled', 'disabled', false, GObject.ParamFlags.READWRITE),
     },
 }, class ExtensionList extends GObject.Object {
     _init() {
