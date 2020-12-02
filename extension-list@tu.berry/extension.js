@@ -196,16 +196,16 @@ const ExtensionList = GObject.registerClass({
     _updateMenu() {
         this._button.menu.removeAll();
         let scroll = new PopupScrollMenu();
+        let unpinlist = this._unpinlist;
         if(this.unpin) {
-            let list = this._unpinlist;
             ExtManager.getUuids()
                 .sort((x, y) => x.toLowerCase().localeCompare(y.toLowerCase()))
                 .map(x => ExtManager.lookup(x))
-                .forEach(x => { scroll.addMenuItem(this._pinItemMaker(x, list.has(x.uuid))); });
+                .forEach(x => { scroll.addMenuItem(this._pinItemMaker(x, unpinlist.has(x.uuid))); });
         } else {
             ExtManager.getUuids()
                 .sort((x, y) => x.toLowerCase().localeCompare(y.toLowerCase()))
-                .filter(x => !this._unpinlist.has(x))
+                .filter(x => !unpinlist.has(x))
                 .map(x => ExtManager.lookup(x))
                 .filter(x => !this.disabled || x.state === ExtState.ENABLED)
                 .forEach(x => { scroll.addMenuItem(this._menuItemMaker(x)); });
