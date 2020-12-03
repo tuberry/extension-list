@@ -25,7 +25,7 @@ const Fields = {
     DISABLED:  'hide-disabled',
 };
 
-var PopupScrollMenu = class extends PopupMenu.PopupMenuSection {
+const PopupScrollMenu = class extends PopupMenu.PopupMenuSection {
     constructor() {
         super();
         this.actor = new St.ScrollView({
@@ -67,6 +67,9 @@ const ExtensionList = GObject.registerClass({
 }, class ExtensionList extends GObject.Object {
     _init() {
         super._init();
+        this._bindSettings();
+        this._addIndicator();
+        this._stateChangeId = ExtManager.connect('extension-state-changed', this._updateMenu.bind(this));
     }
 
     get _unpinlist() {
@@ -223,20 +226,29 @@ const ExtensionList = GObject.registerClass({
         gsettings.bind(Fields.URL,      this, 'url',      Gio.SettingsBindFlags.DEFAULT);
     }
 
-    enable() {
-        this._bindSettings();
-        this._addIndicator();
-        this._stateChangeId = ExtManager.connect('extension-state-changed', this._updateMenu.bind(this));
-    }
-
-    disable() {
+    destroy() {
         if(this._stateChangeId) ExtManager.disconnect(this._stateChangeId), this._stateChangeId = 0;
         this._button.destroy();
-        this._button = null;
+        delete this._button;
+        this.run_dispose();
     }
 });
 
+const Extension = class Extension {
+    constructor() {
+    }
+
+    enable() {
+        this._ext = new ExtensionList();
+    }
+
+    disable() {
+        this._ext.destroy();
+        delete this._ext;
+    }
+}
+
 function init() {
-    return new ExtensionList();
+    return new Extension();
 }
 

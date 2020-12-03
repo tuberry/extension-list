@@ -1,5 +1,5 @@
 # extension-list
-Simple gnome shell extension manager in top panel. Click the entry to enable/disable an extension.
+Simple gnome shell extension manager in top panel.
 > Keep it simple. —— *stupid*<br>
 [![license]](/LICENSE)
 </br>
