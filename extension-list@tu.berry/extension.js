@@ -230,7 +230,6 @@ const ExtensionList = GObject.registerClass({
         if(this._stateChangeId) ExtManager.disconnect(this._stateChangeId), this._stateChangeId = 0;
         this._button.destroy();
         delete this._button;
-        this.run_dispose();
     }
 });
 
