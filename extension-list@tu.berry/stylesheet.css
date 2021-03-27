@@ -1,5 +1,5 @@
-.extension-list-item {
-    /* max-width: 300px; */
+.extension-list-menu {
+    max-width: 30em;
 }
 
 .extension-list-label-error {
@@ -7,14 +7,12 @@
 }
 
 .extension-list-scroll-menu {
-    /* max-height: 200px; */
 }
 
 .extension-list-prefs-button {
-    padding: 0 5px;
+    padding: 0 0.5em;
 }
 
 .extension-list-button:hover {
     color: deepskyblue;
-    /* background-color: rgba(138, 180, 248, 0.3); */
 }

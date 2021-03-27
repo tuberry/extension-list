@@ -6,11 +6,11 @@
             <summary>show prefs button</summary>
         </key>
         <key type="b" name="url-button">
-            <default>true</default>
+            <default>false</default>
             <summary>show url button</summary>
         </key>
         <key type="b" name="delete-button">
-            <default>true</default>
+            <default>false</default>
             <summary>show delete button</summary>
         </key>
         <key type="b" name="hide-disabled">
@@ -18,7 +18,7 @@
             <summary>hide disabled in menu</summary>
         </key>
         <key type="b" name="debug-button">
-            <default>true</default>
+            <default>false</default>
             <summary>show debug button</summary>
         </key>
         <key type="b" name="unpin-button">

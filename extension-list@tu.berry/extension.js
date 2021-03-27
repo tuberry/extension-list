@@ -58,11 +58,11 @@ const PopupScrollMenu = class extends PopupMenu.PopupMenuSection {
 
 const ExtensionList = GObject.registerClass({
     Properties: {
-        'url':      GObject.param_spec_boolean('url', 'url', 'url', false, GObject.ParamFlags.READWRITE),
-        'prefs':    GObject.param_spec_boolean('prefs', 'prefs', 'prefs', false, GObject.ParamFlags.READWRITE),
-        'unpin':    GObject.param_spec_boolean('unpin', 'unpin', 'unpin', false, GObject.ParamFlags.READWRITE),
-        'delete':   GObject.param_spec_boolean('delete', 'delete', 'delete', false, GObject.ParamFlags.READWRITE),
-        'disabled': GObject.param_spec_boolean('disabled', 'disabled', 'disabled', false, GObject.ParamFlags.READWRITE),
+        'url':      GObject.ParamSpec.boolean('url', 'url', 'url', GObject.ParamFlags.READWRITE, false),
+        'prefs':    GObject.ParamSpec.boolean('prefs', 'prefs', 'prefs', GObject.ParamFlags.READWRITE, false),
+        'unpin':    GObject.ParamSpec.boolean('unpin', 'unpin', 'unpin', GObject.ParamFlags.READWRITE, false),
+        'delete':   GObject.ParamSpec.boolean('delete', 'delete', 'delete', GObject.ParamFlags.READWRITE, false),
+        'disabled': GObject.ParamSpec.boolean('disabled', 'disabled', 'disabled', GObject.ParamFlags.READWRITE, false),
     },
 }, class ExtensionList extends GObject.Object {
     _init() {
@@ -87,7 +87,7 @@ const ExtensionList = GObject.registerClass({
     }
 
     _menuItemMaker(ext) {
-        let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item' });
+        let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item popup-menu-item' });
         item.setOrnament(ext.state == ExtState.ENABLED && !this.disabled ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NONE);
         let toggle = () => { item._ornament == PopupMenu.Ornament.NONE && !this.disabled ? ExtManager.enableExtension(ext.uuid) : ExtManager.disableExtension(ext.uuid); };
         item.connect('activate', () => { item._getTopMenu().close(); toggle(); });
@@ -113,7 +113,7 @@ const ExtensionList = GObject.registerClass({
     }
 
     _pinItemMaker(ext, unpin) {
-        let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item' });
+        let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item popup-menu-item' });
         item.add_child(new St.Label({
             x_expand: true,
             text: ext.metadata.name + (ext.type == ExtType.SYSTEM ? ' *' : ''),
@@ -139,18 +139,17 @@ const ExtensionList = GObject.registerClass({
             }
             if(this.unpin) this.unpin = false;
         }
-        btn.connect('clicked', toggle);
+        btn.connect('clicked', toggle.bind(this));
         item.connect('activate', () => { toggle(); this._updateMenu(); });
 
         return item;
     }
 
     _settingItem() {
-        let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item', hover: false });
+        let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item popup-menu-item', hover: false });
         let hbox = new St.BoxLayout({ x_align: St.Align.START, x_expand: true });
         let addButtonItem = (icon, func, unpin) => {
             let btn = new St.Button({
-                hover: true,
                 x_expand: true,
                 style_class: 'extension-list-setting-button extension-list-button',
                 child: new St.Icon({ icon_name: icon, style_class: 'popup-menu-icon', }),
