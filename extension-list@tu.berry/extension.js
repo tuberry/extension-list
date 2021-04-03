@@ -1,5 +1,6 @@
 // vim:fdm=syntax
-// by tuberry
+// by: tuberry@github
+'use strict';
 
 const Main = imports.ui.main;
 const Util = imports.misc.util;
@@ -145,7 +146,7 @@ const ExtensionList = GObject.registerClass({
         return item;
     }
 
-    _settingItem() {
+    _settingsItem() {
         let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item popup-menu-item', hover: false });
         let hbox = new St.BoxLayout({ x_align: St.Align.START, x_expand: true });
         let addButtonItem = (icon, func, unpin) => {
@@ -214,7 +215,7 @@ const ExtensionList = GObject.registerClass({
         }
         this._button.menu.addMenuItem(scroll);
         this._button.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem(''));
-        this._button.menu.addMenuItem(this._settingItem());
+        this._button.menu.addMenuItem(this._settingsItem());
     }
 
     _bindSettings() {
