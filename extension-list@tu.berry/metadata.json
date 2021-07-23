@@ -1,6 +1,6 @@
 {
   "name": "Extension List",
-  "description": "Simple gnome shell extension manager in top panel",
+  "description": "Simple gnome shell extension manager in the top panel\n\nFor support, please report any issues via the homepage link below.",
   "gettext-domain": "extension-list",
   "settings-schema": "org.gnome.shell.extensions.extension-list",
   "shell-version": [

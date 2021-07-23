@@ -20,7 +20,6 @@ const Fields = {
     UNPINLIST: 'unpin-list',
     URL:       'url-button',
     DEBUG:     'debug-button',
-    PREFS:     'prefs-button',
     UNPIN:     'unpin-button',
     DELETE:    'delete-button',
     DISABLED:  'hide-disabled',
@@ -60,7 +59,6 @@ const PopupScrollMenu = class extends PopupMenu.PopupMenuSection {
 const ExtensionList = GObject.registerClass({
     Properties: {
         'url':      GObject.ParamSpec.boolean('url', 'url', 'url', GObject.ParamFlags.READWRITE, false),
-        'prefs':    GObject.ParamSpec.boolean('prefs', 'prefs', 'prefs', GObject.ParamFlags.READWRITE, false),
         'unpin':    GObject.ParamSpec.boolean('unpin', 'unpin', 'unpin', GObject.ParamFlags.READWRITE, false),
         'delete':   GObject.ParamSpec.boolean('delete', 'delete', 'delete', GObject.ParamFlags.READWRITE, false),
         'disabled': GObject.ParamSpec.boolean('disabled', 'disabled', 'disabled', GObject.ParamFlags.READWRITE, false),
@@ -82,7 +80,7 @@ const ExtensionList = GObject.registerClass({
     }
 
     _addIndicator() {
-        this._button = new PanelMenu.Button(0.0, null, false);
+        this._button = new PanelMenu.Button(null, Me.metadata.uuid);
         this._button.add_actor(new St.Icon({ icon_name: 'application-x-addon-symbolic', style_class: 'system-status-icon' }));
         Main.panel.addToStatusArea(Me.metadata.uuid, this._button, 0, 'right');
     }
@@ -106,9 +104,13 @@ const ExtensionList = GObject.registerClass({
             btn.connect('clicked', () => { item._getTopMenu().close(); func(); });
             hbox.add_child(btn);
         }
-        if(this.prefs && ext.hasPrefs) addButtonItem('emblem-system-symbolic', () => { ExtManager.openExtensionPrefs(ext.uuid, '', {}); });
-        if(this.url && ext.metadata.url) addButtonItem('mail-forward-symbolic', () => { Util.spawn(["gio", "open", ext.metadata.url]); });
-        if(this.delete && ext.type != ExtType.SYSTEM) addButtonItem('edit-delete-symbolic', () => { ExtDownloader.uninstallExtension(ext.uuid); this._updateMenu(); });
+        if(this.url) {
+            if(ext.metadata.url) addButtonItem('mail-forward-symbolic', () => { Util.spawn(["gio", "open", ext.metadata.url]); });
+        } else if(this.delete) {
+            if(ext.type != ExtType.SYSTEM) addButtonItem('edit-delete-symbolic', () => { ExtDownloader.uninstallExtension(ext.uuid); this._updateMenu(); });
+        } else {
+            if(ext.hasPrefs) addButtonItem('emblem-system-symbolic', () => { ExtManager.openExtensionPrefs(ext.uuid, '', {}); });
+        }
         item.add_child(hbox);
         return item;
     }
@@ -172,11 +174,9 @@ const ExtensionList = GObject.registerClass({
         if(gsettings.get_boolean(Fields.DEBUG))
             addButtonItem('applications-engineering-symbolic', () => { item._getTopMenu().close(); this._reloadShell(); });
         addButtonItem('face-cool-symbolic', () => { this.disabled = !this.disabled; this._updateMenu(); });
-        addButtonItem('emblem-system-symbolic', () => { this._singleton(!this.prefs, false, false); });
-        addButtonItem('mail-forward-symbolic', () => { this._singleton(false, !this.url, false); });
-        addButtonItem('edit-delete-symbolic', () => { this._singleton(false, false, !this.delete); });
-        if(!this.disabled)
-            addButtonItem('eye-open-negative-filled-symbolic', this._updateMenu.bind(this), true);
+        addButtonItem('mail-forward-symbolic', () => { this._singleton(!this.url, false); });
+        addButtonItem('edit-delete-symbolic', () => { this._singleton(false, !this.delete); });
+        addButtonItem('eye-open-negative-filled-symbolic', this._updateMenu.bind(this), true);
         item.add_child(hbox);
         return item;
     }
@@ -189,10 +189,9 @@ const ExtensionList = GObject.registerClass({
         }
     }
 
-    _singleton(x, y, z) {
-        this.url = y;
-        this.prefs = x;
-        this.delete = z;
+    _singleton(x, y) {
+        if(this.url != x) this.url = x;
+        if(this.delete != y) this.delete = y;
         this._updateMenu();
     }
 
@@ -221,7 +220,6 @@ const ExtensionList = GObject.registerClass({
     _bindSettings() {
         gsettings.bind(Fields.DELETE,   this, 'delete',   Gio.SettingsBindFlags.DEFAULT);
         gsettings.bind(Fields.DISABLED, this, 'disabled', Gio.SettingsBindFlags.DEFAULT);
-        gsettings.bind(Fields.PREFS,    this, 'prefs',    Gio.SettingsBindFlags.DEFAULT);
         gsettings.bind(Fields.UNPIN,    this, 'unpin',    Gio.SettingsBindFlags.DEFAULT);
         gsettings.bind(Fields.URL,      this, 'url',      Gio.SettingsBindFlags.DEFAULT);
     }

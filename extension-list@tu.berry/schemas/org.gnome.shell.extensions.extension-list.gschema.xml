@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="gnome-shell-extensions-extension-list">
     <schema path="/org/gnome/shell/extensions/extension-list/" id="org.gnome.shell.extensions.extension-list">
-        <key type="b" name="prefs-button">
-            <default>true</default>
-            <summary>show prefs button</summary>
-        </key>
         <key type="b" name="url-button">
             <default>false</default>
             <summary>show url button</summary>
