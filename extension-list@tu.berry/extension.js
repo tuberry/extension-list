@@ -196,6 +196,7 @@ const ExtensionList = GObject.registerClass({
     }
 
     _updateMenu() {
+        if(!this._button) return;
         this._button.menu.removeAll();
         let scroll = new PopupScrollMenu();
         let unpinlist = this._unpinlist;
