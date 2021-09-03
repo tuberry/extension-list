@@ -1,5 +1,5 @@
 // vim:fdm=syntax
-// by: tuberry@github
+// by tuberry
 'use strict';
 
 const Main = imports.ui.main;
@@ -226,7 +226,8 @@ const ExtensionList = GObject.registerClass({
     }
 
     destroy() {
-        if(this._stateChangeId) ExtManager.disconnect(this._stateChangeId), this._stateChangeId = 0;
+        if(this._stateChangeId)
+            ExtManager.disconnect(this._stateChangeId), this._stateChangeId = 0;
         this._button.destroy();
         delete this._button;
     }
