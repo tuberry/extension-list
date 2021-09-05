@@ -88,8 +88,9 @@ const ExtensionList = GObject.registerClass({
     _menuItemMaker(ext) {
         let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item popup-menu-item' });
         item.setOrnament(ext.state == ExtState.ENABLED && !this.disabled ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NONE);
-        let toggle = () => { item._ornament == PopupMenu.Ornament.NONE && !this.disabled ? ExtManager.enableExtension(ext.uuid) : ExtManager.disableExtension(ext.uuid); };
-        item.connect('activate', () => { item._getTopMenu().close(); toggle(); });
+        let toggle = () => { item._ornament == PopupMenu.Ornament.NONE && !this.disabled
+                ? ExtManager.enableExtension(ext.uuid) : ExtManager.disableExtension(ext.uuid); };
+        item.connect('activate', item => { item._getTopMenu().close(); toggle(); });
         item.add_child(new St.Label({
             x_expand: true,
             text: ext.metadata.name + (ext.type == ExtType.SYSTEM ? ' *' : ''),
