@@ -1,6 +1,6 @@
 # extension-list
 
-Simple gnome shell extension manager in top panel.
+Simple GNOME Shell extension manager in the top panel.
 > Keep it simple. —— *stupid*<br>
 [![license]](/LICENSE)
 </br>
@@ -15,7 +15,7 @@ Simple gnome shell extension manager in top panel.
 
 ### Manual
 
-The latest and supported version should only work on the the most current stable version of GNOME Shell.
+The latest and supported version should only work on the most current stable version of GNOME Shell.
 
 ```bash
 git clone https://github.com/tuberry/extension-list.git && cd extension-list
@@ -33,7 +33,7 @@ git checkout your_gnome_shell_version
 
 * The DOT ornament means the extension is enabled;
 * Click the menu item to enable/disable an extension;
-* A debug button to restarts gnome shell on Xorg or launchs a nested [session](https://wiki.gnome.org/Projects/GnomeShell/Development) on Wayland:
+* A debug button to restart gnome shell on Xorg or launch a nested [session](https://wiki.gnome.org/Projects/GnomeShell/Development) on Wayland:
 
  ```bash
 dconf write /org/gnome/shell/extensions/extension-list/debug-button true

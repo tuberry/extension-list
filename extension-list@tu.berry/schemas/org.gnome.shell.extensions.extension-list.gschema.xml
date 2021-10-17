@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="gnome-shell-extension-extension-list">
     <schema path="/org/gnome/shell/extensions/extension-list/" id="org.gnome.shell.extensions.extension-list">
+        <key type="b" name="lite-mode">
+            <default>true</default>
+            <summary>singleton button</summary>
+        </key>
+        <key type="b" name="use-switch">
+            <default>false</default>
+            <summary>use a switch instead of the DOT</summary>
+        </key>
+        <key type="b" name="verbose-menu">
+            <default>true</default>
+            <summary>show verbose menu</summary>
+        </key>
         <key type="b" name="url-button">
             <default>false</default>
             <summary>show url button</summary>

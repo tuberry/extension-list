@@ -1,8 +1,13 @@
-.extension-list-menu {
+.extension-list-item {
+    /* max-width: 30em; */
+}
+
+.extension-list-label {
     max-width: 30em;
 }
 
 .extension-list-label-error {
+    max-width: 30em;
     color: red;
 }
 
