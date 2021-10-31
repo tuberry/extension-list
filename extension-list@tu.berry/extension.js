@@ -1,12 +1,13 @@
 // vim:fdm=syntax
 // by tuberry
+/* exported init */
 'use strict';
 
 const Main = imports.ui.main;
 const Util = imports.misc.util;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const { GLib, St, GObject, Meta, Gio } = imports.gi;
+const { St, GObject, Meta, Gio } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const ExtDownloader = imports.ui.extensionDownloader;
@@ -75,7 +76,7 @@ const ExtensionList = GObject.registerClass({
         super._init();
         this._bindSettings();
         this._addIndicator();
-        this._stateChangeId = ExtManager.connect('extension-state-changed', this._updateMenu.bind(this));
+        this._stateId = ExtManager.connect('extension-state-changed', this._updateMenu.bind(this));
     }
 
     _bindSettings() {
@@ -104,32 +105,35 @@ const ExtensionList = GObject.registerClass({
 
     _extItemMaker(ext) {
         let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item popup-menu-item' });
-        let toggle = () => { this._button.menu.close(); ExtManager.lookup(ext.uuid).state == ExtState.ENABLED
-                ? ExtManager.disableExtension(ext.uuid) : ExtManager.enableExtension(ext.uuid); };
+        let toggle = () => {
+            this._button.menu.close();
+            ExtManager.lookup(ext.uuid).state === ExtState.ENABLED
+                ? ExtManager.disableExtension(ext.uuid)
+                : ExtManager.enableExtension(ext.uuid);
+        };
         item.connect('activate', toggle.bind(this));
-        item.add_child(new St.Label({ x_expand: true,
-            text: ext.metadata.name + (ext.type == ExtType.SYSTEM ? ' *' : ''),
-            style_class: 'extension-list-label%s'.format(ext.state == ExtState.ERROR ? '-error' : ''),
+        item.add_child(new St.Label({
+            x_expand: true,
+            text: ext.metadata.name + (ext.type === ExtType.SYSTEM ? ' *' : ''),
+            style_class: 'extension-list-label%s'.format(ext.state === ExtState.ERROR ? '-error' : ''),
         }));
         let hbox = new St.BoxLayout({ x_align: St.Align.START });
         if(!this.disabled) {
-            if(this.switch) hbox.add_child(new PopupMenu.Switch(ext.state == ExtState.ENABLED));
-            else item.setOrnament(ext.state == ExtState.ENABLED ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NONE);
+            if(this.switch) hbox.add_child(new PopupMenu.Switch(ext.state === ExtState.ENABLED));
+            else item.setOrnament(ext.state === ExtState.ENABLED ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NONE);
         }
         let addButton = (flag, icon, func) => {
-            let btn = new St.Button({ label: '    ', style_class: 'extension-list-prefs-button extension-list-button', });
-            if(flag) btn.set_child(new St.Icon({ icon_name: icon + '-symbolic', style_class: 'popup-menu-icon', }));
+            let btn = new St.Button({ label: '    ', style_class: 'extension-list-prefs-button extension-list-button' });
+            if(flag) btn.set_child(new St.Icon({ icon_name: '%s-symbolic'.format(icon), style_class: 'popup-menu-icon' }));
             btn.connect('clicked', flag ? () => { this._button.menu.close(); func(); } : toggle.bind(this));
             hbox.add_child(btn);
-        }
+        };
         let btns = [[true, ext.hasPrefs, 'emblem-system', () => { ExtManager.openExtensionPrefs(ext.uuid, '', {}); }],
-        [this.delete, ext.type != ExtType.SYSTEM, 'edit-delete', () => { ExtDownloader.uninstallExtension(ext.uuid); this._updateMenu(); }],
-        [this.url, ext.metadata.url, 'mail-forward', () => { Util.spawn(['gio', 'open', ext.metadata.url]); }]];
-        if(this.lite) {
-            (btn => btn.shift() && addButton(...btn))(btns[(this.url << 1) + this.delete] || btns[0]);
-        } else {
-            btns.map(btn => btn.shift() && addButton(...btn));
-        }
+            [this.delete, ext.type !== ExtType.SYSTEM, 'edit-delete', () => { ExtDownloader.uninstallExtension(ext.uuid); this._updateMenu(); }],
+            [this.url, ext.metadata.url, 'mail-forward', () => { Util.spawn(['gio', 'open', ext.metadata.url]); }]];
+        if(this.lite) (btn => btn.shift() && addButton(...btn))(btns[(this.url << 1) + this.delete] || btns[0]);
+        else btns.map(btn => btn.shift() && addButton(...btn));
+
         item.add_child(hbox);
 
         return item;
@@ -137,15 +141,18 @@ const ExtensionList = GObject.registerClass({
 
     _pinItemMaker(ext, unpin) {
         let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item popup-menu-item' });
-        item.add_child(new St.Label({ x_expand: true,
-            text: ext.metadata.name + (ext.type == ExtType.SYSTEM ? ' *' : ''),
-            style_class: 'extension-list-label%s'.format(ext.state == ExtState.ERROR ? '-error' : ''),
+        item.add_child(new St.Label({
+            x_expand: true,
+            text: ext.metadata.name + (ext.type === ExtType.SYSTEM ? ' *' : ''),
+            style_class: 'extension-list-label%s'.format(ext.state === ExtState.ERROR ? '-error' : ''),
         }));
         let hbox = new St.BoxLayout({ x_align: St.Align.START });
         let btn = new St.Button({
             style_class: 'extension-list-prefs-button extension-list-button',
-            child: new St.Icon({ icon_name: unpin ? 'eye-not-looking-symbolic' : 'eye-open-negative-filled-symbolic',
-                               style_class: 'popup-menu-icon', }),
+            child: new St.Icon({
+                icon_name: unpin ? 'eye-not-looking-symbolic' : 'eye-open-negative-filled-symbolic',
+                style_class: 'popup-menu-icon',
+            }),
         });
         hbox.add_child(btn);
         item.add_child(hbox);
@@ -159,7 +166,7 @@ const ExtensionList = GObject.registerClass({
                 this.unpin_list = [...list.add(ext.uuid)].filter(x => ExtManager.lookup(x));
                 btn.child.icon_name = 'eye-not-looking-symbolic';
             }
-        }
+        };
         btn.connect('clicked', toggle.bind(this));
         item.connect('activate', () => { toggle(); this.unpin = false; this._updateMenu(); });
 
@@ -170,13 +177,14 @@ const ExtensionList = GObject.registerClass({
         let item = new PopupMenu.PopupBaseMenuItem({ style_class: 'extension-list-item popup-menu-item', hover: false });
         let hbox = new St.BoxLayout({ x_align: St.Align.START, x_expand: true });
         let addButton = (text, icon, callback, unpin) => {
-            let btn = new St.Button({ x_expand: true,
+            let btn = new St.Button({
+                x_expand: true,
                 style_class: 'extension-list-setting-button extension-list-button',
-                child: new St.Icon({ icon_name: icon + '-symbolic', style_class: 'popup-menu-icon', }),
+                child: new St.Icon({ icon_name: '%s-symbolic'.format(icon), style_class: 'popup-menu-icon' }),
             });
             btn.connect('clicked', () => { this._toggleUnpin(unpin); callback(); this._updateMenu(); });
             hbox.add_child(btn);
-        }
+        };
         // item.connect('activate', () => { this._toggleUnpin(); this.verbose = true; this._updateMenu(); })
         this._settings.map(st => addButton(...st));
         item.add_child(hbox);
@@ -186,10 +194,10 @@ const ExtensionList = GObject.registerClass({
 
     _veboseItems() {
         let makeItem = (text, icon, callback, unpin) => {
-            let item = new PopupMenu.PopupImageMenuItem(text, icon + '-symbolic', { style_class: 'extension-list-item popup-menu-item' });
+            let item = new PopupMenu.PopupImageMenuItem(text, '%s-symbolic'.format(icon), { style_class: 'extension-list-item popup-menu-item' });
             item.connect('activate', () => { this._toggleUnpin(unpin); callback(); this._updateMenu(); });
             return item;
-        }
+        };
 
         return this._settings.map(s => makeItem(...s));
     }
@@ -204,8 +212,7 @@ const ExtensionList = GObject.registerClass({
             // [this.lite ? _('Show more buttons') : _('Show less buttons'), this.lite ?  'list-add' : 'list-remove', () => { this.lite = !this.lite; }],
             // [_('Fold verbose menu'), this.verbose ?  'go-up' : 'go-down', () => { this.verbose = !this.verbose; }],
         ];
-        if(gsettings.get_boolean(Fields.DEBUG))
-            settings.splice(1, 0, [_('Restart GNOME Shell'), 'applications-engineering', () => { this._button.menu.close(); this._reloadShell(); }]);
+        if(gsettings.get_boolean(Fields.DEBUG)) settings.splice(1, 0, [_('Restart GNOME Shell'), 'applications-engineering', () => { this._button.menu.close(); this._reloadShell(); }]);
 
         return this.verbose ? settings.splice(-1).concat(settings) : settings;
     }
@@ -215,23 +222,18 @@ const ExtensionList = GObject.registerClass({
     }
 
     _toggleUnpin(unpin) {
-        if(unpin) {
-            this.unpin = !this.unpin;
-        } else {
-            if(this.unpin) this.unpin = false;
-        }
+        if(unpin) this.unpin = !this.unpin;
+        else
+        if(this.unpin) this.unpin = false;
     }
 
     _reloadShell() {
-        if(Meta.is_wayland_compositor()) {
-            Util.spawn(['dbus-run-session', '--', 'gnome-shell', '--nested', '--wayland']);
-        } else {
-            Meta.restart(_('Restarting…'));
-        }
+        if(Meta.is_wayland_compositor()) Util.spawn(['dbus-run-session', '--', 'gnome-shell', '--nested', '--wayland']);
+        else Meta.restart(_('Restarting…'));
     }
 
     _openExtensions() {
-        this._button.menu.close()
+        this._button.menu.close();
         Util.spawn(['gapplication', 'launch', 'org.gnome.Extensions']);
     }
 
@@ -255,16 +257,12 @@ const ExtensionList = GObject.registerClass({
         }
         this._button.menu.addMenuItem(scroll);
         this._button.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem(''));
-        if(this.verbose) {
-            this._veboseItems().map(x => this._button.menu.addMenuItem(x));
-        } else {
-            this._button.menu.addMenuItem(this._settingsItem());
-        }
+        if(this.verbose) this._veboseItems().map(x => this._button.menu.addMenuItem(x));
+        else this._button.menu.addMenuItem(this._settingsItem());
     }
 
     destroy() {
-        if(this._stateChangeId)
-            ExtManager.disconnect(this._stateChangeId), delete this._stateChangeId;
+        if(this._stateId) ExtManager.disconnect(this._stateId), delete this._stateId;
         this._button.destroy();
         delete this._button;
     }
@@ -283,7 +281,7 @@ const Extension = class Extension {
         this._ext.destroy();
         delete this._ext;
     }
-}
+};
 
 function init() {
     return new Extension();
