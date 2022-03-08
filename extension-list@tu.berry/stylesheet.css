@@ -6,15 +6,15 @@
     max-width: 30em;
 }
 
-.extension-list-label-error {
-    max-width: 30em;
+.extension-list-label:error {
     color: red;
 }
 
-.extension-list-scroll-menu {
+.extension-list-label:outdate {
+    color: orange;
 }
 
-.extension-list-prefs-button {
+.extension-list-setting-button {
     padding: 0 0.5em;
 }
 
