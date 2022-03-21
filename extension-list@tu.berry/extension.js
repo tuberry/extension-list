@@ -42,7 +42,7 @@ const Style = {
     [ExtState.OUT_OF_DATE]: 'outdate',
 };
 
-const genIcon = x => Gio.Icon.new_for_string(Me.dir.get_child('icons').get_child('%s-symbolic.svg'.format(x)).get_path());
+const genIcon = x => Gio.Icon.new_for_string(Me.dir.get_child('icons').get_child(`${x}-symbolic.svg`).get_path());
 const genParam = (type, name, ...dflt) => GObject.ParamSpec[type](name, name, name, GObject.ParamFlags.READWRITE, ...dflt);
 
 class IconItem extends PopupMenu.PopupBaseMenuItem {
@@ -61,7 +61,7 @@ class IconItem extends PopupMenu.PopupBaseMenuItem {
     addButton(icon_name, callback) {
         let btn = new St.Button({ x_expand: true, style_class: this._style, child: new St.Icon({ style_class: 'popup-menu-icon' }) });
         if(icon_name === 'eye-open-negative-filled') btn.child.set_gicon(genIcon(icon_name));
-        else btn.child.set_icon_name('%s-symbolic'.format(icon_name));
+        else btn.child.set_icon_name(`${icon_name}-symbolic`);
         btn.connect('clicked', callback);
         this._hbox.add_child(btn);
     }
@@ -86,7 +86,7 @@ class ExtItem extends PopupMenu.PopupBaseMenuItem {
     setExtension(ext, dis) {
         this._ext = ext;
         this._dis = dis;
-        let label = this._ext.type === ExtType.SYSTEM ? '%s *'.format(this._ext.name) : this._ext.name;
+        let label = this._ext.type === ExtType.SYSTEM ? `${this._ext.name} *` : this._ext.name;
         this.setOrnament(this._dis || this._ext.state !== ExtState.ENABLED ? PopupMenu.Ornament.NONE : PopupMenu.Ornament.DOT);
         this.setLabel(label, Style[ext.state]);
         this._checkIcon();
@@ -137,7 +137,7 @@ class ExtItem extends PopupMenu.PopupBaseMenuItem {
 
     setIcon(icon) {
         if(this._icon && this._icon === icon) return;
-        if((this._icon = icon)) this._button.child.set_icon_name('%s-symbolic'.format(this._icon));
+        if((this._icon = icon)) this._button.child.set_icon_name(`${this._icon}-symbolic`);
         else this._button.child.set_gicon(genIcon(this._ext.unpinned ? Icons.EDOWN : Icons.EOPEN));
         this._checkIcon();
     }
@@ -184,7 +184,7 @@ class ScrollSection extends PopupMenu.PopupMenuSection {
 
     _buildeWidgets() {
         this.actor = new St.ScrollView({
-            style: 'max-height: %dpx'.format(global.display.get_size()[1] - 100),
+            style: `max-height: ${global.display.get_size()[1] - 100}px`,
             hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.NEVER,
             clip_to_allocation: true,
@@ -225,7 +225,7 @@ class ExtensionList extends GObject.Object {
         this._bindSettings();
         this._addMenuItems();
         ExtManager.connectObject('extension-state-changed', this._onStateChanged.bind(this), this);
-        gsettings.connectObject('changed::%s'.format(Fields.UPLIST), this.setUnpinned.bind(this), this);
+        gsettings.connectObject(`changed::${Fields.UPLIST}`, this.setUnpinned.bind(this), this);
     }
 
     _bindSettings() {
@@ -235,7 +235,7 @@ class ExtensionList extends GObject.Object {
 
     _addIndicator() {
         this._button = new PanelMenu.Button(0.5, Me.metadata.uuid);
-        this._button.add_actor(new St.Icon({ icon_name: '%s-symbolic'.format(Icons.ADDON), style_class: 'system-status-icon' }));
+        this._button.add_actor(new St.Icon({ icon_name: `${Icons.ADDON}-symbolic`, style_class: 'system-status-icon' }));
         Main.panel.addToStatusArea(Me.metadata.uuid, this._button);
     }
 
@@ -276,7 +276,7 @@ class ExtensionList extends GObject.Object {
             [Icons.COOL,  () => { this.pin(); gsettings.set_boolean(Fields.DISABLED, !this._disabled); }],
             [Icons.DEL,   () => { this.pin(); gsettings.set_uint(Fields.ICON, this._icon === Icons.DEL ? 0 : 1); }],
             [Icons.URL,   () => { this.pin(); gsettings.set_uint(Fields.ICON, this._icon === Icons.URL ? 0 : 2); }],
-            [Icons.EOPEN, () => { gsettings.set_boolean(Fields.UNPIN, !this._unpin); }],
+            [Icons.EOPEN, () => gsettings.set_boolean(Fields.UNPIN, !this._unpin)],
         ];
         if(gsettings.get_boolean(Fields.DEBUG)) settings.unshift([Icons.DEBUG, this._reloadShell.bind(this)]);
         this._menus = {
