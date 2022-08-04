@@ -16,7 +16,6 @@ const ExtState = ExtensionUtils.ExtensionState;
 const ExtType = ExtensionUtils.ExtensionType;
 const Me = ExtensionUtils.getCurrentExtension();
 const _ = ExtensionUtils.gettext;
-let gsettings = null;
 
 const Fields = {
     UPLIST:   'unpin-list',
@@ -43,7 +42,32 @@ const Style = {
 };
 
 const genIcon = x => Gio.Icon.new_for_string(Me.dir.get_child('icons').get_child(`${x}-symbolic.svg`).get_path());
-const genParam = (type, name, ...dflt) => GObject.ParamSpec[type](name, name, name, GObject.ParamFlags.READWRITE, ...dflt);
+
+class Field {
+    constructor(prop, gset, obj) {
+        this.gset = typeof gset === 'string' ? new Gio.Settings({ schema: gset }) : gset;
+        this.prop = prop;
+        this.bind(obj);
+    }
+
+    _get(x) {
+        return this.gset[`get_${this.prop[x][1]}`](this.prop[x][0]);
+    }
+
+    _set(x, y) {
+        this.gset[`set_${this.prop[x][1]}`](this.prop[x][0], y);
+    }
+
+    bind(a) {
+        let fs = Object.entries(this.prop);
+        fs.forEach(([x]) => { a[x] = this._get(x); });
+        this.gset.connectObject(...fs.flatMap(([x, [y]]) => [`changed::${y}`, () => { a[x] = this._get(x); }]), a);
+    }
+
+    unbind(a) {
+        this.gset.disconnectObject(a);
+    }
+}
 
 class IconItem extends PopupMenu.PopupBaseMenuItem {
     static {
@@ -60,7 +84,7 @@ class IconItem extends PopupMenu.PopupBaseMenuItem {
 
     addButton(icon_name, callback) {
         let btn = new St.Button({ x_expand: true, style_class: this._style, child: new St.Icon({ style_class: 'popup-menu-icon' }) });
-        if(icon_name === 'eye-open-negative-filled') btn.child.set_gicon(genIcon(icon_name));
+        if(icon_name === Icons.EOPEN) btn.child.set_gicon(genIcon(icon_name));
         else btn.child.set_icon_name(`${icon_name}-symbolic`);
         btn.connect('clicked', callback);
         this._hbox.add_child(btn);
@@ -103,8 +127,8 @@ class ExtItem extends PopupMenu.PopupBaseMenuItem {
     _onButtonClicked() {
         switch(this._icon) {
         case Icons.PREFS: this._getTopMenu().close(); ExtManager.openExtensionPrefs(this._ext.uuid, '', {}); break;
-        case Icons.DEL: this._getTopMenu().close(); ExtDownloader.uninstallExtension(this._ext.uuid); break;
-        case Icons.URL: this._getTopMenu().close(); Util.spawn(['gio', 'open', this._ext.url]); break;
+        case Icons.DEL:   this._getTopMenu().close(); ExtDownloader.uninstallExtension(this._ext.uuid); break;
+        case Icons.URL:   this._getTopMenu().close(); Util.spawn(['gio', 'open', this._ext.url]); break;
         default: this._togglePinned(); break;
         }
     }
@@ -127,12 +151,12 @@ class ExtItem extends PopupMenu.PopupBaseMenuItem {
     }
 
     _togglePinned(once) {
-        let unpinned = new Set(gsettings.get_strv(Fields.UPLIST));
+        let unpinned = new Set(this._parent.unpinned);
         unpinned.has(this._ext.uuid) ? unpinned.delete(this._ext.uuid) : unpinned.add(this._ext.uuid);
         this._ext.unpinned = !this._ext.unpinned;
         this.setIcon(null);
-        gsettings.set_strv(Fields.UPLIST, [...unpinned]);
-        if(once) gsettings.set_boolean(Fields.UNPIN, false);
+        this._parent.setUnpinned([...unpinned]);
+        if(once) this._parent.setUnpin(false);
     }
 
     setIcon(icon) {
@@ -146,8 +170,20 @@ class ExtItem extends PopupMenu.PopupBaseMenuItem {
 class ScrollSection extends PopupMenu.PopupMenuSection {
     constructor(list, disabled, icon) {
         super();
+        this._field = new Field({
+            unpinned: [Fields.UPLIST, 'strv'],
+            unpin:    [Fields.UNPIN,  'boolean'],
+        }, ExtensionUtils.getSettings(), this);
         this._buildeWidgets();
         this.updateList(list, disabled, icon);
+    }
+
+    setUnpin(unpin) {
+        this._field._set('unpin', unpin);
+    }
+
+    setUnpinned(uplist) {
+        this._field._set('unpinned', uplist);
     }
 
     setList(list) {
@@ -205,32 +241,29 @@ class ScrollSection extends PopupMenu.PopupMenuSection {
         needsScrollbar ? this.actor.add_style_pseudo_class('scrolled') : this.actor.remove_style_pseudo_class('scrolled');
         super.open();
     }
+
+    destroy() {
+        this._field.unbind(this);
+        super.destroy();
+    }
 }
 
-class ExtensionList extends GObject.Object {
-    static {
-        GObject.registerClass({
-            Properties: {
-                icon:     genParam('uint', 'icon', 0, 2, 0),
-                unpin:    genParam('boolean', 'unpin', false),
-                disabled: genParam('boolean', 'disabled', false),
-            },
-        }, this);
-    }
-
+class ExtensionList {
     constructor() {
-        super();
-        this.setUnpinned();
         this._addIndicator();
         this._bindSettings();
         this._addMenuItems();
         ExtManager.connectObject('extension-state-changed', this._onStateChanged.bind(this), this);
-        gsettings.connectObject(`changed::${Fields.UPLIST}`, this.setUnpinned.bind(this), this);
     }
 
     _bindSettings() {
-        [[Fields.ICON, 'icon'], [Fields.UNPIN, 'unpin'], [Fields.DISABLED, 'disabled']]
-            .forEach(([x, y, z]) => gsettings.bind(x, this, y, z ?? Gio.SettingsBindFlags.GET));
+        this._field = new Field({
+            unpinned: [Fields.UPLIST,   'strv'],
+            icon:     [Fields.ICON,     'uint'],
+            unpin:    [Fields.UNPIN,    'boolean'],
+            disabled: [Fields.DISABLED, 'boolean'],
+            debug:    [Fields.DEBUG,    'boolean'],
+        }, ExtensionUtils.getSettings(), this);
     }
 
     _addIndicator() {
@@ -255,8 +288,8 @@ class ExtensionList extends GObject.Object {
         this._menus?.section.updateList(this.extensions, this._disabled, this._icon);
     }
 
-    setUnpinned() {
-        this._unpinned = new Set(gsettings.get_strv(Fields.UPLIST));
+    set unpinned(uplist) {
+        this._unpinned = new Set(uplist);
     }
 
     _onStateChanged(mgr_, ext) {
@@ -267,18 +300,18 @@ class ExtensionList extends GObject.Object {
     }
 
     pin() {
-        if(this._unpin) gsettings.set_boolean(Fields.UNPIN, false);
+        if(this._unpin) this._field._set('unpin', false);
     }
 
     _addMenuItems() {
         let settings = [
             [Icons.ADDON, () => { this.pin(); this._button.menu.close(); Util.spawn(['gapplication', 'launch', 'org.gnome.Extensions']); }],
-            [Icons.COOL,  () => { this.pin(); gsettings.set_boolean(Fields.DISABLED, !this._disabled); }],
-            [Icons.DEL,   () => { this.pin(); gsettings.set_uint(Fields.ICON, this._icon === Icons.DEL ? 0 : 1); }],
-            [Icons.URL,   () => { this.pin(); gsettings.set_uint(Fields.ICON, this._icon === Icons.URL ? 0 : 2); }],
-            [Icons.EOPEN, () => gsettings.set_boolean(Fields.UNPIN, !this._unpin)],
+            [Icons.COOL,  () => { this.pin(); this._field._set('disabled', !this._disabled); }],
+            [Icons.DEL,   () => { this.pin(); this._field._set('icon', this._icon === Icons.DEL ? 0 : 1); }],
+            [Icons.URL,   () => { this.pin(); this._field._set('icon', this._icon === Icons.URL ? 0 : 2); }],
+            [Icons.EOPEN, () => this._field._set('unpin', !this._unpin)],
         ];
-        if(gsettings.get_boolean(Fields.DEBUG)) settings.unshift([Icons.DEBUG, this._reloadShell.bind(this)]);
+        if(this.debug) settings.unshift([Icons.DEBUG, this._reloadShell.bind(this)]);
         this._menus = {
             section:  new ScrollSection(this.extensions, this._disabled, this._unpin ? null : this._icon),
             sep:      new PopupMenu.PopupSeparatorMenuItem(),
@@ -308,7 +341,7 @@ class ExtensionList extends GObject.Object {
     }
 
     destroy() {
-        gsettings.disconnectObject(this);
+        this._field.unbind(this);
         ExtManager.disconnectObject(this);
         this._button.destroy();
         this._button = null;
@@ -321,17 +354,15 @@ class Extension {
     }
 
     enable() {
-        gsettings = ExtensionUtils.getSettings();
         this._ext = new ExtensionList();
     }
 
     disable() {
         this._ext.destroy();
-        gsettings = this._ext = null;
+        this._ext = null;
     }
 }
 
 function init() {
     return new Extension();
 }
-
