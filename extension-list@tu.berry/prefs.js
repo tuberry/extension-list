@@ -105,26 +105,25 @@ class ColorPickerPrefs extends Adw.PreferencesGroup {
 
     _buildWidgets() {
         this._field = {
-            EXTAPP: [new AppBtn(), 'app'],
-            DEBUG:  [new Gtk.CheckButton(), 'active'],
-            DELBTN: [new Gtk.CheckButton(), 'active'],
-            DISBTN: [new Gtk.CheckButton(), 'active'],
-            EXTBTN: [new Gtk.CheckButton(), 'active'],
-            PINBTN: [new Gtk.CheckButton(), 'active'],
-            URLBTN: [new Gtk.CheckButton(), 'active'],
+            EXTAPP: ['app',    new AppBtn()],
+            DEBUG:  ['active', new Gtk.CheckButton()],
+            DELBTN: ['active', new Gtk.CheckButton()],
+            DISBTN: ['active', new Gtk.CheckButton()],
+            EXTBTN: ['active', new Gtk.CheckButton()],
+            PINBTN: ['active', new Gtk.CheckButton()],
+            URLBTN: ['active', new Gtk.CheckButton()],
         };
-        Object.entries(this._field).forEach(([x, [y, z]]) => gsettings.bind(Fields[x], y, z, Gio.SettingsBindFlags.DEFAULT));
+        Object.entries(this._field).forEach(([x, [y, z]]) => gsettings.bind(Fields[x], z, y, Gio.SettingsBindFlags.DEFAULT));
     }
 
     _buildUI() {
         [
-            [this._field.EXTBTN[0], [_('Extension'), _('Open <i>extensions.gnome.org</i> or…')], this._field.EXTAPP[0]],
-            [this._field.DISBTN[0], [_('Disabled'), _('Hide/Unhide disabled extensions from menu')], buildIcon(Icons.COOL)],
-            [this._field.DELBTN[0], [_('Delete'), _('Toggle delete button from menu items')], buildIcon(Icons.DEL)],
-            [this._field.URLBTN[0], [_('URL'), _('Toggle url button from menu items')], buildIcon(Icons.URL)],
-            [this._field.PINBTN[0], [_('Pin'), _('Toggle menu for pin/unpin extensions')], buildIcon(Icons.EOPEN)],
-            [this._field.DEBUG[0],  [_('Debug'), _('Restart GNOME Shell or launch a nested Shell session')], buildIcon(Icons.DEBUG)],
+            [this._field.EXTBTN[1], [_('Extension'), _('Open <i>extensions.gnome.org</i> or…')], this._field.EXTAPP[1]],
+            [this._field.DISBTN[1], [_('Disabled'), _('Hide/Unhide disabled extensions from menu')], buildIcon(Icons.COOL)],
+            [this._field.DELBTN[1], [_('Delete'), _('Toggle delete button from menu items')], buildIcon(Icons.DEL)],
+            [this._field.URLBTN[1], [_('URL'), _('Toggle url button from menu items')], buildIcon(Icons.URL)],
+            [this._field.PINBTN[1], [_('Pin'), _('Toggle menu for pin/unpin extensions')], buildIcon(Icons.EOPEN)],
+            [this._field.DEBUG[1],  [_('Debug'), _('Restart GNOME Shell or launch a nested Shell session')], buildIcon(Icons.DEBUG)],
         ].forEach(xs => this.add(new UI.PrefRow(...xs)));
     }
 }
-

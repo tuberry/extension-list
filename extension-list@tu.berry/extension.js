@@ -373,7 +373,7 @@ class ExtensionList {
     _reloadShell() {
         this._button.menu.close();
         if(Meta.is_wayland_compositor()) Util.spawn(['dbus-run-session', '--', 'gnome-shell', '--nested', '--wayland']);
-        else Meta.restart(_('Restarting…'));
+        else Meta.restart(_('Restarting…'), global.context);
     }
 
     _openExtApp() {
