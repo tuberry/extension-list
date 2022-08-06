@@ -7,7 +7,7 @@ const Main = imports.ui.main;
 const Util = imports.misc.util;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const { St, GObject, Meta, Gio } = imports.gi;
+const { St, GObject, Meta, Gio, Shell } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const ExtDownloader = imports.ui.extensionDownloader;
@@ -15,26 +15,8 @@ const ExtManager = Main.extensionManager;
 const ExtState = ExtensionUtils.ExtensionState;
 const ExtType = ExtensionUtils.ExtensionType;
 const Me = ExtensionUtils.getCurrentExtension();
+const { Fields, Icons } = Me.imports.fields;
 const _ = ExtensionUtils.gettext;
-
-const Fields = {
-    UPLIST:   'unpin-list',
-    ICON:     'button-icon',
-    DEBUG:    'debug-button',
-    UNPIN:    'unpin-button',
-    DISABLED: 'hide-disabled',
-};
-
-const Icons = {
-    COOL:  'face-cool',
-    DEL:   'edit-delete',
-    URL:   'mail-forward',
-    PREFS: 'emblem-system',
-    EDOWN: 'eye-not-looking',
-    ADDON: 'application-x-addon',
-    DEBUG: 'applications-engineering',
-    EOPEN: 'eye-open-negative-filled',
-};
 
 const Style = {
     [ExtState.ERROR]:       'error',
@@ -69,7 +51,7 @@ class Field {
     }
 }
 
-class IconItem extends PopupMenu.PopupBaseMenuItem {
+class ELIconItem extends PopupMenu.PopupBaseMenuItem {
     static {
         GObject.registerClass(this);
     }
@@ -82,12 +64,21 @@ class IconItem extends PopupMenu.PopupBaseMenuItem {
         this.add_child(this._hbox);
     }
 
-    addButton(icon_name, callback) {
-        let btn = new St.Button({ x_expand: true, style_class: this._style, child: new St.Icon({ style_class: 'popup-menu-icon' }) });
+    addButton(icon_name, callback, visible) {
+        let btn = new St.Button({
+            x_expand: true, visible, style_class: this._style,
+            child: new St.Icon({ style_class: 'popup-menu-icon' }),
+        });
         if(icon_name === Icons.EOPEN) btn.child.set_gicon(genIcon(icon_name));
         else btn.child.set_icon_name(`${icon_name}-symbolic`);
         btn.connect('clicked', callback);
+        btn._icon_name = icon_name;
         this._hbox.add_child(btn);
+    }
+
+    setViz(icon, viz) {
+        let btn = this._hbox.get_children().find(x => x._icon_name === icon);
+        if(btn) btn.visible = viz;
     }
 }
 
@@ -220,7 +211,7 @@ class ScrollSection extends PopupMenu.PopupMenuSection {
 
     _buildeWidgets() {
         this.actor = new St.ScrollView({
-            style: `max-height: ${global.display.get_size()[1] - 100}px`,
+            style: `max-height: ${Math.round(global.display.get_size()[1] * 0.55)}px`,
             hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.NEVER,
             clip_to_allocation: true,
@@ -250,7 +241,7 @@ class ScrollSection extends PopupMenu.PopupMenuSection {
 
 class ExtensionList {
     constructor() {
-        this._addIndicator();
+        this._buildWidgets();
         this._bindSettings();
         this._addMenuItems();
         ExtManager.connectObject('extension-state-changed', this._onStateChanged.bind(this), this);
@@ -263,13 +254,56 @@ class ExtensionList {
             unpin:    [Fields.UNPIN,    'boolean'],
             disabled: [Fields.DISABLED, 'boolean'],
             debug:    [Fields.DEBUG,    'boolean'],
+            extbtn:   [Fields.EXTBTN,   'boolean'],
+            urlbtn:   [Fields.URLBTN,   'boolean'],
+            disbtn:   [Fields.DISBTN,   'boolean'],
+            delbtn:   [Fields.DELBTN,   'boolean'],
+            pinbtn:   [Fields.PINBTN,   'boolean'],
+            extapp:   [Fields.EXTAPP,   'string'],
         }, ExtensionUtils.getSettings(), this);
     }
 
-    _addIndicator() {
+    _buildWidgets() {
         this._button = new PanelMenu.Button(0.5, Me.metadata.uuid);
         this._button.add_actor(new St.Icon({ icon_name: `${Icons.ADDON}-symbolic`, style_class: 'system-status-icon' }));
         Main.panel.addToStatusArea(Me.metadata.uuid, this._button);
+        this._viz = {};
+    }
+
+    set debug(viz) {
+        this.viz = ['_debug', viz, Icons.DEBUG];
+    }
+
+    set extbtn(viz) {
+        this.viz = ['_extbtn', viz, Icons.ADDON];
+    }
+
+    set urlbtn(viz) {
+        this.viz = ['_urlbtn', viz, Icons.URL];
+    }
+
+    set disbtn(viz) {
+        this.viz = ['_disbtn', viz, Icons.COOL];
+    }
+
+    set delbtn(viz) {
+        this.viz = ['_delbtn', viz, Icons.DEL];
+    }
+
+    set pinbtn(viz) {
+        this.viz = ['_pinbtn', viz, Icons.EOPEN];
+    }
+
+    set viz([k, v, ic]) {
+        this._viz[k] = v;
+        this._menus?.settings.setViz(ic, v);
+        if(Object.values(this._viz).reduce((a, c) => a | c, false)) {
+            this._menus?.settings.show();
+            this._menus?.sep.show();
+        } else {
+            this._menus?.settings.hide();
+            this._menus?.sep.hide();
+        }
     }
 
     set icon(icon) {
@@ -300,22 +334,24 @@ class ExtensionList {
     }
 
     pin() {
-        if(this._unpin) this._field._set('unpin', false);
+        if(!this._unpin) return;
+        this._field._set('unpin', false);
+        this._menus?.section.open();
     }
 
     _addMenuItems() {
         let settings = [
-            [Icons.ADDON, () => { this.pin(); this._button.menu.close(); Util.spawn(['gapplication', 'launch', 'org.gnome.Extensions']); }],
-            [Icons.COOL,  () => { this.pin(); this._field._set('disabled', !this._disabled); }],
-            [Icons.DEL,   () => { this.pin(); this._field._set('icon', this._icon === Icons.DEL ? 0 : 1); }],
-            [Icons.URL,   () => { this.pin(); this._field._set('icon', this._icon === Icons.URL ? 0 : 2); }],
-            [Icons.EOPEN, () => this._field._set('unpin', !this._unpin)],
+            [Icons.ADDON, this._openExtApp.bind(this), this._viz._extbtn],
+            [Icons.COOL,  () => { this.pin(); this._field._set('disabled', !this._disabled); }, this._viz._disbtn],
+            [Icons.DEL,   () => { this.pin(); this._field._set('icon', this._icon === Icons.DEL ? 0 : 1); }, this._viz._delbtn],
+            [Icons.URL,   () => { this.pin(); this._field._set('icon', this._icon === Icons.URL ? 0 : 2); }, this._viz._urlbtn],
+            [Icons.EOPEN, () => this._field._set('unpin', !this._unpin), this._viz._pinbtn],
+            [Icons.DEBUG, this._reloadShell.bind(this), this._viz._debug],
         ];
-        if(this.debug) settings.unshift([Icons.DEBUG, this._reloadShell.bind(this)]);
         this._menus = {
             section:  new ScrollSection(this.extensions, this._disabled, this._unpin ? null : this._icon),
             sep:      new PopupMenu.PopupSeparatorMenuItem(),
-            settings: new IconItem('extension-list-setting-button extension-list-button', settings),
+            settings: new ELIconItem('extension-list-setting-button extension-list-button', settings),
         };
         for(let p in this._menus) this._button.menu.addMenuItem(this._menus[p]);
     }
@@ -338,6 +374,13 @@ class ExtensionList {
         this._button.menu.close();
         if(Meta.is_wayland_compositor()) Util.spawn(['dbus-run-session', '--', 'gnome-shell', '--nested', '--wayland']);
         else Meta.restart(_('Restarting…'));
+    }
+
+    _openExtApp() {
+        this.pin();
+        this._button.menu.close();
+        if(this.extapp) Shell.AppSystem.get_default().lookup_app(this.extapp.replace('Shell.', '')).activate();
+        else Util.spawn(['gio', 'open', 'https://extensions.gnome.org/local']);
     }
 
     destroy() {

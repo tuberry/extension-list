@@ -1,0 +1,90 @@
+# Chinese translations for gnome-shell-extension-extension-list package
+# gnome-shell-extension-extension-list 软件包的简体中文翻译.
+# Copyright (C) 2022 THE gnome-shell-extension-extension-list'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-shell-extension-extension-list package.
+# Automatically generated, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-shell-extension-extension-list\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-08-06 17:07+0800\n"
+"PO-Revision-Date: 2022-08-06 16:16+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: extension.js:376
+msgid "Restarting…"
+msgstr "重启中…"
+
+#: prefs.js:46 ui.js:30
+msgid "Clear"
+msgstr "清除"
+
+#: prefs.js:85
+msgid "(e.g.o)"
+msgstr "(e.g.o)"
+
+#: prefs.js:101
+msgid "Toolbar"
+msgstr "工具栏"
+
+#: prefs.js:101
+msgid "Icon"
+msgstr "图标"
+
+#: prefs.js:121
+msgid "Extension"
+msgstr "扩展"
+
+#: prefs.js:121
+msgid "Open <i>extensions.gnome.org</i> or…"
+msgstr "打开 <i>extensions.gnome.org</i> 或…"
+
+#: prefs.js:122
+msgid "Disabled"
+msgstr "禁用"
+
+#: prefs.js:122
+msgid "Hide/Unhide disabled extensions from menu"
+msgstr "隐藏/显示菜单中已禁用的扩展"
+
+#: prefs.js:123
+msgid "Delete"
+msgstr "删除"
+
+#: prefs.js:123
+msgid "Toggle delete button from menu items"
+msgstr "切换菜单项的删除按钮"
+
+#: prefs.js:124
+msgid "URL"
+msgstr "链接"
+
+#: prefs.js:124
+msgid "Toggle url button from menu items"
+msgstr "切换菜单项的链接按钮"
+
+#: prefs.js:125
+msgid "Pin"
+msgstr "固定"
+
+#: prefs.js:125
+msgid "Toggle menu for pin/unpin extensions"
+msgstr "切换固定/排除扩展的菜单"
+
+#: prefs.js:126
+msgid "Debug"
+msgstr "调试"
+
+#: prefs.js:126
+msgid "Restart GNOME Shell or launch a nested Shell session"
+msgstr "重启 GNOME Shell 或启动嵌套的 Shell 会话"
+
+#: ui.js:258
+msgid "Click or press ENTER to commit changes"
+msgstr "单击或按回车提交更改"

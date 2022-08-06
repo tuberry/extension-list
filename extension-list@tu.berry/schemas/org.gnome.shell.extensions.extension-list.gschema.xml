@@ -6,17 +6,41 @@
             <default>0</default>
             <summary>button icon: 0 - prefs, 1 - delete, 2 - url</summary>
         </key>
-        <key type="b" name="hide-disabled">
-            <default>false</default>
-            <summary>hide disabled in menu</summary>
+        <key type="s" name="ext-app">
+            <default>""</default>
+            <summary>open ext app (default - e.g.o)</summary>
+        </key>
+        <key type="b" name="ext-button">
+            <default>true</default>
+            <summary>show ext button</summary>
+        </key>
+        <key type="b" name="url-button">
+            <default>true</default>
+            <summary>show url button</summary>
+        </key>
+        <key type="b" name="del-button">
+            <default>true</default>
+            <summary>show delete button</summary>
+        </key>
+        <key type="b" name="dis-button">
+            <default>true</default>
+            <summary>show disabled button</summary>
+        </key>
+        <key type="b" name="pin-button">
+            <default>true</default>
+            <summary>show pin button</summary>
         </key>
         <key type="b" name="debug-button">
             <default>false</default>
             <summary>show debug button</summary>
         </key>
-        <key type="b" name="unpin-button">
+        <key type="b" name="hide-disabled">
             <default>false</default>
-            <summary>show unpin button</summary>
+            <summary>hide disabled from menu</summary>
+        </key>
+        <key type="b" name="toggle-unpin">
+            <default>false</default>
+            <summary>unpin or not</summary>
         </key>
         <key type="as" name="unpin-list">
             <default>[]</default>
