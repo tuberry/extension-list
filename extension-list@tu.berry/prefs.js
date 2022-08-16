@@ -7,7 +7,6 @@ const { Adw, Gio, Gtk, GObject } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const gsettings = ExtensionUtils.getSettings();
 const { Fields, Icons } = Me.imports.fields;
 const UI = Me.imports.ui;
 
@@ -104,6 +103,7 @@ class ColorPickerPrefs extends Adw.PreferencesGroup {
     }
 
     _buildWidgets() {
+        let gsettings = ExtensionUtils.getSettings();
         this._field = {
             EXTAPP: ['app',    new AppBtn()],
             DEBUG:  ['active', new Gtk.CheckButton()],
