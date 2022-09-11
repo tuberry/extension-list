@@ -30,6 +30,10 @@
             <default>true</default>
             <summary>show pin button</summary>
         </key>
+        <key type="b" name="unpin-button">
+            <default>true</default>
+            <summary>show unpin button</summary>
+        </key>
         <key type="b" name="debug-button">
             <default>false</default>
             <summary>show debug button</summary>
