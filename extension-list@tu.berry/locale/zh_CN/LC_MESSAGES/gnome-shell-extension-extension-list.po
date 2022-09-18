@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-shell-extension-extension-list\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-06 17:07+0800\n"
+"POT-Creation-Date: 2022-09-18 15:05+0800\n"
 "PO-Revision-Date: 2022-08-06 16:16+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -21,19 +21,19 @@ msgstr ""
 msgid "Restarting…"
 msgstr "重启中…"
 
-#: prefs.js:46 ui.js:30
+#: prefs.js:45 ui.js:30
 msgid "Clear"
 msgstr "清除"
 
-#: prefs.js:85
+#: prefs.js:84
 msgid "(e.g.o)"
 msgstr "(e.g.o)"
 
-#: prefs.js:101
+#: prefs.js:100
 msgid "Toolbar"
 msgstr "工具栏"
 
-#: prefs.js:101
+#: prefs.js:100
 msgid "Icon"
 msgstr "图标"
 

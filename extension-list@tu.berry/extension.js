@@ -297,6 +297,10 @@ class ExtensionList {
     set viz([k, v, ic]) {
         this._viz[k] = v;
         this._menus?.settings.setViz(ic, v);
+        this._checkViz();
+    }
+
+    _checkViz() {
         if(Object.values(this._viz).reduce((a, c) => a | c, false)) {
             this._menus?.settings.show();
             this._menus?.sep.show();
@@ -354,6 +358,7 @@ class ExtensionList {
             settings: new ELIconItem('extension-list-setting-button extension-list-button', settings),
         };
         for(let p in this._menus) this._button.menu.addMenuItem(this._menus[p]);
+        this._checkViz();
     }
 
     get extensions() {
@@ -379,7 +384,7 @@ class ExtensionList {
     _openExtApp() {
         this.pin();
         this._button.menu.close();
-        if(this.extapp) Shell.AppSystem.get_default().lookup_app(this.extapp.replace('Shell.', '')).activate();
+        if(this.extapp) Shell.AppSystem.get_default().lookup_app(this.extapp.replace('Shell.', ''))?.activate();
         else Util.spawn(['gio', 'open', 'https://extensions.gnome.org/local']);
     }
 
