@@ -3,7 +3,7 @@
 /* exported init buildPrefsWidget */
 'use strict';
 
-const { Adw, Gio, Gtk, GObject } = imports.gi;
+const { Adw, Gio, Gtk, Gdk, GObject } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -11,9 +11,8 @@ const { Fields, Icons } = Me.imports.fields;
 const UI = Me.imports.ui;
 
 const _ = ExtensionUtils.gettext;
-const genIcon = x => Gio.Icon.new_for_string(Me.dir.get_child('icons').get_child(`${x}-symbolic.svg`).get_path());
 const genParam = (type, name, ...dflt) => GObject.ParamSpec[type](name, name, name, GObject.ParamFlags.READWRITE, ...dflt);
-const buildIcon = x => x !== Icons.EOPEN ? new Gtk.Image({ icon_name: `${x}-symbolic` }) : new Gtk.Image({ gicon: genIcon(x) });
+const buildIcon = x => new Gtk.Image({ icon_name: `${x}-symbolic` });
 
 function buildPrefsWidget() {
     return new ColorPickerPrefs();
@@ -98,6 +97,7 @@ class ColorPickerPrefs extends Adw.PreferencesGroup {
 
     constructor() {
         super({ title: _('Toolbar'), header_suffix: new Gtk.Label({ label: _('Icon') }) });
+        Gtk.IconTheme.get_for_display(Gdk.Display.get_default()).add_search_path(Me.dir.get_child('icons').get_path());
         this._buildWidgets();
         this._buildUI();
     }
