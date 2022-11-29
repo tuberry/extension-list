@@ -1,9 +1,9 @@
 .extension-list-item {
-    /* max-width: 30em; */
+    /* max-width: 20em; */
 }
 
 .extension-list-label {
-    max-width: 30em;
+    max-width: 16em;
 }
 
 .extension-list-label:error {

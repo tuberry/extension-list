@@ -11,8 +11,8 @@ const { Fields, Icons } = Me.imports.fields;
 const UI = Me.imports.ui;
 
 const _ = ExtensionUtils.gettext;
+const buildIcon = icon_name => new Gtk.Image({ icon_name });
 const genParam = (type, name, ...dflt) => GObject.ParamSpec[type](name, name, name, GObject.ParamFlags.READWRITE, ...dflt);
-const buildIcon = x => new Gtk.Image({ icon_name: `${x}-symbolic` });
 
 function buildPrefsWidget() {
     return new ColorPickerPrefs();
