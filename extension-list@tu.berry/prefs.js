@@ -7,15 +7,15 @@ const { Adw, Gio, Gtk, Gdk, GObject } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const { Fields, Icons } = Me.imports.fields;
+const { Fields, Block, Icons } = Me.imports.fields;
 const UI = Me.imports.ui;
 
 const _ = ExtensionUtils.gettext;
-const buildIcon = icon_name => new Gtk.Image({ icon_name });
+const genIcon = icon_name => new Gtk.Image({ icon_name });
 const genParam = (type, name, ...dflt) => GObject.ParamSpec[type](name, name, name, GObject.ParamFlags.READWRITE, ...dflt);
 
 function buildPrefsWidget() {
-    return new ColorPickerPrefs();
+    return new ExtensionListPrefs();
 }
 
 function init() {
@@ -90,7 +90,7 @@ var AppBtn = class extends Gtk.Box {
     }
 };
 
-class ColorPickerPrefs extends Adw.PreferencesGroup {
+class ExtensionListPrefs extends Adw.PreferencesGroup {
     static {
         GObject.registerClass(this);
     }
@@ -103,27 +103,25 @@ class ColorPickerPrefs extends Adw.PreferencesGroup {
     }
 
     _buildWidgets() {
-        let gsettings = ExtensionUtils.getSettings();
-        this._field = {
-            EXTAPP: ['app',    new AppBtn()],
-            DEBUG:  ['active', new Gtk.CheckButton()],
-            DELBTN: ['active', new Gtk.CheckButton()],
-            DISBTN: ['active', new Gtk.CheckButton()],
-            EXTBTN: ['active', new Gtk.CheckButton()],
-            PINBTN: ['active', new Gtk.CheckButton()],
-            URLBTN: ['active', new Gtk.CheckButton()],
-        };
-        Object.entries(this._field).forEach(([x, [y, z]]) => gsettings.bind(Fields[x], z, y, Gio.SettingsBindFlags.DEFAULT));
+        this._block = new Block({
+            app: [Fields.EXTAPP, 'app',    new AppBtn()],
+            dev: [Fields.DEBUG,  'active', new Gtk.CheckButton()],
+            del: [Fields.DELBTN, 'active', new Gtk.CheckButton()],
+            dis: [Fields.DISBTN, 'active', new Gtk.CheckButton()],
+            ext: [Fields.EXTBTN, 'active', new Gtk.CheckButton()],
+            pin: [Fields.PINBTN, 'active', new Gtk.CheckButton()],
+            url: [Fields.URLBTN, 'active', new Gtk.CheckButton()],
+        });
     }
 
     _buildUI() {
         [
-            [this._field.EXTBTN[1], [_('Extension'), _('Open <i>extensions.gnome.org</i> or…')], this._field.EXTAPP[1]],
-            [this._field.DISBTN[1], [_('Disabled'), _('Hide/Unhide disabled extensions from menu')], buildIcon(Icons.COOL)],
-            [this._field.DELBTN[1], [_('Delete'), _('Toggle delete button from menu items')], buildIcon(Icons.DEL)],
-            [this._field.URLBTN[1], [_('URL'), _('Toggle url button from menu items')], buildIcon(Icons.URL)],
-            [this._field.PINBTN[1], [_('Pin'), _('Toggle menu for pin/unpin extensions')], buildIcon(Icons.EOPEN)],
-            [this._field.DEBUG[1],  [_('Debug'), _('Restart GNOME Shell or launch a nested Shell session')], buildIcon(Icons.DEBUG)],
+            [this._block.ext, [_('Extension'), _('Open <i>extensions.gnome.org</i> or…')], this._block.app],
+            [this._block.dis, [_('Disabled'), _('Hide/Unhide disabled extensions from menu')], genIcon(Icons.COOL)],
+            [this._block.del, [_('Delete'), _('Toggle delete button from menu items')], genIcon(Icons.DEL)],
+            [this._block.url, [_('URL'), _('Toggle url button from menu items')], genIcon(Icons.URL)],
+            [this._block.pin, [_('Pin'), _('Toggle menu for pin/unpin extensions')], genIcon(Icons.EOPEN)],
+            [this._block.dev, [_('Debug'), _('Restart GNOME Shell or launch a nested Shell session')], genIcon(Icons.DEBUG)],
         ].forEach(xs => this.add(new UI.PrefRow(...xs)));
     }
 }
