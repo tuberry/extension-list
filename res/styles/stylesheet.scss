@@ -1,0 +1,15 @@
+$variant: 'dark';
+
+@import 'gnome-shell-sass/_colors';
+
+$pfx: 'extension-list';
+
+.#{$pfx}-label {
+    max-width: 16em;
+    &:error { color: $error_color; }
+    &:outdate { color: $warning_color; }
+}
+
+.#{$pfx}-setting:hover {
+    color: lighten($selected_bg_color, 5%);
+}

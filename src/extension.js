@@ -23,7 +23,7 @@ const Style = {
     [ExtState.OUT_OF_DATE]: 'outdate',
 };
 
-const genIcon = x => Gio.Icon.new_for_string(Me.dir.get_child('icons').get_child(`${x}.svg`).get_path());
+const genIcon = x => Gio.Icon.new_for_string('%s/icons/hicolor/scalable/actions/%s.svg'.format(Me.dir.get_path(), x));
 
 class ExIconItem extends PopupMenu.PopupBaseMenuItem {
     static {
@@ -33,7 +33,7 @@ class ExIconItem extends PopupMenu.PopupBaseMenuItem {
     constructor(cbs) {
         super({ activate: false });
         this._box = new St.BoxLayout({ x_align: St.Align.START, x_expand: true });
-        cbs.map(x => this.mkButton('extension-list-setting-button extension-list-button', ...x)).forEach(x => this._box.add_child(x));
+        cbs.map(x => this.mkButton('extension-list-setting', ...x)).forEach(x => this._box.add_child(x));
         this.add_child(this._box);
     }
 
@@ -62,7 +62,7 @@ class ExtItem extends PopupMenu.PopupBaseMenuItem {
         this.connect('activate', () => this._onActivated());
         this._label = new St.Label({ x_expand: true, style_class: 'extension-list-label' });
         this._label.clutter_text.set_ellipsize(Pango.EllipsizeMode.MIDDLE);
-        this._button = new St.Button({ child: new St.Icon({ style_class: 'popup-menu-icon' }), style_class: 'extension-list-button' });
+        this._button = new St.Button({ child: new St.Icon({ style_class: 'popup-menu-icon' }), style_class: 'extension-list-setting' });
         this._button.connect('clicked', () => this._onButtonClicked());
         [this._label, this._button].forEach(x => this.add_child(x));
         if(ext) this.setExtension(ext);
