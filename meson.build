@@ -5,7 +5,7 @@ project(
 )
 
 NAME = 'Extension List'
-DESCRIPTION = 'Simple GNOME Shell extension manager in the top panel\\n\\nFor support, please report any issues via the homepage link below.'
+INFO = 'Simple GNOME Shell extension manager in the top panel'
 EID = meson.project_name().replace('gnome-shell-extension-', '')
 UUID = EID + '@tu.berry'
 EGO = 'EGO=3088' / EID
