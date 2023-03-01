@@ -138,7 +138,7 @@ class ExScrollSect extends PopupMenu.PopupMenuSection {
 
     setExt(ext) {
         let items = this._getMenuItems();
-        if(ext.state === ExtState.UNINSTALLED) { items.find(x => x._ext.uuid === ext.uuid)?.destroy(); return; }
+        if(ext.state === ExtState.UNINSTALLED) return items.find(x => x._ext.uuid === ext.uuid)?.destroy();
         let index = items.findIndex(x => x._ext.name.localeCompare(ext.name) >= 0);
         if(items[index]?._ext.uuid === ext.uuid) items[index].setExtension(ext);
         else this.addMenuItem(new ExtItem(ext), index < 0 ? undefined : index);

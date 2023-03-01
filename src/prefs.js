@@ -42,7 +42,7 @@ var AppBtn = class extends Gtk.Box {
         [this._icon, this._label].forEach(x => box.append(x));
         this._btn = new Gtk.Button({ child: box });
         let reset = new Gtk.Button({ icon_name: 'edit-clear-symbolic', tooltip_text: _('Clear') });
-        reset.connect('clicked', () => (this.app = ''));
+        reset.connect('clicked', () => { this.app = ''; });
         this._btn.connect('clicked', this._onClicked.bind(this));
         [this._btn, reset].forEach(x => this.append(x));
     }
@@ -103,7 +103,7 @@ class ExtensionListPrefs extends Adw.PreferencesGroup {
     }
 
     _buildWidgets() {
-        this._block = new Block({
+        this._blk = new Block({
             app: [Fields.EXTAPP, 'app',    new AppBtn()],
             dev: [Fields.DEBUG,  'active', new Gtk.CheckButton()],
             del: [Fields.DELBTN, 'active', new Gtk.CheckButton()],
@@ -116,12 +116,12 @@ class ExtensionListPrefs extends Adw.PreferencesGroup {
 
     _buildUI() {
         [
-            [this._block.ext, [_('Extension'), _('Open <i>extensions.gnome.org</i> or…')], this._block.app],
-            [this._block.dis, [_('Disabled'), _('Hide/Unhide disabled extensions from menu')], genIcon(Icons.COOL)],
-            [this._block.del, [_('Delete'), _('Toggle delete button from menu items')], genIcon(Icons.DEL)],
-            [this._block.url, [_('URL'), _('Toggle url button from menu items')], genIcon(Icons.URL)],
-            [this._block.pin, [_('Pin'), _('Toggle menu for pin/unpin extensions')], genIcon(Icons.EOPEN)],
-            [this._block.dev, [_('Debug'), _('Restart GNOME Shell or launch a nested Shell session')], genIcon(Icons.DEBUG)],
+            [this._blk.ext, [_('Extension'), _('Open <i>extensions.gnome.org</i> or…')], this._blk.app],
+            [this._blk.dis, [_('Disabled'), _('Hide/Unhide disabled extensions from menu')], genIcon(Icons.COOL)],
+            [this._blk.del, [_('Delete'), _('Toggle delete button from menu items')], genIcon(Icons.DEL)],
+            [this._blk.url, [_('URL'), _('Toggle url button from menu items')], genIcon(Icons.URL)],
+            [this._blk.pin, [_('Pin'), _('Toggle menu for pin/unpin extensions')], genIcon(Icons.EOPEN)],
+            [this._blk.dev, [_('Debug'), _('Restart GNOME Shell or launch a nested Shell session')], genIcon(Icons.DEBUG)],
         ].forEach(xs => this.add(new UI.PrefRow(...xs)));
     }
 }
