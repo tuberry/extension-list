@@ -7,12 +7,11 @@ const { Adw, Gio, Gtk, Gdk, GObject } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const { Fields, Block, Icons } = Me.imports.fields;
+const { Field, Icons } = Me.imports.const;
+const { _, genParam } = Me.imports.util;
 const UI = Me.imports.ui;
 
-const _ = ExtensionUtils.gettext;
 const genIcon = icon_name => new Gtk.Image({ icon_name });
-const genParam = (type, name, ...dflt) => GObject.ParamSpec[type](name, name, name, GObject.ParamFlags.READWRITE, ...dflt);
 
 function buildPrefsWidget() {
     return new ExtensionListPrefs();
@@ -103,14 +102,14 @@ class ExtensionListPrefs extends Adw.PreferencesGroup {
     }
 
     _buildWidgets() {
-        this._blk = new Block({
-            app: [Fields.EXTAPP, 'app',    new AppBtn()],
-            dev: [Fields.DEBUG,  'active', new Gtk.CheckButton()],
-            del: [Fields.DELBTN, 'active', new Gtk.CheckButton()],
-            dis: [Fields.DISBTN, 'active', new Gtk.CheckButton()],
-            ext: [Fields.EXTBTN, 'active', new Gtk.CheckButton()],
-            pin: [Fields.PINBTN, 'active', new Gtk.CheckButton()],
-            url: [Fields.URLBTN, 'active', new Gtk.CheckButton()],
+        this._blk = new UI.Block({
+            app: [Field.EXTAPP, 'app',    new AppBtn()],
+            dev: [Field.DEBUG,  'active', new Gtk.CheckButton()],
+            del: [Field.DELBTN, 'active', new Gtk.CheckButton()],
+            dis: [Field.DISBTN, 'active', new Gtk.CheckButton()],
+            ext: [Field.EXTBTN, 'active', new Gtk.CheckButton()],
+            pin: [Field.PINBTN, 'active', new Gtk.CheckButton()],
+            url: [Field.URLBTN, 'active', new Gtk.CheckButton()],
         });
     }
 

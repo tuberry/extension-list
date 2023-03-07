@@ -15,8 +15,9 @@ const ExtManager = Main.extensionManager;
 const ExtState = ExtensionUtils.ExtensionState;
 const ExtType = ExtensionUtils.ExtensionType;
 const Me = ExtensionUtils.getCurrentExtension();
-const { Fields, Field, Icons } = Me.imports.fields;
-const _ = ExtensionUtils.gettext;
+const { Fulu, Extension, Symbiont, DEventEmitter } = Me.imports.fubar;
+const { Field, Icons } = Me.imports.const;
+const { _ } = Me.imports.util;
 
 const Style = {
     [ExtState.ERROR]:       'error',
@@ -146,7 +147,7 @@ class ExScrollSect extends PopupMenu.PopupMenuSection {
 
     _buildWidgets() {
         this.actor = new St.ScrollView({
-            style: `max-height: ${Math.round(global.display.get_size()[1] * 0.55)}px`,
+            style: `max-height: ${Math.round(global.display.get_size().at(1) * 0.55)}px`,
             hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.NEVER,
             clip_to_allocation: true,
@@ -169,8 +170,9 @@ class ExScrollSect extends PopupMenu.PopupMenuSection {
     }
 }
 
-class ExtensionList {
+class ExtensionList extends DEventEmitter {
     constructor() {
+        super();
         this._buildWidgets();
         this._bindSettings();
         this._addMenuItems();
@@ -184,27 +186,32 @@ class ExtensionList {
         this._button.add_actor(new St.Icon({ icon_name: Icons.ADDON, style_class: 'system-status-icon' }));
         this._button.menu.togglePin = this._togglePin.bind(this);
         Main.panel.addToStatusArea(Me.metadata.uuid, this._button);
+        new Symbiont(() => {
+            ExtManager.disconnectObject(this);
+            this._button.destroy();
+            this._button = null;
+        }, this);
     }
 
     _bindSettings() {
-        this._field = new Field({
-            extapp:   [Fields.EXTAPP,   'string'],
+        this._fulu = new Fulu({
+            extapp:   [Field.EXTAPP,   'string'],
         }, ExtensionUtils.getSettings(), this).attach({
-            unpin:    [Fields.UNPIN,    'boolean'],
-            disabled: [Fields.DISABLED, 'boolean'],
-            unpinned: [Fields.UPLIST,   'strv', x => new Set(x)],
-            icon:     [Fields.ICON,     'uint', x => [Icons.SET, Icons.DEL, Icons.URL][x]],
+            unpin:    [Field.UNPIN,    'boolean'],
+            disabled: [Field.DISABLED, 'boolean'],
+            unpinned: [Field.UPLIST,   'strv', x => new Set(x)],
+            icon:     [Field.ICON,     'uint', x => [Icons.SET, Icons.DEL, Icons.URL][x]],
         }, this, 'section');
     }
 
     _bindToolSets() {
-        this._field.attach({
-            debug:  [Fields.DEBUG,  'boolean', Icons.DEBUG],
-            extbtn: [Fields.EXTBTN, 'boolean', Icons.ADDON],
-            urlbtn: [Fields.URLBTN, 'boolean', Icons.URL],
-            disbtn: [Fields.DISBTN, 'boolean', Icons.COOL],
-            delbtn: [Fields.DELBTN, 'boolean', Icons.DEL],
-            pinbtn: [Fields.PINBTN, 'boolean', Icons.EOPEN],
+        this._fulu.attach({
+            debug:  [Field.DEBUG,  'boolean', Icons.DEBUG],
+            extbtn: [Field.EXTBTN, 'boolean', Icons.ADDON],
+            urlbtn: [Field.URLBTN, 'boolean', Icons.URL],
+            disbtn: [Field.DISBTN, 'boolean', Icons.COOL],
+            delbtn: [Field.DELBTN, 'boolean', Icons.DEL],
+            pinbtn: [Field.PINBTN, 'boolean', Icons.EOPEN],
         }, this, 'tools');
     }
 
@@ -292,30 +299,8 @@ class ExtensionList {
         if(this.extapp) Shell.AppSystem.get_default().lookup_app(this.extapp.replace('Shell.', ''))?.activate();
         else Util.spawn(['gio', 'open', 'https://extensions.gnome.org/local']);
     }
-
-    destroy() {
-        this._field.detach(this);
-        ExtManager.disconnectObject(this);
-        this._button.destroy();
-        this._button = null;
-    }
-}
-
-class Extension {
-    constructor() {
-        ExtensionUtils.initTranslations();
-    }
-
-    enable() {
-        this._ext = new ExtensionList();
-    }
-
-    disable() {
-        this._ext.destroy();
-        this._ext = null;
-    }
 }
 
 function init() {
-    return new Extension();
+    return new Extension(ExtensionList);
 }
