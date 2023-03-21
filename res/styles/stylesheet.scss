@@ -5,7 +5,7 @@ $variant: 'dark';
 $pfx: 'extension-list';
 
 .#{$pfx}-label {
-    max-width: 16em;
+    max-width: 14em;
     &:error { color: $error_color; }
     &:outdate { color: $warning_color; }
 }
