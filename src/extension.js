@@ -15,7 +15,7 @@ const ExtManager = Main.extensionManager;
 const ExtState = ExtensionUtils.ExtensionState;
 const ExtType = ExtensionUtils.ExtensionType;
 const Me = ExtensionUtils.getCurrentExtension();
-const { Fulu, Extension, DEventEmitter, symbiose, omit, onus } = Me.imports.fubar;
+const { Fulu, Extension, DummyActor, symbiose, omit, onus } = Me.imports.fubar;
 const { StButton, IconItem, TrayIcon } = Me.imports.menu;
 const { Field, Icon } = Me.imports.const;
 const { _ } = Me.imports.util;
@@ -140,7 +140,7 @@ class ExtScrollSect extends PopupMenu.PopupMenuSection {
     }
 }
 
-class ExtensionList extends DEventEmitter {
+class ExtensionList extends DummyActor {
     constructor() {
         super();
         this._buildWidgets();
