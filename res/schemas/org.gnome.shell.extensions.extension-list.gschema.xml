@@ -7,7 +7,7 @@
             <summary>button icon: 0 - prefs, 1 - delete, 2 - url</summary>
         </key>
         <key type="s" name="ext-app">
-            <default>""</default>
+            <default>"org.gnome.Extensions.desktop"</default>
             <summary>open ext app (default - e.g.o)</summary>
         </key>
         <key type="b" name="ext-button">

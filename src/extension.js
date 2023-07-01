@@ -16,14 +16,9 @@ const ExtState = ExtensionUtils.ExtensionState;
 const ExtType = ExtensionUtils.ExtensionType;
 const Me = ExtensionUtils.getCurrentExtension();
 const { Fulu, Extension, DummyActor, symbiose, omit, onus } = Me.imports.fubar;
-const { StButton, IconItem, TrayIcon } = Me.imports.menu;
+const { IconButton, IconItem, TrayIcon } = Me.imports.menu;
 const { Field, Icon } = Me.imports.const;
 const { _ } = Me.imports.util;
-
-const Style = {
-    [ExtState.ERROR]:       'error',
-    [ExtState.OUT_OF_DATE]: 'outdate',
-};
 
 class ExtMenuItem extends PopupMenu.PopupMenuItem {
     static {
@@ -35,10 +30,7 @@ class ExtMenuItem extends PopupMenu.PopupMenuItem {
         this.label.set_x_expand(true);
         this.label.set_style_class_name('extension-list-label');
         this.label.clutter_text.set_ellipsize(Pango.EllipsizeMode.MIDDLE);
-        this._btn = new StButton({
-            child: new St.Icon({ style_class: 'popup-menu-icon' }),
-            style_class: 'extension-list-setting',
-        }, () => this._onButtonClicked());
+        this._btn = new IconButton({ style_class: 'extension-list-setting' }, () => this._onButtonClicked());
         this.add_child(this._btn);
         if(ext) this.setExtension(ext);
     }
@@ -47,7 +39,7 @@ class ExtMenuItem extends PopupMenu.PopupMenuItem {
         this._ext = ext;
         let label = this._ext.type === ExtType.SYSTEM ? `${this._ext.name} *` : this._ext.name;
         this.setOrnament(this._ext.orna && this._ext.state === ExtState.ENABLED ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NONE);
-        this.setLabel(label, Style[ext.state]);
+        this.setLabel(label, { [ExtState.ERROR]: 'error', [ExtState.OUT_OF_DATE]: 'outdate' }[ext.state]);
         this.setIcon(this._ext.icon);
     }
 
@@ -69,7 +61,7 @@ class ExtMenuItem extends PopupMenu.PopupMenuItem {
             default: return true;
             }
         })(this.icon = icon);
-        if(this._btn.visible) this._btn.child.set_icon_name(icon);
+        if(this._btn.visible) this._btn.setIcon(icon);
     }
 
     _onButtonClicked() {
@@ -117,7 +109,7 @@ class ExtScrollSect extends PopupMenu.PopupMenuSection {
 
     _buildWidgets() {
         this.actor = new St.ScrollView({
-            style: `max-height: ${Math.round(global.display.get_size().at(1) * 0.55)}px`,
+            style: `max-height: ${Math.round(global.display.get_size().at(1) * 0.9)}px`,
             hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.NEVER,
             clip_to_allocation: true,
@@ -171,28 +163,24 @@ class ExtensionList extends DummyActor {
 
     _bindToolSets() {
         this._fulu.attach({
-            extbtn: [Field.EXT, 'boolean', Icon.ADN],
-            urlbtn: [Field.URL, 'boolean', Icon.URL],
-            disbtn: [Field.DIS, 'boolean', Icon.COOL],
-            delbtn: [Field.DEL, 'boolean', Icon.DEL],
-            pinbtn: [Field.PIN, 'boolean', Icon.SHOW],
+            extbtn: [Field.EXT, 'boolean'],
+            urlbtn: [Field.URL, 'boolean'],
+            disbtn: [Field.DIS, 'boolean'],
+            delbtn: [Field.DEL, 'boolean'],
+            pinbtn: [Field.PIN, 'boolean'],
         }, this, 'tools');
     }
 
-    set tools([k, v, out]) {
+    set tools([k, v]) {
         this._tools[k] = v;
-        this._menus?.prefs.setViz(out, v);
+        this._menus?.prefs.setViz(k, v);
         this._checkTools();
     }
 
     _checkTools() {
-        if(Object.values(this._tools).reduce((p, v) => p | v, false)) {
-            this._menus?.prefs.show();
-            this._menus?.sep.show();
-        } else {
-            this._menus?.prefs.hide();
-            this._menus?.sep.hide();
-        }
+        let viz = Object.values(this._tools).reduce((p, v) => p | v, false) ? 'show' : 'hide';
+        this._menus?.prefs[viz]();
+        this._menus?.sep[viz]();
     }
 
     set section([k, v, out]) {
@@ -223,13 +211,21 @@ class ExtensionList extends DummyActor {
         this._menus = {
             section: new ExtScrollSect(this.getExts()),
             sep:     new PopupMenu.PopupSeparatorMenuItem(),
-            prefs:   new IconItem('extension-list-setting', [
-                [Icon.ADN,  () => this._openExtApp(), this._tools.extbtn],
-                [Icon.COOL, () => { this.pin(); this._fulu.set('disabled', !this.disabled, this); }],
-                [Icon.DEL,  () => { this.pin(); this._fulu.set('icon', this.icon === Icon.DEL ? 0 : 1, this); }],
-                [Icon.URL,  () => { this.pin(); this._fulu.set('icon', this.icon === Icon.URL ? 0 : 2, this); }],
-                [Icon.SHOW, () => this._fulu.set('unpin', !this.unpin, this)],
-            ]),
+            prefs:   new IconItem('extension-list-setting', {
+                extbtn: [() => this._openExtApp(), Icon.ADN],
+                disbtn: [() => {
+                    this.pin(); this._fulu.set('disabled', !this.disabled, this);
+                }, this.disabled, Icon.HIDE, Icon.SHOW],
+                delbtn: [() => {
+                    this.pin(); this._fulu.set('icon', this.icon === Icon.DEL ? 0 : 1, this);
+                    this._menus.prefs._icons.urlbtn.setIcon(Icon.URL);
+                }, this.icon !== Icon.DEL, Icon.DEL, Icon.SET],
+                urlbtn: [() => {
+                    this.pin(); this._fulu.set('icon', this.icon === Icon.URL ? 0 : 2, this);
+                    this._menus.prefs._icons.delbtn.setIcon(Icon.DEL);
+                }, this.icon !== Icon.URL, Icon.URL, Icon.SET],
+                pinbtn: [() => this._fulu.set('unpin', !this.unpin, this), Icon.PIN],
+            }),
         };
         for(let p in this._menus) this._btn.menu.addMenuItem(this._menus[p]);
     }

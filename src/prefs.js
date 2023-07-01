@@ -45,10 +45,10 @@ class ExtensionListPrefs extends Adw.PreferencesGroup {
         let image = icon_name => new Gtk.Image({ icon_name });
         [
             [this._blk.EXT, [_('Extension'), _('Open <i>extensions.gnome.org</i> or…')], this._blk.APP],
-            [this._blk.DIS, [_('Disabled'), _('Hide/Unhide disabled extensions from menu')], image(Icon.COOL)],
+            [this._blk.DIS, [_('Disabled'), _('Hide/Unhide disabled extensions from menu')], image(Icon.SHOW)],
             [this._blk.DEL, [_('Delete'), _('Toggle delete button from menu items')], image(Icon.DEL)],
             [this._blk.URL, [_('URL'), _('Toggle url button from menu items')], image(Icon.URL)],
-            [this._blk.PIN, [_('Pin'), _('Toggle menu for pin/unpin extensions')], image(Icon.SHOW)],
+            [this._blk.PIN, [_('Pin'), _('Toggle menu for pin/unpin extensions')], image(Icon.PIN)],
         ].forEach(xs => this.add(new UI.PrefRow(...xs)));
     }
 }
