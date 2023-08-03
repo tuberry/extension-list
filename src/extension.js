@@ -15,7 +15,7 @@ const ExtManager = Main.extensionManager;
 const ExtState = ExtensionUtils.ExtensionState;
 const ExtType = ExtensionUtils.ExtensionType;
 const Me = ExtensionUtils.getCurrentExtension();
-const { Fulu, Extension, DummyActor, symbiose, omit, onus } = Me.imports.fubar;
+const { Fulu, Extension, Destroyable, symbiose, omit } = Me.imports.fubar;
 const { IconButton, IconItem, TrayIcon } = Me.imports.menu;
 const { Field, Icon } = Me.imports.const;
 const { _ } = Me.imports.util;
@@ -132,7 +132,7 @@ class ExtScrollSect extends PopupMenu.PopupMenuSection {
     }
 }
 
-class ExtensionList extends DummyActor {
+class ExtensionList extends Destroyable {
     constructor() {
         super();
         this._buildWidgets();
@@ -140,7 +140,7 @@ class ExtensionList extends DummyActor {
         this._addMenuItems();
         this._bindToolSets();
         symbiose(this, () => omit(this, '_btn'));
-        ExtManager.connectObject('extension-state-changed', this._onStateChanged.bind(this), onus(this));
+        ExtManager.connectObject('extension-state-changed', this._onStateChanged.bind(this), this);
     }
 
     _buildWidgets() {
