@@ -1,0 +1,91 @@
+# Czech translation for gnome-shell-extension-extension-list package
+# gnome-shell-extension-extension-list 软件包的简体中文翻译.
+# Copyright (C) 2022 THE gnome-shell-extension-extension-list'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-shell-extension-extension-list package.
+# Amerey.eu <info@amerey.eu>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-shell-extension-extension-list\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-10 05:36+0800\n"
+"PO-Revision-Date: 2023-08-03 11:09+0200\n"
+"Last-Translator: Amerey.eu <info@amerey.eu>\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.3.1\n"
+
+#: src/ui.js:32 src/prefs.js:44
+msgid "Clear"
+msgstr "Vymazat"
+
+#: src/ui.js:266
+msgid "Click or press ENTER to commit changes"
+msgstr "Změny potvrďte kliknutím nebo stisknutím klávesy ENTER"
+
+#: src/prefs.js:83
+msgid "(e.g.o)"
+msgstr "(e.g.o)"
+
+#: src/prefs.js:99
+msgid "Toolbar"
+msgstr "Panel nástrojů"
+
+#: src/prefs.js:99
+msgid "Icon"
+msgstr "Ikona"
+
+#: src/prefs.js:119
+msgid "Extension"
+msgstr "Rozšíření"
+
+#: src/prefs.js:119
+msgid "Open <i>extensions.gnome.org</i> or…"
+msgstr "Otevřete <i>extensions.gnome.org</i> nebo…"
+
+#: src/prefs.js:120
+msgid "Disabled"
+msgstr "Vypnuto"
+
+#: src/prefs.js:120
+msgid "Hide/Unhide disabled extensions from menu"
+msgstr "Skrýt/zobrazit deaktivovaná rozšíření z nabídky"
+
+#: src/prefs.js:121
+msgid "Delete"
+msgstr "Smazat"
+
+#: src/prefs.js:121
+msgid "Toggle delete button from menu items"
+msgstr "Skrýt/zobrazit tlačítko pro odstranění z položek nabídky"
+
+#: src/prefs.js:122
+msgid "URL"
+msgstr "URL"
+
+#: src/prefs.js:122
+msgid "Toggle url button from menu items"
+msgstr "Skrýt/zobrazit tlačítko url z položek nabídky"
+
+#: src/prefs.js:123
+msgid "Pin"
+msgstr "Připnout"
+
+#: src/prefs.js:123
+msgid "Toggle menu for pin/unpin extensions"
+msgstr "Skrýt/zobrazit nabídku pro připnutí/odepnutí rozšíření"
+
+#: src/prefs.js:124
+msgid "Debug"
+msgstr "Ladit"
+
+#: src/prefs.js:124
+msgid "Restart GNOME Shell or launch a nested Shell session"
+msgstr "Restartujte prostředí GNOME nebo spusťte vnořenou relaci prostředí"
+
+#: src/extension.js:286
+msgid "Restarting…"
+msgstr "Restartování…"
