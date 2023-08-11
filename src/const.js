@@ -1,9 +1,7 @@
 // vim:fdm=syntax
 // by tuberry
-/* exported Icon Field */
-'use strict';
 
-var Icon = {
+export const Icon = {
     PIN:  'view-pin-symbolic',
     COOL: 'face-cool-symbolic',
     URL:  'user-home-symbolic',
@@ -14,7 +12,7 @@ var Icon = {
     ADN:  'application-x-addon-symbolic',
 };
 
-var Field = {
+export const Field = {
     APP: 'ext-app',
     DEL: 'del-button',
     DIS: 'dis-button',

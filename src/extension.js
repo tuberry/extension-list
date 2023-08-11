@@ -1,24 +1,26 @@
 // vim:fdm=syntax
 // by tuberry
-/* exported init */
-'use strict';
 
-const Main = imports.ui.main;
-const Util = imports.misc.util;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const { St, GObject, Shell, Pango } = imports.gi;
+import St from 'gi://St';
+import Shell from 'gi://Shell';
+import Pango from 'gi://Pango';
+import GObject from 'gi://GObject';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const ExtDownloader = imports.ui.extensionDownloader;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as Util from 'resource:///org/gnome/shell/misc/util.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+
+import * as ExtensionUtils from 'resource:///org/gnome/shell/misc/extensionUtils.js';
+import * as ExtDownloader from 'resource:///org/gnome/shell/ui/extensionDownloader.js';
+
+import { Field, Icon } from './const.js';
+import { IconButton, IconItem, TrayIcon } from './menu.js';
+import { Fulu, BaseExtension, Destroyable, symbiose, omit, onus, getSelf, _ } from './fubar.js';
+
 const ExtManager = Main.extensionManager;
-const ExtState = ExtensionUtils.ExtensionState;
 const ExtType = ExtensionUtils.ExtensionType;
-const Me = ExtensionUtils.getCurrentExtension();
-const { Fulu, Extension, Destroyable, symbiose, omit } = Me.imports.fubar;
-const { IconButton, IconItem, TrayIcon } = Me.imports.menu;
-const { Field, Icon } = Me.imports.const;
-const { _ } = Me.imports.util;
+const ExtState = ExtensionUtils.ExtensionState;
 
 class ExtMenuItem extends PopupMenu.PopupMenuItem {
     static {
@@ -133,27 +135,27 @@ class ExtScrollSect extends PopupMenu.PopupMenuSection {
 }
 
 class ExtensionList extends Destroyable {
-    constructor() {
+    constructor(gset) {
         super();
         this._buildWidgets();
-        this._bindSettings();
+        this._bindSettings(gset);
         this._addMenuItems();
         this._bindToolSets();
         symbiose(this, () => omit(this, '_btn'));
-        ExtManager.connectObject('extension-state-changed', this._onStateChanged.bind(this), this);
+        ExtManager.connectObject('extension-state-changed', this._onStateChanged.bind(this), onus(this));
     }
 
     _buildWidgets() {
         this._tools = {};
-        this._btn = Main.panel.addToStatusArea(Me.metadata.uuid, new PanelMenu.Button(0.5, Me.metadata.uuid));
+        this._btn = Main.panel.addToStatusArea(getSelf().uuid, new PanelMenu.Button(0.5));
         this._btn.menu.togglePin = this._togglePin.bind(this);
         this._btn.add_actor(new TrayIcon(Icon.ADN));
     }
 
-    _bindSettings() {
+    _bindSettings(gset) {
         this._fulu = new Fulu({
             extapp:   [Field.APP, 'string'],
-        }, ExtensionUtils.getSettings(), this).attach({
+        }, gset, this).attach({
             unpin:    [Field.TPN, 'boolean'],
             disabled: [Field.HDS, 'boolean'],
             unpinned: [Field.UPN, 'strv', x => new Set(x)],
@@ -254,6 +256,4 @@ class ExtensionList extends Destroyable {
     }
 }
 
-function init() {
-    return new Extension(ExtensionList);
-}
+export default class Extension extends BaseExtension { $klass = ExtensionList; }
