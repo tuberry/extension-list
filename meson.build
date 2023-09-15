@@ -1,7 +1,7 @@
 project(
   'gnome-shell-extension-extension-list',
   license: 'GPL3+',
-  version: '45.beta',
+  version: '45.0',
 )
 
 NAME = 'Extension List'

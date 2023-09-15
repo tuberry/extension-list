@@ -16,7 +16,7 @@ import * as ExtDownloader from 'resource:///org/gnome/shell/ui/extensionDownload
 
 import { Field, Icon } from './const.js';
 import { IconButton, IconItem, TrayIcon } from './menu.js';
-import { Fulu, BaseExtension, Destroyable, symbiose, omit, onus, getSelf, _ } from './fubar.js';
+import { Fulu, BaseExtension, Destroyable, manageSource, omit, getSignalHolder, getSelf, _ } from './fubar.js';
 
 const ExtManager = Main.extensionManager;
 const ExtType = ExtensionUtils.ExtensionType;
@@ -141,8 +141,8 @@ class ExtensionList extends Destroyable {
         this._bindSettings(gset);
         this._addMenuItems();
         this._bindToolSets();
-        symbiose(this, () => omit(this, '_btn'));
-        ExtManager.connectObject('extension-state-changed', this._onStateChanged.bind(this), onus(this));
+        manageSource(this, () => omit(this, '_btn'));
+        ExtManager.connectObject('extension-state-changed', this._onStateChanged.bind(this), getSignalHolder(this));
     }
 
     _buildWidgets() {
@@ -180,7 +180,7 @@ class ExtensionList extends Destroyable {
     }
 
     _checkTools() {
-        let viz = Object.values(this._tools).reduce((p, v) => p | v, false) ? 'show' : 'hide';
+        let viz = Object.values(this._tools).reduce((a, x) => a | x, false) ? 'show' : 'hide';
         this._menus?.prefs[viz]();
         this._menus?.sep[viz]();
     }
@@ -229,7 +229,7 @@ class ExtensionList extends Destroyable {
                 pinbtn: [() => this._fulu.set('unpin', !this.unpin, this), Icon.PIN],
             }),
         };
-        for(let p in this._menus) this._btn.menu.addMenuItem(this._menus[p]);
+        Object.values(this._menus).forEach(x => this._btn.menu.addMenuItem(x));
     }
 
     getExts() {
