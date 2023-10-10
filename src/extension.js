@@ -16,7 +16,7 @@ import * as ExtDownloader from 'resource:///org/gnome/shell/ui/extensionDownload
 
 import { Field, Icon } from './const.js';
 import { IconButton, IconItem, TrayIcon } from './menu.js';
-import { Fulu, BaseExtension, Destroyable, manageSource, omit, getSignalHolder, getSelf, _ } from './fubar.js';
+import { Fulu, ExtensionBase, Destroyable, manageSource, omit, getSignalHolder, getSelf, _ } from './fubar.js';
 
 const ExtManager = Main.extensionManager;
 const ExtType = ExtensionUtils.ExtensionType;
@@ -40,7 +40,7 @@ class ExtMenuItem extends PopupMenu.PopupMenuItem {
     setExtension(ext) {
         this._ext = ext;
         let label = this._ext.type === ExtType.SYSTEM ? `${this._ext.name} *` : this._ext.name;
-        this.setOrnament(this._ext.orna && this._ext.state === ExtState.ENABLED ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NONE);
+        this.setOrnament(PopupMenu.Ornament[this._ext.orna && this._ext.state === ExtState.ENABLED ? 'DOT' : 'NONE']);
         this.setLabel(label, { [ExtState.ERROR]: 'error', [ExtState.OUT_OF_DATE]: 'outdate' }[ext.state]);
         this.setIcon(this._ext.icon);
     }
@@ -149,7 +149,7 @@ class ExtensionList extends Destroyable {
         this._tools = {};
         this._btn = Main.panel.addToStatusArea(getSelf().uuid, new PanelMenu.Button(0.5));
         this._btn.menu.togglePin = this._togglePin.bind(this);
-        this._btn.add_actor(new TrayIcon(Icon.ADN));
+        this._btn.add_child(new TrayIcon(Icon.ADN));
     }
 
     _bindSettings(gset) {
@@ -256,4 +256,4 @@ class ExtensionList extends Destroyable {
     }
 }
 
-export default class Extension extends BaseExtension { $klass = ExtensionList; }
+export default class Extension extends ExtensionBase { $klass = ExtensionList; }
