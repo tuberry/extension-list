@@ -4,6 +4,10 @@ $variant: 'dark';
 
 $pfx: 'extension-list';
 
+.#{$pfx}-scroll {
+    max-height: 50em;
+}
+
 .#{$pfx}-label {
     max-width: 14em;
     &:error { color: $error_color; }

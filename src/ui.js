@@ -22,7 +22,7 @@ export const _GTK = Gettext.domain('gtk40').gettext;
 export const getSelf = () => ExtensionPreferences.lookupByURL(import.meta.url);
 export const block = (o, s) => omap(o, ([k, [x, y]]) => [[k, (s.bind(Field[k], y, x, Gio.SettingsBindFlags.DEFAULT), y)]]);
 
-export const Hook = new class Conns {
+export const Hook = new class Hook {
     #map = new WeakMap();
     attach(cbs, obj) {
         this.detach(obj);
@@ -59,9 +59,9 @@ export class Spin extends Gtk.SpinButton {
         GObject.registerClass(this);
     }
 
-    constructor(l, u, s, tip) {
-        super({ tooltip_text: tip || '', valign: Gtk.Align.CENTER });
-        this.set_adjustment(new Gtk.Adjustment({ lower: l, upper: u, step_increment: s }));
+    constructor(lower, upper, step_increment, tooltip_text = '') {
+        super({ tooltip_text, valign: Gtk.Align.CENTER });
+        this.set_adjustment(new Gtk.Adjustment({ lower, upper, step_increment }));
     }
 }
 
@@ -74,8 +74,8 @@ export class Drop extends Gtk.DropDown {
         }, this);
     }
 
-    constructor(opts, tip) {
-        super({ model: Gtk.StringList.new(opts), valign: Gtk.Align.CENTER, tooltip_text: tip || '' });
+    constructor(opts, tooltip_text = '') {
+        super({ model: Gtk.StringList.new(opts), valign: Gtk.Align.CENTER, tooltip_text });
         this.connect('notify::selected', () => this.emit('changed', this.selected));
     }
 }
@@ -327,9 +327,8 @@ export class DialogButtonBase extends Box {
     }
 
     _buildDND(gtype) {
-        let drop = hook({ drop: this._onDrop.bind(this) }, Gtk.DropTarget.new(gtype, Gdk.DragAction.COPY));
-        let drag = hook({ prepare: this._onDrag.bind(this) }, new Gtk.DragSource({ actions: Gdk.DragAction.COPY }));
-        [drop, drag].forEach(x => this._btn.add_controller(x));
+        this._btn.add_controller(hook({ drop: this._onDrop.bind(this) }, Gtk.DropTarget.new(gtype, Gdk.DragAction.COPY)));
+        this._btn.add_controller(hook({ prepare: this._onDrag.bind(this) }, new Gtk.DragSource({ actions: Gdk.DragAction.COPY })));
     }
 
     _onDrag(src) {
@@ -550,18 +549,18 @@ export class LazyEntry extends Gtk.Stack {
         }, this);
     }
 
-    constructor(holder, tip) {
+    constructor(placeholder, tooltip) {
         super({ valign: Gtk.Align.CENTER, hhomogeneous: true });
-        this._buildWidgets(holder, tip);
+        this._buildWidgets(placeholder, tooltip);
         this.value = '';
     }
 
-    _buildWidgets(holder, tip) {
-        this._label = new Gtk.Entry({ hexpand: true, sensitive: false, placeholder_text: holder || '' });
+    _buildWidgets(placeholder_text = '', tooltip_text = '') {
+        this._label = new Gtk.Entry({ hexpand: true, sensitive: false, placeholder_text });
         this._entry = hook({ activate: () => { this.value = this._entry.get_text(); } },
-            new Gtk.Entry({ hexpand: true, enable_undo: true, placeholder_text: holder || '' }));
+            new Gtk.Entry({ hexpand: true, enable_undo: true, placeholder_text }));
         this._edit = hook({ clicked: () => { this._entry.set_text(this.value); this.set_visible_child_name('entry'); } },
-            new Gtk.Button({ icon_name: 'document-edit-symbolic', tooltip_text: tip || '' }));
+            new Gtk.Button({ icon_name: 'document-edit-symbolic', tooltip_text }));
         this._done = hook({ clicked: () => { this.value = this._entry.get_text(); } },
             new Gtk.Button({ icon_name: 'object-select-symbolic', tooltip_text: _('Click or press ENTER to commit changes') }));
         this.add_named(new Box([this._label, this._edit], { hexpand: true }), 'label');

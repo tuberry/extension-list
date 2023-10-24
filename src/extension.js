@@ -111,7 +111,7 @@ class ExtScrollSect extends PopupMenu.PopupMenuSection {
 
     _buildWidgets() {
         this.actor = new St.ScrollView({
-            style: `max-height: ${Math.round(global.display.get_size().at(1) * 0.9)}px`,
+            style_class: 'extension-list-scroll',
             hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.NEVER,
             clip_to_allocation: true,
