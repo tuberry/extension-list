@@ -14,9 +14,10 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as ExtensionUtils from 'resource:///org/gnome/shell/misc/extensionUtils.js';
 import * as ExtDownloader from 'resource:///org/gnome/shell/ui/extensionDownloader.js';
 
+import { id } from './util.js';
 import { Field, Icon } from './const.js';
 import { IconButton, IconItem, TrayIcon } from './menu.js';
-import { Fulu, ExtensionBase, Destroyable, symbiose, omit, onus, getSelf, _ } from './fubar.js';
+import { Fulu, ExtensionBase, Destroyable, symbiose, omit, connect, getSelf, _ } from './fubar.js';
 
 const ExtManager = Main.extensionManager;
 const ExtType = ExtensionUtils.ExtensionType;
@@ -28,11 +29,14 @@ class ExtMenuItem extends PopupMenu.PopupMenuItem {
     }
 
     constructor(ext) {
-        super('', { style_class: 'extension-list-item popup-menu-item' });
+        super('', { can_focus: false });
+        this.add_style_class_name('extension-list-item');
+        this.connect('activate', () => this._onActivate());
         this.label.set_x_expand(true);
+        this.label.set_can_focus(true);
         this.label.set_style_class_name('extension-list-label');
         this.label.clutter_text.set_ellipsize(Pango.EllipsizeMode.MIDDLE);
-        this._btn = new IconButton({ style_class: 'extension-list-setting' }, () => this._onButtonClicked());
+        this._btn = new IconButton({ style_class: 'extension-list-iconbtn' }, () => this._onButtonClick());
         this.add_child(this._btn);
         if(ext) this.setExtension(ext);
     }
@@ -66,7 +70,7 @@ class ExtMenuItem extends PopupMenu.PopupMenuItem {
         if(this._btn.visible) this._btn.setIcon(icon);
     }
 
-    _onButtonClicked() {
+    _onButtonClick() {
         switch(this.icon) {
         case Icon.SET: this._getTopMenu().close(); ExtManager.openExtensionPrefs(this._ext.uuid, '', {}); break;
         case Icon.DEL: this._getTopMenu().close(); ExtDownloader.uninstallExtension(this._ext.uuid); break;
@@ -75,8 +79,7 @@ class ExtMenuItem extends PopupMenu.PopupMenuItem {
         }
     }
 
-    activate(event) {
-        super.activate(event);
+    _onActivate() {
         switch(this.icon) {
         case Icon.SET: case Icon.DEL: case Icon.URL:
             if(this._ext.state === ExtState.ENABLED) ExtManager.disableExtension(this._ext.uuid);
@@ -142,7 +145,7 @@ class ExtensionList extends Destroyable {
         this._addMenuItems();
         this._bindToolSets();
         symbiose(this, () => omit(this, '_btn'));
-        ExtManager.connectObject('extension-state-changed', this._onStateChanged.bind(this), onus(this));
+        connect(this, [ExtManager, 'extension-state-changed', this._onStateChange.bind(this)]);
     }
 
     _buildWidgets() {
@@ -180,20 +183,20 @@ class ExtensionList extends Destroyable {
     }
 
     _checkTools() {
-        let viz = Object.values(this._tools).reduce((a, x) => a | x, false) ? 'show' : 'hide';
+        let viz = Object.values(this._tools).some(id) ? 'show' : 'hide';
         this._menus?.prefs[viz]();
         this._menus?.sep[viz]();
     }
 
     set section([k, v, out]) {
         this[k] = out ? out(v) : v;
-        this._menus?.section.setList(this.getExts());
+        this._menus?.section.setList(this.getExtensions());
     }
 
-    _onStateChanged(_m, extension) {
+    _onStateChange(_m, extension) {
         let ext = this.extract(extension);
         if(this.unpin) this._menus?.section.setExtension(ext);
-        else if(this.disabled) this._menus?.section.setList(this.getExts());
+        else if(this.disabled) this._menus?.section.setList(this.getExtensions());
         else if(ext.show) this._menus?.section.setExtension(ext);
     }
 
@@ -211,32 +214,32 @@ class ExtensionList extends Destroyable {
 
     _addMenuItems() {
         this._menus = {
-            section: new ExtScrollSect(this.getExts()),
+            section: new ExtScrollSect(this.getExtensions()),
             sep:     new PopupMenu.PopupSeparatorMenuItem(),
-            prefs:   new IconItem('extension-list-setting', {
-                extbtn: [() => this._openExtApp(), Icon.ADN],
+            prefs:   new IconItem('extension-list-iconbtn', {
+                extbtn: [() => this._openExtensionApp(), Icon.ADN],
                 disbtn: [() => {
                     this.pin(); this._fulu.set('disabled', !this.disabled, this);
-                }, this.disabled, Icon.HIDE, Icon.SHOW],
+                }, [this.disabled, Icon.HIDE, Icon.SHOW]],
                 delbtn: [() => {
                     this.pin(); this._fulu.set('icon', this.icon === Icon.DEL ? 0 : 1, this);
-                    this._menus.prefs._icons.urlbtn.setIcon(Icon.URL);
-                }, this.icon !== Icon.DEL, Icon.DEL, Icon.SET],
+                    this._menus.prefs.getIcon('urlbtn').setIcon(Icon.URL);
+                }, [this.icon !== Icon.DEL, Icon.DEL, Icon.SET]],
                 urlbtn: [() => {
                     this.pin(); this._fulu.set('icon', this.icon === Icon.URL ? 0 : 2, this);
-                    this._menus.prefs._icons.delbtn.setIcon(Icon.DEL);
-                }, this.icon !== Icon.URL, Icon.URL, Icon.SET],
+                    this._menus.prefs.getIcon('delbtn').setIcon(Icon.DEL);
+                }, [this.icon !== Icon.URL, Icon.URL, Icon.SET]],
                 pinbtn: [() => this._fulu.set('unpin', !this.unpin, this), Icon.PIN],
             }),
         };
         Object.values(this._menus).forEach(x => this._btn.menu.addMenuItem(x));
     }
 
-    getExts() {
+    getExtensions() {
         let ret = Array.from(ExtManager._extensions.values()).map(x => this.extract(x));
         if(!this.unpin) {
-            ret = ret.filter(x => x.show);
-            if(this.disabled) ret = ret.filter(x => x.state === ExtState.ENABLED);
+            if(this.disabled) ret = ret.filter(x => x.show && x.state === ExtState.ENABLED);
+            else ret = ret.filter(x => x.show);
         }
         return ret.sort((a, b) => a.name.localeCompare(b.name));
     }
@@ -248,7 +251,7 @@ class ExtensionList extends Destroyable {
         return { uuid, state, type, hasPrefs, name, url, show, icon, orna };
     }
 
-    _openExtApp() {
+    _openExtensionApp() {
         this.pin();
         this._btn.menu.close();
         if(this.extapp) Shell.AppSystem.get_default().lookup_app(this.extapp)?.activate();

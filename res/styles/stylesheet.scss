@@ -12,8 +12,10 @@ $pfx: 'extension-list';
     max-width: 14em;
     &:error { color: $error_color; }
     &:outdate { color: $warning_color; }
+    &:focus { color: $selected_bg_color; font-weight: bold }
 }
 
-.#{$pfx}-setting:hover {
-    color: lighten($selected_bg_color, 5%);
+.#{$pfx}-iconbtn {
+    &:focus { color: $selected_bg_color; }
+    &:hover { color: lighten($selected_bg_color, 5%); }
 }
