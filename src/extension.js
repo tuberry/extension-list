@@ -191,6 +191,7 @@ class ExtensionList extends Destroyable {
     set section([k, v, out]) {
         this[k] = out ? out(v) : v;
         this._menus?.section.setList(this.getExtensions());
+        this._menus?.section.open();
     }
 
     _onStateChange(_m, extension) {
