@@ -2,7 +2,7 @@
 
 Simple GNOME Shell extension manager in the top panel.
 > Keep it simple. —— *stupid*<br>
-[![license]](/LICENSE)
+[![license]](/LICENSE.md)
 </br>
 
 ![image](https://user-images.githubusercontent.com/17917040/92874384-939c5c80-f43a-11ea-9e2a-887a113efaf2.png)
@@ -31,14 +31,14 @@ For older versions (< 44), it's recommended to install via:
 
 [<img src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true" alt="Get it on GNOME Extensions" height="100" align="middle">][EGO]
 
-## Features
+## Notes
 
 * The DOT ornament means the extension is enabled;
-* Click the menu item to enable/disable an extension;
+* Click the menu item to enable/disable the extension, while hold <kbd>Ctrl</kbd> to invoke the button function;
 
 ## Acknowledgements
 
 * [extensions](https://github.com/petres/gnome-shell-extension-extensions): the idea
 
-[license]:https://img.shields.io/badge/license-GPLv3-green.svg
+[license]:https://img.shields.io/badge/license-GPLv3+-green.svg
 [EGO]:https://extensions.gnome.org/extension/3088/extension-list/
