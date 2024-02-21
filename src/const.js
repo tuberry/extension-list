@@ -1,15 +1,15 @@
-// vim:fdm=syntax
-// by tuberry
+// SPDX-FileCopyrightText: tuberry
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 export const Icon = {
-    PIN:  'view-pin-symbolic',
-    COOL: 'face-cool-symbolic',
-    URL:  'user-home-symbolic',
-    DEL:  'user-trash-symbolic',
-    HIDE: 'view-reveal-symbolic',
-    SHOW: 'view-conceal-symbolic',
-    SET:  'emblem-system-symbolic',
-    ADN:  'application-x-addon-symbolic',
+    SHOW:  'object-select-symbolic',
+    HIDE:  'edit-clear-all-symbolic',
+    URL:   'user-home-symbolic',
+    DEL:   'user-trash-symbolic',
+    UNPIN: 'view-conceal-symbolic',
+    PIN:   'view-reveal-symbolic',
+    SET:   'emblem-system-symbolic',
+    ADN:   'application-x-addon-symbolic',
 };
 
 export const Field = {
@@ -22,5 +22,6 @@ export const Field = {
     URL: 'url-button',
     BTN: 'button-icon',
     TPN: 'toggle-unpin',
-    HDS: 'hide-disabled',
+    HDS: 'hide-inactive',
+    TIP: 'enable-tooltip',
 };

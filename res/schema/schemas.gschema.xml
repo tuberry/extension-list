@@ -10,6 +10,10 @@
             <default>"org.gnome.Extensions.desktop"</default>
             <summary>open ext app (default - e.g.o)</summary>
         </key>
+        <key type="b" name="enable-tooltip">
+            <default>true</default>
+            <summary>enable toolbar tooltip</summary>
+        </key>
         <key type="b" name="ext-button">
             <default>true</default>
             <summary>show ext button</summary>
@@ -24,15 +28,15 @@
         </key>
         <key type="b" name="dis-button">
             <default>true</default>
-            <summary>show disabled button</summary>
+            <summary>show inactive button</summary>
         </key>
         <key type="b" name="pin-button">
             <default>true</default>
             <summary>show pin button</summary>
         </key>
-        <key type="b" name="hide-disabled">
+        <key type="b" name="hide-inactive">
             <default>false</default>
-            <summary>hide disabled from menu</summary>
+            <summary>hide inactive extensions from menu</summary>
         </key>
         <key type="b" name="toggle-unpin">
             <default>false</default>

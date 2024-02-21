@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-shell-extension-extension-list\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-28 05:29+0800\n"
+"POT-Creation-Date: 2024-02-18 16:12+0800\n"
 "PO-Revision-Date: 2022-08-06 16:16+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,77 +17,124 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ui.js:281
+#: src/ui.js:305
 msgid "All"
 msgstr "全部"
 
-#: src/ui.js:281
+#: src/ui.js:305
 msgid "Normal"
 msgstr "常规"
 
-#: src/ui.js:281
+#: src/ui.js:305
 msgid "Symbolic"
 msgstr "符号"
 
-#: src/ui.js:326
+#: src/ui.js:343
 msgid "Clear"
 msgstr "清除"
 
-#: src/ui.js:425
+#: src/ui.js:445
 msgid "Mismatched filetype"
 msgstr "文件类型不匹配"
 
-#: src/ui.js:565
+#: src/ui.js:577
 msgid "Click or press ENTER to commit changes"
 msgstr "单击或按回车提交更改"
 
-#: src/prefs.js:19
+#: src/prefs.js:39
 msgid "Toolbar"
 msgstr "工具栏"
 
-#: src/prefs.js:19
+#: src/prefs.js:39
 msgid "Icon"
 msgstr "图标"
 
-#: src/prefs.js:38
+#: src/prefs.js:40
+msgid "Enable tootip"
+msgstr "启用提示"
+
+#: src/prefs.js:40
+msgid "Show the tooltip for each toolbar button"
+msgstr "显示工具栏按钮提示"
+
+#: src/prefs.js:42
 msgid "Extension"
 msgstr "扩展"
 
-#: src/prefs.js:38
+#: src/prefs.js:42
 msgid "Open <i>extensions.gnome.org</i> or…"
 msgstr "打开 <i>extensions.gnome.org</i> 或…"
 
-#: src/prefs.js:39
-msgid "Disabled"
+#: src/prefs.js:43
+msgid "Inactive"
 msgstr "禁用"
 
-#: src/prefs.js:39
-msgid "Hide/Unhide disabled extensions from menu"
+#: src/prefs.js:43
+msgid "Hide/Show inactive extensions from menu"
 msgstr "隐藏/显示菜单中已禁用的扩展"
 
-#: src/prefs.js:40
+#: src/prefs.js:44
 msgid "Delete"
 msgstr "删除"
 
-#: src/prefs.js:40
-msgid "Toggle delete button from menu items"
+#: src/prefs.js:44
+msgid "Toggle delete buttons in menu items"
 msgstr "切换菜单项的删除按钮"
 
-#: src/prefs.js:41
+#: src/prefs.js:45
 msgid "URL"
 msgstr "链接"
 
-#: src/prefs.js:41
-msgid "Toggle url button from menu items"
+#: src/prefs.js:45
+msgid "Toggle url buttons in menu items"
 msgstr "切换菜单项的链接按钮"
 
-#: src/prefs.js:42
+#: src/prefs.js:46
 msgid "Pin"
 msgstr "固定"
 
-#: src/prefs.js:42
-msgid "Toggle menu for pin/unpin extensions"
+#: src/prefs.js:46
+msgid "Toggle menu to pin/unpin extensions"
 msgstr "切换固定/排除扩展的菜单"
+
+#: src/extension.js:253
+msgid "Typed"
+msgstr "键入"
+
+#: src/extension.js:253
+msgid "Type to search"
+msgstr "键入以搜索"
+
+#: src/extension.js:260
+msgid "Open extensions app or website"
+msgstr "打开扩展应用或网站"
+
+#: src/extension.js:263
+msgid "Show inactive extensions"
+msgstr "显示已禁用扩展"
+
+#: src/extension.js:263
+msgid "Hide inactive extensions"
+msgstr "隐藏已禁用扩展"
+
+#: src/extension.js:267
+msgid "Toggle delete button"
+msgstr "切换删除按钮"
+
+#: src/extension.js:267 src/extension.js:271
+msgid "Toggle setting button"
+msgstr "切换设置按钮"
+
+#: src/extension.js:271
+msgid "Toggle homepage button"
+msgstr "切换主页按钮"
+
+#: src/extension.js:272
+msgid "Toggle pin/normal menu"
+msgstr "切换固定/常规菜单"
+
+#~ msgid "Disabled"
+#~ msgstr "禁用"
 
 #~ msgid "(e.g.o)"
 #~ msgstr "(e.g.o)"
