@@ -19,12 +19,6 @@ meson setup build && meson install -C build
 # meson setup build -Dtarget=system && meson install -C build # system-wide, default --prefix=/usr/local
 ```
 
-For contributing translations:
-
-```bash
-bash ./cli/update-po.sh your_lang_code # default to $LANG
-```
-
 For older versions (< 44), it's recommended to install via:
 
 ### E.G.O
@@ -35,6 +29,30 @@ For older versions (< 44), it's recommended to install via:
 
 * The DOT ornament means the extension is enabled;
 * Click the menu item to enable/disable the extension, while hold <kbd>Ctrl</kbd> to invoke the button function;
+
+## Contributions
+
+Any contribution is welcome.
+
+### Ideas
+
+For any question or idea, feel free to open an issue or PR in the repo.
+
+### Translations
+
+To update the po file from sources:
+
+```bash
+bash ./cli/update-po.sh [your_lang_code] # like zh_CN, default to $LANG
+```
+
+### Developments
+
+To install GJS TypeScript type [definitions](https://www.npmjs.com/package/@girs/gnome-shell):
+
+```bash
+npm install @girs/gnome-shell --save-dev
+```
 
 ## Acknowledgements
 

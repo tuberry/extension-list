@@ -24,7 +24,7 @@ $pfx: 'extension-list';
     &:state-immutable { color: $insensitive_fg_color; }
 }
 
-.#{$pfx}-iconbtn {
+.#{$pfx}-icon {
     padding: 0 0.15em;
     &:focus { @include inner_border(0.5em); }
     &:hover { color: tone($selected_bg_color, 5%); }
