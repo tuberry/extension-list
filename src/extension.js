@@ -15,7 +15,7 @@ import {ExtensionType, ExtensionState} from 'resource:///org/gnome/shell/misc/ex
 
 import {Field, Icon} from './const.js';
 import {IconButton, IconItem, MenuItem, Systray} from './menu.js';
-import {Setting, Extension, Mortal, view, degrade, connect, _, open} from './fubar.js';
+import {Setting, Extension, Mortal, Source, view, connect, _, open} from './fubar.js';
 
 const Style = {[ExtensionState.ERROR]: 'state-error', [ExtensionState.OUT_OF_DATE]: 'state-outdate'};
 
@@ -83,7 +83,7 @@ class ExtensionItem extends MenuItem {
                 this.$onButtonClick();
             } else if(this.ext.mutable) {
                 if(this.ext.state === ExtensionState.ACTIVE) Main.extensionManager.disableExtension(this.ext.uuid);
-                else Main.extensionManager.enableExtension(this.ext.uuid); break;
+                else Main.extensionManager.enableExtension(this.ext.uuid);
             }
             break;
         default: this._getTopMenu().togglePin(this.ext.uuid, true); break;
@@ -91,7 +91,7 @@ class ExtensionItem extends MenuItem {
     }
 }
 
-class ExtensionScroll extends PopupMenu.PopupMenuSection {
+class ExtensionSection extends PopupMenu.PopupMenuSection {
     constructor(list) {
         super();
         this.$buildWidgets();
@@ -134,7 +134,7 @@ class ExtensionList extends Mortal {
 
     $buildWidgets() {
         this.search = '';
-        this.$src = degrade({tray: this.$genSystray()}, this);
+        this.$src = Source.fuse({tray: this.$genSystray()}, this);
     }
 
     $bindSettings(gset) {
@@ -160,7 +160,7 @@ class ExtensionList extends Mortal {
     }
 
     $genSystray() {
-        let btn = new Systray({section: new ExtensionScroll(this.getExtensions()), ...this.$genToolbar()}, Icon.ADN);
+        let btn = new Systray({section: new ExtensionSection(this.getExtensions()), ...this.$genToolbar()}, Icon.ADN);
         btn.menu.connect('menu-closed', () => this.$updateSearch(''));
         btn.menu.actor.connect('key-press-event', this.$onKeyPress.bind(this));
         btn.menu.togglePin = (uuid, once) => {
