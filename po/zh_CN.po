@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-shell-extension-extension-list\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-12 14:38+0800\n"
+"POT-Creation-Date: 2024-05-16 15:58+0800\n"
 "PO-Revision-Date: 2022-08-06 16:16+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ui.js:342
+#: src/ui.js:339
 msgid "All"
 msgstr "全部"
 
-#: src/ui.js:342
+#: src/ui.js:339
 msgid "Normal"
 msgstr "常规"
 
-#: src/ui.js:342
+#: src/ui.js:339
 msgid "Symbolic"
 msgstr "符号"
 
-#: src/ui.js:380
+#: src/ui.js:377
 msgid "Clear"
 msgstr "清除"
 
-#: src/ui.js:482
+#: src/ui.js:476
 msgid "Mismatched filetype"
 msgstr "文件类型不匹配"
 
-#: src/ui.js:625
+#: src/ui.js:619
 msgid "Click or press ENTER to commit changes"
 msgstr "单击或按回车提交更改"
 
@@ -97,39 +97,39 @@ msgstr "固定"
 msgid "Toggle menu to pin/unpin extensions"
 msgstr "切换固定/排除扩展的菜单"
 
-#: src/extension.js:221
+#: src/extension.js:222
 msgid "Typed"
 msgstr "键入"
 
-#: src/extension.js:221
+#: src/extension.js:222
 msgid "Type to search"
 msgstr "键入以搜索"
 
-#: src/extension.js:229
+#: src/extension.js:230
 msgid "Open extensions app or website"
 msgstr "打开扩展应用或网站"
 
-#: src/extension.js:232
+#: src/extension.js:233
 msgid "Show inactive extensions"
 msgstr "显示已禁用扩展"
 
-#: src/extension.js:232
+#: src/extension.js:233
 msgid "Hide inactive extensions"
 msgstr "隐藏已禁用扩展"
 
-#: src/extension.js:236
+#: src/extension.js:237
 msgid "Toggle delete button"
 msgstr "切换删除按钮"
 
-#: src/extension.js:236 src/extension.js:240
+#: src/extension.js:237 src/extension.js:241
 msgid "Toggle setting button"
 msgstr "切换设置按钮"
 
-#: src/extension.js:240
+#: src/extension.js:241
 msgid "Toggle homepage button"
 msgstr "切换主页按钮"
 
-#: src/extension.js:242
+#: src/extension.js:243
 msgid "Toggle pin/normal menu"
 msgstr "切换固定/常规菜单"
 

@@ -35,8 +35,8 @@ class ExtensionListPrefs extends UI.PrefPage {
 
     $buildUI() {
         this.addToGroup(new UI.PrefRow([_('Enable tootip'), _('Show the tooltip for each toolbar button')], this.$blk.TIP));
-        let genIcon = icon_name => new Gtk.Image({icon_name});
-        let toolbar = new Adw.PreferencesGroup({title: _('Toolbar'), header_suffix: new Gtk.Label({label: _('Icon')})});
+        let genIcon = iconName => new Gtk.Image({iconName});
+        let toolbar = new Adw.PreferencesGroup({title: _('Toolbar'), headerSuffix: new Gtk.Label({label: _('Icon')})});
         [
             [this.$blk.EXT, [_('Extension'), _('Open <i>extensions.gnome.org</i> or…')], this.$blk.APP],
             [this.$blk.DIS, [_('Inactive'), _('Hide/Show inactive extensions from menu')], genIcon(Icon.SHOW)],

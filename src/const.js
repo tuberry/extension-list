@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 export const Icon = {
-    SHOW:  'object-select-symbolic',
-    HIDE:  'edit-clear-all-symbolic',
     URL:   'user-home-symbolic',
     DEL:   'user-trash-symbolic',
     UNPIN: 'view-conceal-symbolic',
     PIN:   'view-reveal-symbolic',
     SET:   'emblem-system-symbolic',
+    HIDE:  'checkbox-mixed-symbolic',
+    SHOW:  'checkbox-checked-symbolic',
     ADN:   'application-x-addon-symbolic',
 };
 

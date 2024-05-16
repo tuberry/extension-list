@@ -17,6 +17,7 @@ import {Field, Icon} from './const.js';
 import {IconButton, IconItem, MenuItem, Systray} from './menu.js';
 import {Setting, Extension, Mortal, Source, view, connect, _, open} from './fubar.js';
 
+const Button = {SET: 0, DEL: 1, URL: 2};
 const Style = {[ExtensionState.ERROR]: 'state-error', [ExtensionState.OUT_OF_DATE]: 'state-outdate'};
 
 class ExtensionItem extends MenuItem {
@@ -29,8 +30,8 @@ class ExtensionItem extends MenuItem {
         this.add_style_class_name('extension-list-item');
         this.label.set_x_expand(true);
         this.label.add_style_class_name('extension-list-label');
-        this.label.clutter_text.set_ellipsize(Pango.EllipsizeMode.MIDDLE);
-        this.$btn = new IconButton({style_class: 'extension-list-icon'}, () => this.$onButtonClick());
+        this.label.clutterText.set_ellipsize(Pango.EllipsizeMode.MIDDLE);
+        this.$btn = new IconButton({styleClass: 'extension-list-icon'}, () => this.$onButtonClick());
         this.add_child(this.$btn);
         if(ext) this.setExtension(ext);
     }
@@ -70,8 +71,8 @@ class ExtensionItem extends MenuItem {
     $onButtonClick() {
         switch(this.icon) {
         case Icon.SET: this._getTopMenu().close(); Main.extensionManager.openExtensionPrefs(this.ext.uuid, '', {}); break;
-        case Icon.URL: this._getTopMenu().close(); open(this.ext.url); break;
         case Icon.DEL: this._getTopMenu().close(); uninstallExtension(this.ext.uuid); break;
+        case Icon.URL: this._getTopMenu().close(); open(this.ext.url); break;
         default: this._getTopMenu().togglePin(this.ext.uuid); break;
         }
     }
@@ -117,8 +118,8 @@ class ExtensionSection extends PopupMenu.PopupMenuSection {
     $buildWidgets() {
         this.actor = new St.ScrollView({
             child: this.box,
-            clip_to_allocation: true,
-            style_class: 'extension-list-view',
+            clipToAllocation: true,
+            styleClass: 'extension-list-view',
         });
         this.actor._delegate = this;
     }
@@ -139,7 +140,7 @@ class ExtensionList extends Mortal {
 
     $bindSettings(gset) {
         this.$set = new Setting({
-            extapp: [Field.APP, 'string'],
+            extApp: [Field.APP, 'string'],
         }, gset, this).attach({
             unpin:    [Field.TPN, 'boolean'],
             inactive: [Field.HDS, 'boolean'],
@@ -147,11 +148,11 @@ class ExtensionList extends Mortal {
             tooltip:  [Field.TIP, 'boolean', null, x => this.$postTooltipSet(x)],
             icon:     [Field.BTN, 'uint',    x => [Icon.SET, Icon.DEL, Icon.URL][x]],
         }, this, () => this.$onSectionPut()).attach({
-            extbtn: [Field.EXT, 'boolean'],
-            urlbtn: [Field.URL, 'boolean'],
-            disbtn: [Field.DIS, 'boolean'],
-            delbtn: [Field.DEL, 'boolean'],
-            pinbtn: [Field.PIN, 'boolean'],
+            extBtn: [Field.EXT, 'boolean'],
+            urlBtn: [Field.URL, 'boolean'],
+            disBtn: [Field.DIS, 'boolean'],
+            delBtn: [Field.DEL, 'boolean'],
+            pinBtn: [Field.PIN, 'boolean'],
         }, this, (v, k) => this.$menu?.prefs.viewIcon(k, v));
     }
 
@@ -224,21 +225,21 @@ class ExtensionList extends Mortal {
     $genToolbar() {
         let tip = this.tooltip,
             sep = new PopupMenu.PopupSeparatorMenuItem(this.$getTypeHints(tip)),
-            style_class = 'extension-list-icon',
+            styleClass = 'extension-list-icon',
             prefs = new IconItem({
-                extbtn: [{style_class, visible: this.extbtn}, () => this.openExtensionApp(), Icon.ADN, tip && _('Open extensions app or website')],
-                disbtn: [{style_class, visible: this.disbtn}, () => {
+                extBtn: [{styleClass, visible: this.extBtn}, () => this.openExtensionApp(), Icon.ADN, tip && _('Open extensions app or website')],
+                disBtn: [{styleClass, visible: this.disBtn}, () => {
                     this.pin(); this.$set.set('inactive', !this.inactive, this);
                 }, [this.inactive, Icon.SHOW, Icon.HIDE], tip && [_('Show inactive extensions'), _('Hide inactive extensions')]],
-                delbtn: [{style_class, visible: this.delbtn}, () => {
-                    this.pin(); this.$set.set('icon', this.icon === Icon.DEL ? 0 : 1, this);
-                    this.$menu.prefs.getIcon('urlbtn').setIcon(Icon.URL);
+                delBtn: [{styleClass, visible: this.delBtn}, () => {
+                    this.pin(); this.$set.set('icon', this.icon === Icon.DEL ? Button.SET : Button.DEL, this);
+                    this.$menu.prefs.getIcon('urlBtn').setIcon(Icon.URL);
                 }, [this.icon !== Icon.DEL, Icon.DEL, Icon.SET], tip && [_('Toggle delete button'), _('Toggle setting button')]],
-                urlbtn: [{style_class, visible: this.urlbtn}, () => {
-                    this.pin(); this.$set.set('icon', this.icon === Icon.URL ? 0 : 2, this);
-                    this.$menu.prefs.getIcon('delbtn').setIcon(Icon.DEL);
+                urlBtn: [{styleClass, visible: this.urlBtn}, () => {
+                    this.pin(); this.$set.set('icon', this.icon === Icon.URL ? Button.SET : Button.URL, this);
+                    this.$menu.prefs.getIcon('delBtn').setIcon(Icon.DEL);
                 }, [this.icon !== Icon.URL, Icon.URL, Icon.SET], tip && [_('Toggle homepage button'), _('Toggle setting button')]],
-                pinbtn: [{style_class, visible: this.pinbtn}, () => this.$set.set('unpin', !this.unpin, this),
+                pinBtn: [{styleClass, visible: this.pinBtn}, () => this.$set.set('unpin', !this.unpin, this),
                     Icon.PIN, tip && _('Toggle pin/normal menu')],
             });
         return {sep, prefs};
@@ -263,7 +264,7 @@ class ExtensionList extends Mortal {
     openExtensionApp() {
         this.pin();
         this.$src.tray.menu.close();
-        if(this.extapp) Shell.AppSystem.get_default().lookup_app(this.extapp)?.activate();
+        if(this.extApp) Shell.AppSystem.get_default().lookup_app(this.extApp)?.activate();
         else open('https://extensions.gnome.org/local');
     }
 }
