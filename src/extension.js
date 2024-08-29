@@ -130,7 +130,7 @@ class ExtensionList extends Mortal {
         super();
         this.$bindSettings(gset);
         this.$buildWidgets();
-        connect(this, Main.extensionManager, 'extension-state-changed', this.$onStateChange.bind(this));
+        connect(this, Main.extensionManager, 'extension-state-changed', (...xs) => this.$onStateChange(...xs));
     }
 
     $buildWidgets() {
@@ -163,7 +163,7 @@ class ExtensionList extends Mortal {
     $genSystray() {
         let btn = new Systray({section: new ExtensionSection(this.getExtensions()), ...this.$genToolbar()}, Icon.ADN);
         btn.menu.connect('menu-closed', () => this.$updateSearch(''));
-        btn.menu.actor.connect('key-press-event', this.$onKeyPress.bind(this));
+        btn.menu.actor.connect('key-press-event', (...xs) => this.$onKeyPress(...xs));
         btn.menu.togglePin = (uuid, once) => {
             this.unpinned.has(uuid) ? this.unpinned.delete(uuid) : this.unpinned.add(uuid);
             this.$set.set('unpinned', [...this.unpinned], this);

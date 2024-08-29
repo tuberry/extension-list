@@ -1,11 +1,10 @@
 # extension-list
 
 Simple GNOME Shell extension manager in the top panel.
-> Keep it simple. —— *stupid*<br>
+> Keep it simple. —— *stupid*\
 [![license]](/LICENSE.md)
-</br>
 
-![image](https://user-images.githubusercontent.com/17917040/92874384-939c5c80-f43a-11ea-9e2a-887a113efaf2.png)
+![image](https://github.com/user-attachments/assets/9cae1d62-0128-4bb9-a949-aeed2d95f21d)
 
 ## Installation
 
@@ -19,7 +18,7 @@ meson setup build && meson install -C build
 # meson setup build -Dtarget=system && meson install -C build # system-wide, default --prefix=/usr/local
 ```
 
-For older versions (< 44), it's recommended to install via:
+For older versions, it's recommended to install via:
 
 ### E.G.O
 

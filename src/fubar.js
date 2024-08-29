@@ -14,7 +14,7 @@ import {loadInterfaceXML} from 'resource:///org/gnome/shell/misc/fileUtils.js';
 import {TransientSignalHolder} from 'resource:///org/gnome/shell/misc/signalTracker.js';
 import {Extension as ExtensionBase, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-import {has, seq, xnor, fopen, hook} from './util.js';
+import {has, seq, xnor, fopen, hook, string} from './util.js';
 
 const ruin = o => o?.destroy();
 const raise = x => { throw Error(x); };// NOTE: https://github.com/tc39/proposal-throw-expressions#todo
@@ -24,8 +24,9 @@ const onus = o => [o, o[hub]].find(x => GObject.type_is_a(x, GObject.Object) && 
 export {_};
 export const hub = Symbol('Hidden Unique Binder');
 export const myself = () => Extension.lookupByURL(import.meta.url); // NOTE: https://github.com/tc39/proposal-json-modules
-export const debug = (...xs) => console.debug(`[${myself().uuid}]`, ...xs); // NOTE:see https://gitlab.gnome.org/GNOME/gobject-introspection/-/issues/491
+export const debug = (...xs) => console.debug(`[${myself().uuid}]`, ...xs); // NOTE: see https://gitlab.gnome.org/GNOME/gobject-introspection/-/issues/491
 export const omit = (o, ...ks) => ks.forEach(k => { ruin(o[k]); delete o[k]; });
+export const extent = x => [...x.get_transformed_position(), ...x.get_transformed_size()];
 export const view = (v, ...ws) => ws.forEach(w => { if(w && v ^ w.visible) v ? w.show() : w.hide(); }); // NOTE: https://github.com/tc39/proposal-optional-chaining-assignment
 export const connect = (tracker, ...args) => (t => args.reduce((p, x) => (x.connectObject ? p.push([x]) : p.at(-1).push(x), p), [])
     .forEach(([emitter, ...xs]) => emitter.connectObject(...xs, t)))(onus(tracker));
@@ -45,7 +46,7 @@ export class DBusProxy extends Gio.DBusProxy {
     constructor(name, object, callback, hooks, signals, xml, cancel = null, bus = Gio.DBus.session, gFlags = Gio.DBusProxyFlags.NONE) {
         let info = Gio.DBusInterfaceInfo.new_for_xml(xml ?? loadInterfaceXML(name));
         super({gConnection: bus, gName: name, gObjectPath: object, gInterfaceInfo: info, gFlags, gInterfaceName: info.name});
-        if(signals) for(let i = 0; i < signals.length; i += 2) this.connectSignal(signals[i], signals[i + 1]);
+        if(signals) for(let i = 0, n = signals.length; i < n; i += 2) this.connectSignal(signals[i], signals[i + 1]);
         if(hooks) connect(this, this, ...hooks);
         this.init_async(GLib.PRIORITY_DEFAULT, cancel).then(() => callback(this, null)).catch(e => callback(null, e));
     }
@@ -131,7 +132,6 @@ export class Source {
         this.revive = (...xs) => { this.dispel(); this.summon(...xs); };
         this.reload = (...xs) => { if(this.active) this.revive(...xs); };
         this.reborn = (...xs) => { this.revive(...xs); return this.hub; }; // return
-        this.reboot = (b, ...xs) => { this.dispel(); if(b) this.summon(...xs); };
         this.toggle = (b, ...xs) => { if(!xnor(b, this.active)) b ? this.summon(...xs) : this.dispel(); };
         if(enable) this.summon(...args);
         this.destroy = () => this.toggle(false);
@@ -150,7 +150,7 @@ export class Setting {
     #map = new WeakMap();
 
     constructor(prop, gset, ...args) {
-        this.gset = typeof gset === 'string' ? new Gio.Settings({schema: gset}) : gset;
+        this.gset = string(gset) ? new Gio.Settings({schema: gset}) : gset;
         if(prop) this.attach(prop, ...args);
     }
 
