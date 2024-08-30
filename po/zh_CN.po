@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-shell-extension-extension-list\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-29 02:27+0800\n"
+"POT-Creation-Date: 2024-08-30 12:55+0800\n"
 "PO-Revision-Date: 2022-08-06 16:16+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -42,8 +42,8 @@ msgid "Click or press ENTER to apply changes"
 msgstr "单击或按回车应用更改"
 
 #: src/prefs.js:37
-msgid "Enable tootip"
-msgstr "启用提示"
+msgid "Enable _tootip"
+msgstr "启用提示(_T)"
 
 #: src/prefs.js:37
 msgid "Show the tooltip for each toolbar button"
@@ -58,40 +58,40 @@ msgid "Icon"
 msgstr "图标"
 
 #: src/prefs.js:41
-msgid "Extension"
-msgstr "扩展"
+msgid "_Extension"
+msgstr "扩展(_E)"
 
 #: src/prefs.js:41
 msgid "Open <i>extensions.gnome.org</i> or…"
 msgstr "打开 <i>extensions.gnome.org</i> 或…"
 
 #: src/prefs.js:42
-msgid "Inactive"
-msgstr "禁用"
+msgid "_Inactive"
+msgstr "禁用(_I)"
 
 #: src/prefs.js:42
 msgid "Hide/Show inactive extensions from menu"
 msgstr "隐藏/显示菜单中已禁用的扩展"
 
 #: src/prefs.js:43
-msgid "Delete"
-msgstr "删除"
+msgid "_Delete"
+msgstr "删除(_D)"
 
 #: src/prefs.js:43
 msgid "Toggle delete buttons in menu items"
 msgstr "切换菜单项的删除按钮"
 
 #: src/prefs.js:44
-msgid "URL"
-msgstr "链接"
+msgid "_URL"
+msgstr "链接(_U)"
 
 #: src/prefs.js:44
 msgid "Toggle url buttons in menu items"
 msgstr "切换菜单项的链接按钮"
 
 #: src/prefs.js:45
-msgid "Pin"
-msgstr "固定"
+msgid "_Pin"
+msgstr "固定(_P)"
 
 #: src/prefs.js:45
 msgid "Toggle menu to pin/unpin extensions"
@@ -132,6 +132,12 @@ msgstr "切换主页按钮"
 #: src/extension.js:243
 msgid "Toggle pin/normal menu"
 msgstr "切换固定/常规菜单"
+
+#~ msgid "URL"
+#~ msgstr "链接"
+
+#~ msgid "Pin"
+#~ msgstr "固定"
 
 #~ msgid "Disabled"
 #~ msgstr "禁用"

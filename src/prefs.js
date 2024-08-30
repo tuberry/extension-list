@@ -34,15 +34,15 @@ class ExtensionListPrefs extends UI.PrefPage {
     }
 
     $buildUI() {
-        this.addToGroup(new UI.PrefRow([_('Enable tootip'), _('Show the tooltip for each toolbar button')], this.$blk.TIP));
+        this.addToGroup(new UI.PrefRow([_('Enable _tootip'), _('Show the tooltip for each toolbar button')], this.$blk.TIP));
         let genIcon = iconName => new Gtk.Image({iconName});
         let toolbar = new Adw.PreferencesGroup({title: _('Toolbar'), headerSuffix: new Gtk.Label({label: _('Icon')})});
         [
-            [this.$blk.EXT, [_('Extension'), _('Open <i>extensions.gnome.org</i> or…')], this.$blk.APP],
-            [this.$blk.DIS, [_('Inactive'), _('Hide/Show inactive extensions from menu')], genIcon(Icon.SHOW)],
-            [this.$blk.DEL, [_('Delete'), _('Toggle delete buttons in menu items')], genIcon(Icon.DEL)],
-            [this.$blk.URL, [_('URL'), _('Toggle url buttons in menu items')], genIcon(Icon.URL)],
-            [this.$blk.PIN, [_('Pin'), _('Toggle menu to pin/unpin extensions')], genIcon(Icon.PIN)],
+            [this.$blk.EXT, [_('_Extension'), _('Open <i>extensions.gnome.org</i> or…')], this.$blk.APP],
+            [this.$blk.DIS, [_('_Inactive'), _('Hide/Show inactive extensions from menu')], genIcon(Icon.SHOW)],
+            [this.$blk.DEL, [_('_Delete'), _('Toggle delete buttons in menu items')], genIcon(Icon.DEL)],
+            [this.$blk.URL, [_('_URL'), _('Toggle url buttons in menu items')], genIcon(Icon.URL)],
+            [this.$blk.PIN, [_('_Pin'), _('Toggle menu to pin/unpin extensions')], genIcon(Icon.PIN)],
         ].forEach(xs => toolbar.add(new UI.PrefRow(...xs)));
         this.add(toolbar);
     }
