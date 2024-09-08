@@ -18,7 +18,7 @@ import {IconButton, IconItem, MenuItem, Systray} from './menu.js';
 import {Setting, Extension, Mortal, Source, view, connect, _, open} from './fubar.js';
 
 const Button = {SET: 0, DEL: 1, URL: 2};
-const Style = {[ExtensionState.ERROR]: 'state-error', [ExtensionState.OUT_OF_DATE]: 'state-outdate'};
+const State = {[ExtensionState.ERROR]: 'state-error', [ExtensionState.OUT_OF_DATE]: 'state-outdate'};
 
 class ExtensionItem extends MenuItem {
     static {
@@ -41,7 +41,7 @@ class ExtensionItem extends MenuItem {
         this.label.set_can_focus(ext.mutable);
         let label = this.ext.type === ExtensionType.SYSTEM ? `${this.ext.name} *` : this.ext.name;
         this.setOrnament(this.ext.orna && this.ext.state === ExtensionState.ACTIVE ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-        this.setLabel(label, Style[ext.state] ?? (ext.mutable ? undefined : 'state-immutable'));
+        this.setLabel(label, State[ext.state] ?? (ext.mutable ? undefined : 'state-immutable'));
         this.setIcon(this.ext.icon);
     }
 

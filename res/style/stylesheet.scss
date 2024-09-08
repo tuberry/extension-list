@@ -1,8 +1,10 @@
+$contrast: 'normal';
+
 @import 'gnome-shell-sass/_colors';
 
 $pfx: 'extension-list';
 
-@function tone($color, $percent: 10%, $reverse: true){
+@function st-tone($color, $percent: 10%, $reverse: true){
     @return if($variant==if($reverse, 'light', 'dark'), st-darken($color, $percent), st-lighten($color, $percent))
 }
 
@@ -20,6 +22,6 @@ $pfx: 'extension-list';
 
 .#{$pfx}-icon {
     padding: 0 0.15em;
-    &:hover { color: tone(-st-accent-color, 5%); }
+    &:hover { color: st-tone(-st-accent-color, 5%); }
     &:focus { outline: 0.15em solid st-transparentize(-st-accent-color, 0.3); }
 }

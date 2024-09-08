@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-shell-extension-extension-list\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-30 12:55+0800\n"
+"POT-Creation-Date: 2024-09-08 09:03+0800\n"
 "PO-Revision-Date: 2022-08-06 16:16+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -37,7 +37,7 @@ msgstr "清除"
 msgid "Mismatched filetype"
 msgstr "文件类型不匹配"
 
-#: src/ui.js:599
+#: src/ui.js:600
 msgid "Click or press ENTER to apply changes"
 msgstr "单击或按回车应用更改"
 
@@ -62,8 +62,8 @@ msgid "_Extension"
 msgstr "扩展(_E)"
 
 #: src/prefs.js:41
-msgid "Open <i>extensions.gnome.org</i> or…"
-msgstr "打开 <i>extensions.gnome.org</i> 或…"
+msgid "Open <i>extensions.gnome.org</i> or app"
+msgstr "打开 <i>extensions.gnome.org</i> 或应用"
 
 #: src/prefs.js:42
 msgid "_Inactive"

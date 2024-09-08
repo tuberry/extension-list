@@ -38,7 +38,7 @@ class ExtensionListPrefs extends UI.PrefPage {
         let genIcon = iconName => new Gtk.Image({iconName});
         let toolbar = new Adw.PreferencesGroup({title: _('Toolbar'), headerSuffix: new Gtk.Label({label: _('Icon')})});
         [
-            [this.$blk.EXT, [_('_Extension'), _('Open <i>extensions.gnome.org</i> or…')], this.$blk.APP],
+            [this.$blk.EXT, [_('_Extension'), _('Open <i>extensions.gnome.org</i> or app')], this.$blk.APP],
             [this.$blk.DIS, [_('_Inactive'), _('Hide/Show inactive extensions from menu')], genIcon(Icon.SHOW)],
             [this.$blk.DEL, [_('_Delete'), _('Toggle delete buttons in menu items')], genIcon(Icon.DEL)],
             [this.$blk.URL, [_('_URL'), _('Toggle url buttons in menu items')], genIcon(Icon.URL)],
