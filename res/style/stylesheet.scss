@@ -17,11 +17,11 @@ $pfx: 'extension-list';
     &:state-error { color: $error_color; }
     &:state-outdate { color: $warning_color; }
     &:state-immutable { color: $insensitive_fg_color; }
-    &:focus { outline: 0.15em solid st-transparentize(-st-accent-color, 0.3); }
+    &:focus { outline: 0.15em solid -st-accent-color; }
 }
 
 .#{$pfx}-icon {
     padding: 0 0.15em;
     &:hover { color: st-tone(-st-accent-color, 5%); }
-    &:focus { outline: 0.15em solid st-transparentize(-st-accent-color, 0.3); }
+    &:focus { outline: 0.15em solid st-tone(-st-accent-color, 3%); }
 }

@@ -179,17 +179,16 @@ export class DialogBase extends Adw.Dialog {
         super({title, contentWidth: 360, contentHeight: 320, ...param});
         this.connect('selected', (_d, value) => this.$chosen?.resolve(value));
         this.connect('closed', () => this.$chosen?.reject(Error('cancelled')));
+        this.add_controller(hook({'key-pressed': (...xs) => this.$onKeyPress(...xs)}, new Gtk.EventControllerKey()));
         this.$buildContent(opt);
     }
 
     $buildContent(opt) {
         let {content, filter, title} = this.$buildWidgets(opt),
-            eck = hook({'key-pressed': (...xs) => this.$onKeyPress(...xs)}, new Gtk.EventControllerKey()),
             close = hook({clicked: () => this.close()}, Gtk.Button.new_with_mnemonic(_GTK('_Cancel'))),
             select = hook({clicked: () => this.$onSelect()}, Gtk.Button.new_with_mnemonic(_GTK('_OK'))),
             header = new Adw.HeaderBar({showEndTitleButtons: false, showStartTitleButtons: false, titleWidget: title || null});
         select.add_css_class('suggested-action');
-        this.add_controller(eck);
         header.pack_start(close);
         header.pack_end(select);
 
@@ -292,7 +291,6 @@ export class KeysDialog extends DialogBase {
 
     $buildContent({title}) {
         this.set_child(new Adw.StatusPage({iconName: 'preferences-desktop-keyboard-symbolic', title}));
-        this.add_controller(hook({'key-pressed': (...xs) => this.$onKeyPress(...xs)}, new Gtk.EventControllerKey()));
     }
 
     $onKeyPress(_w, keyval, keycode, state) {
