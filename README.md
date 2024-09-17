@@ -24,18 +24,9 @@ For older versions, it's recommended to install via:
 
 [<img src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true" alt="Get it on GNOME Extensions" height="100" align="middle">][EGO]
 
-## Notes
-
-* The DOT ornament means the extension is enabled;
-* Click the menu item to enable/disable the extension, while hold <kbd>Ctrl</kbd> to invoke the button function;
-
 ## Contributions
 
-Any contribution is welcome.
-
-### Ideas
-
-For any question or idea, feel free to open an issue or PR in the repo.
+Feel free to open an issue or PR in the repo for any question or idea.
 
 ### Translations
 

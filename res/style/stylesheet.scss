@@ -4,6 +4,10 @@ $contrast: 'normal';
 
 $pfx: 'extension-list';
 
+@function tone($color, $percent: 10%, $reverse: true){
+    @return if($variant==if($reverse, 'light', 'dark'), darken($color, $percent), lighten($color, $percent))
+}
+
 @function st-tone($color, $percent: 10%, $reverse: true){
     @return if($variant==if($reverse, 'light', 'dark'), st-darken($color, $percent), st-lighten($color, $percent))
 }
@@ -13,15 +17,16 @@ $pfx: 'extension-list';
 }
 
 .#{$pfx}-label {
-    max-width: 14em;
+    max-width: 16em;
     &:state-error { color: $error_color; }
-    &:state-outdate { color: $warning_color; }
-    &:state-immutable { color: $insensitive_fg_color; }
+    &:state-update { color: $success_color; }
+    &:state-outdated { color: $warning_color; }
+    &:state-ignored { color: tone($insensitive_fg_color, 5%); }
     &:focus { outline: 0.15em solid -st-accent-color; }
 }
 
 .#{$pfx}-icon {
     padding: 0 0.15em;
-    &:hover { color: st-tone(-st-accent-color, 5%); }
-    &:focus { outline: 0.15em solid st-tone(-st-accent-color, 3%); }
+    &:hover { color: st-tone(-st-accent-color, 8%); }
+    &:focus { outline: 0.15em solid st-tone(-st-accent-color, 4%); }
 }

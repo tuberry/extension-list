@@ -4,47 +4,47 @@
         <key type="u" name="button-icon">
             <range min="0" max="2"/>
             <default>0</default>
-            <summary>button icon: 0 - prefs, 1 - delete, 2 - url</summary>
+            <summary>tail button icon: 0 - prefs, 1 - remove, 2 - url</summary>
         </key>
-        <key type="s" name="ext-app">
+        <key type="s" name="extension-appid">
             <default>"org.gnome.Extensions.desktop"</default>
-            <summary>open ext app (default - e.g.o)</summary>
+            <summary>open extension app or web</summary>
         </key>
         <key type="b" name="enable-tooltip">
             <default>true</default>
             <summary>enable toolbar tooltip</summary>
         </key>
-        <key type="b" name="ext-button">
+        <key type="b" name="extension-button">
             <default>true</default>
-            <summary>show ext button</summary>
+            <summary>show extension button</summary>
         </key>
-        <key type="b" name="url-button">
+        <key type="b" name="homepage-button">
             <default>true</default>
-            <summary>show url button</summary>
+            <summary>show homepage button</summary>
         </key>
-        <key type="b" name="del-button">
+        <key type="b" name="remove-button">
             <default>true</default>
-            <summary>show delete button</summary>
+            <summary>show remove button</summary>
         </key>
-        <key type="b" name="dis-button">
+        <key type="b" name="filter-button">
             <default>true</default>
-            <summary>show inactive button</summary>
+            <summary>show filter button</summary>
         </key>
-        <key type="b" name="pin-button">
+        <key type="b" name="enable-filter">
             <default>true</default>
-            <summary>show pin button</summary>
+            <summary>filter out ignored extensions</summary>
         </key>
-        <key type="b" name="hide-inactive">
+        <key type="b" name="ignore-button">
+            <default>true</default>
+            <summary>show button for toggling ignore-menu</summary>
+        </key>
+        <key type="b" name="ignore-menu">
             <default>false</default>
-            <summary>hide inactive extensions from menu</summary>
+            <summary>show menu for managing ignore-list</summary>
         </key>
-        <key type="b" name="toggle-unpin">
-            <default>false</default>
-            <summary>unpin or not</summary>
-        </key>
-        <key type="as" name="unpin-list">
+        <key type="as" name="ignore-list">
             <default>[]</default>
-            <summary>list of unpinned extensions</summary>
+            <summary>list of ignored extensions</summary>
         </key>
     </schema>
 </schemalist>
