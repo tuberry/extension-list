@@ -1,0 +1,192 @@
+# German translation for gnome-shell-extension-extension-list package
+# gnome-shell-extension-extension-list 软件包的简体中文翻译.
+# Copyright (C) 2022 THE gnome-shell-extension-extension-list'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-shell-extension-extension-list package.
+# Martin Gansser <martin.gansser@gmail.com>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-shell-extension-extension-list\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-10-09 11:36+0800\n"
+"PO-Revision-Date: 2024-11-01 19:21+0200\n"
+"Last-Translator: Martin Gansser <martin.gansser@gmail.com>\n"
+"Language-Team: none\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/ui.js:343
+msgid "All"
+msgstr "Alles"
+
+#: src/ui.js:343
+msgid "Normal"
+msgstr "Normal"
+
+#: src/ui.js:343
+msgid "Symbolic"
+msgstr "Symbolisch"
+
+#: src/ui.js:382
+msgid "Clear"
+msgstr "Löschen"
+
+#: src/ui.js:480
+msgid "Mismatched filetype"
+msgstr "Unpassender Dateityp"
+
+#: src/ui.js:615
+msgid "Click or press ENTER to apply changes"
+msgstr "Klicken Sie auf oder drücken Sie ENTER, um die Änderungen zu übernehmen"
+
+#: src/prefs.js:40
+msgid "Extension state illustration"
+msgstr "Darstellung des Erweiterungszustands"
+
+#: src/prefs.js:41
+msgid "active"
+msgstr "aktiv"
+
+#: src/prefs.js:42
+msgid "inactive"
+msgstr "inaktiv"
+
+#: src/prefs.js:43
+msgid "system"
+msgstr "System"
+
+#: src/prefs.js:44
+msgid "ignored"
+msgstr "ignoriert"
+
+#: src/prefs.js:45
+msgid "update"
+msgstr "Aktualisierung"
+
+#: src/prefs.js:46
+msgid "outdated"
+msgstr "veraltet"
+
+#: src/prefs.js:47
+msgid "error"
+msgstr "Fehler"
+
+#: src/prefs.js:48
+msgid ""
+"<b>Menu</b>\n"
+"press Alt + number key n to trigger the nth toolbar button\n"
+"<b>Menu item</b>\n"
+"left/middle click to activate/deactivate the extension\n"
+"right click or press Ctrl key to trigger the tail button"
+msgstr ""
+"<b>Menü</b>\n"
+"drücken Sie Alt + Zahlentaste n, um die n-te Schaltfläche der "
+"Symbolleiste auszulösen\n"
+"<b>Menüpunkt</b>\n"
+"auf die mittlere oder linke Maustaste klicken, um die Erweiterung "
+" ein- oder auszuschalten\n"
+"auf die rechte Maustaste klicken oder Strg-Taste drücken, "
+"um die am Ende der Zeile definierte Schaltfläche auszulösen"
+
+#: src/prefs.js:56
+msgid "Enable _tooltip"
+msgstr "Aktivire _tooltip"
+
+#: src/prefs.js:56
+msgid "Show the tooltip for each toolbar button"
+msgstr "Tooltip für jede Schaltfläche der Symbolleiste anzeigen"
+
+#: src/prefs.js:58
+msgid "Toolbar"
+msgstr "Symbolleiste"
+
+#: src/prefs.js:58
+msgid "Icon"
+msgstr "Symbol"
+
+#: src/prefs.js:60
+msgid "_Extension"
+msgstr "_Erweiterung"
+
+#: src/prefs.js:60
+#, javascript-format
+msgid "Open extension <a href=\"%s\">website</a> or app"
+msgstr "Öffnen Sie die Erweiterung <a href=\"%s\“>Website</a> oder die App"
+
+#: src/prefs.js:61
+msgid "_Filter"
+msgstr "_Filter"
+
+#: src/prefs.js:61
+msgid "Show/Hide ignored extensions, same as pressing left Shift key"
+msgstr ""
+"Ignorierte Erweiterungen umschalten, ähnlich wie beim Drücken der linken "
+"Shift-Taste"
+
+#: src/prefs.js:62
+msgid "_Remove"
+msgstr "_Löschen"
+
+#: src/prefs.js:62
+msgid "Toggle remove buttons in menu items"
+msgstr "Schaltflächen zum Entfernen von Menüelementen umschalten"
+
+#: src/prefs.js:63
+msgid "_Homepage"
+msgstr "_Homepage"
+
+#: src/prefs.js:63
+msgid "Toggle homepage buttons in menu items"
+msgstr "Homepage-Schaltflächen in Menüpunkten umschalten"
+
+#: src/prefs.js:64
+msgid "_Ignore"
+msgstr "_Ignorieren"
+
+#: src/prefs.js:64
+msgid "Toggle ignore/normal menu, same as pressing right Shift key"
+msgstr ""
+"Umschalten zwischen normalem und übersprungenem Menü, wie beim Drücken "
+"der rechten Umschalttaste"
+
+#: src/extension.js:225
+msgid "Typed"
+msgstr "Typed"
+
+#: src/extension.js:225
+msgid "Type to search"
+msgstr "Zum Suchen tippen"
+
+#: src/extension.js:231
+msgid "Open extensions website or app"
+msgstr "Website oder Anwendung der Erweiterungen öffnen"
+
+#: src/extension.js:232
+msgid "Show all extensions"
+msgstr "Alle Erweiterungen anzeigen"
+
+#: src/extension.js:232
+msgid "Hide ignored extensions"
+msgstr "Ignorierte Erweiterungen ausblenden"
+
+#: src/extension.js:234
+msgid "Toggle remove button"
+msgstr "Schaltfläche zum Entfernen umschalten"
+
+#: src/extension.js:234 src/extension.js:236
+msgid "Toggle setting button"
+msgstr "Schaltfläche für Einstellungen umschalten"
+
+#: src/extension.js:236
+msgid "Toggle homepage button"
+msgstr "Schaltfläche Homepage umschalten"
+
+#: src/extension.js:237
+msgid "Toggle normal menu"
+msgstr "Normales Menü umschalten"
+
+#: src/extension.js:237
+msgid "Toggle ignore menu"
+msgstr "Menü ignorieren umschalten"
