@@ -10,11 +10,11 @@ export const Icon = {
     DEL:  'user-trash-symbolic',
     HIDE: 'view-conceal-symbolic',
     SHOW: 'view-reveal-symbolic',
-    SET:  'emblem-system-symbolic',
+    SET:  'applications-system-symbolic',
     ADN:  'application-x-addon-symbolic',
 };
 
-export const Field = {
+export const Key = {
     BTN: 'button-icon',
     IGL: 'ignore-list',
     IGM: 'ignore-menu',

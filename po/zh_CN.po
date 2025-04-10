@@ -17,172 +17,195 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ui.js:343
-msgid "All"
-msgstr "全部"
-
-#: src/ui.js:343
-msgid "Normal"
-msgstr "常规"
-
-#: src/ui.js:343
-msgid "Symbolic"
-msgstr "符号"
-
-#: src/ui.js:382
-msgid "Clear"
-msgstr "清除"
-
-#: src/ui.js:480
+#: src/ui.js:384
 msgid "Mismatched filetype"
 msgstr "文件类型不匹配"
 
-#: src/ui.js:615
+#: src/ui.js:516
 msgid "Click or press ENTER to apply changes"
 msgstr "单击或按回车应用更改"
 
-#: src/prefs.js:40
-msgid "Extension state illustration"
-msgstr "扩展状态一览"
-
-#: src/prefs.js:41
-msgid "active"
-msgstr "活动中"
-
-#: src/prefs.js:42
-msgid "inactive"
-msgstr "未活动"
-
-#: src/prefs.js:43
-msgid "system"
-msgstr "系统级"
-
-#: src/prefs.js:44
-msgid "ignored"
-msgstr "已忽略"
-
-#: src/prefs.js:45
-msgid "update"
-msgstr "有更新"
-
-#: src/prefs.js:46
-msgid "outdated"
-msgstr "已过时"
-
-#: src/prefs.js:47
-msgid "error"
-msgstr "有错误"
-
-#: src/prefs.js:48
-msgid ""
-"<b>Menu</b>\n"
-"press Alt + number key n to trigger the nth toolbar button\n"
-"<b>Menu item</b>\n"
-"left/middle click to activate/deactivate the extension\n"
-"right click or press Ctrl key to trigger the tail button"
-msgstr ""
-"<b>菜单</b>\n"
-"按 Alt + 数字键 n 触发第 n 个工具栏按钮\n"
-"<b>菜单项</b>\n"
-"左键/中键启用/停用扩展\n"
-"右键或按 Ctrl 键触发末尾按钮"
-
-#: src/prefs.js:56
+#: src/prefs.js:32
 msgid "Enable _tooltip"
 msgstr "启用提示(_T)"
 
-#: src/prefs.js:56
+#: src/prefs.js:32
 msgid "Show the tooltip for each toolbar button"
 msgstr "显示工具栏按钮提示"
 
-#: src/prefs.js:58
+#: src/prefs.js:33
+msgid "Extension state illustration"
+msgstr "扩展状态一览"
+
+#: src/prefs.js:34
+msgid "active"
+msgstr "活动中"
+
+#: src/prefs.js:35
+msgid "inactive"
+msgstr "未活动"
+
+#: src/prefs.js:36
+msgid "system"
+msgstr "系统级"
+
+#: src/prefs.js:37
+msgid "ignored"
+msgstr "已忽略"
+
+#: src/prefs.js:38
+msgid "update"
+msgstr "有更新"
+
+#: src/prefs.js:39
+msgid "outdated"
+msgstr "已过时"
+
+#: src/prefs.js:40
+msgid "error"
+msgstr "有错误"
+
+#: src/prefs.js:41
+msgid "Menu shortcuts"
+msgstr "菜单快捷键"
+
+#: src/prefs.js:42
+msgid "trigger the toolbar button"
+msgstr "触发工具栏按钮"
+
+#: src/prefs.js:43
+msgid "Menu item shortcuts"
+msgstr "菜单项快捷键"
+
+#: src/prefs.js:44
+msgid "toggle the extension"
+msgstr "开关扩展"
+
+#: src/prefs.js:44
+msgid "primary/middle click"
+msgstr "左/右键"
+
+#: src/prefs.js:45
+msgid "trigger the tail button"
+msgstr "触发末尾按钮"
+
+#: src/prefs.js:45
+msgid "secondary click"
+msgstr "右键"
+
+#: src/prefs.js:47
 msgid "Toolbar"
 msgstr "工具栏"
 
-#: src/prefs.js:58
+#: src/prefs.js:47
 msgid "Icon"
 msgstr "图标"
 
-#: src/prefs.js:60
+#: src/prefs.js:48
 msgid "_Extension"
 msgstr "扩展(_E)"
 
-#: src/prefs.js:60
+#: src/prefs.js:48
 #, javascript-format
 msgid "Open extension <a href=\"%s\">website</a> or app"
 msgstr "打开扩展<a href=\"%s\">网站</a>或应用"
 
-#: src/prefs.js:61
+#: src/prefs.js:49
 msgid "_Filter"
 msgstr "过滤(_F)"
 
-#: src/prefs.js:61
-msgid "Show/Hide ignored extensions, same as pressing left Shift key"
-msgstr "显示或隐藏已忽略扩展，按左 Shift 键同理"
+#: src/prefs.js:49
+msgid "Show/Hide ignored extensions, as pressing right Shift key"
+msgstr "显示或隐藏已忽略扩展，按右 Shift 键同理"
 
-#: src/prefs.js:62
+#: src/prefs.js:50
 msgid "_Remove"
 msgstr "移除(_R)"
 
-#: src/prefs.js:62
+#: src/prefs.js:50
 msgid "Toggle remove buttons in menu items"
 msgstr "切换菜单项的移除按钮"
 
-#: src/prefs.js:63
+#: src/prefs.js:51
 msgid "_Homepage"
 msgstr "主页(_H)"
 
-#: src/prefs.js:63
+#: src/prefs.js:51
 msgid "Toggle homepage buttons in menu items"
 msgstr "切换菜单项的主页按钮"
 
-#: src/prefs.js:64
+#: src/prefs.js:52
 msgid "_Ignore"
 msgstr "忽略(_I)"
 
-#: src/prefs.js:64
-msgid "Toggle ignore/normal menu, same as pressing right Shift key"
-msgstr "切换忽略/常规菜单，按右 Shift 键同理"
+#: src/prefs.js:52
+msgid "Toggle ignore/normal menu, as pressing right Ctrl key"
+msgstr "切换忽略/常规菜单，按右 Ctrl 键同理"
 
-#: src/extension.js:225
+#: src/extension.js:216
 msgid "Typed"
 msgstr "键入"
 
-#: src/extension.js:225
+#: src/extension.js:216
 msgid "Type to search"
 msgstr "键入以搜索"
 
-#: src/extension.js:231
+#: src/extension.js:222
 msgid "Open extensions website or app"
 msgstr "打开扩展网站或应用"
 
-#: src/extension.js:232
+#: src/extension.js:223
 msgid "Show all extensions"
 msgstr "显示所有扩展"
 
-#: src/extension.js:232
+#: src/extension.js:223
 msgid "Hide ignored extensions"
 msgstr "隐藏已忽略扩展"
 
-#: src/extension.js:234
+#: src/extension.js:225
 msgid "Toggle remove button"
 msgstr "切换移除按钮"
 
-#: src/extension.js:234 src/extension.js:236
+#: src/extension.js:225 src/extension.js:227
 msgid "Toggle setting button"
 msgstr "切换设置按钮"
 
-#: src/extension.js:236
+#: src/extension.js:227
 msgid "Toggle homepage button"
 msgstr "切换主页按钮"
 
-#: src/extension.js:237
+#: src/extension.js:228
 msgid "Toggle normal menu"
 msgstr "切换常规菜单"
 
-#: src/extension.js:237
+#: src/extension.js:228
 msgid "Toggle ignore menu"
 msgstr "切换忽略菜单"
+
+#~ msgid "All"
+#~ msgstr "全部"
+
+#~ msgid "Normal"
+#~ msgstr "常规"
+
+#~ msgid "Symbolic"
+#~ msgstr "符号"
+
+#~ msgid ""
+#~ "<b>Menu</b>\n"
+#~ "press Alt + number key n to trigger the nth toolbar button\n"
+#~ "<b>Menu item</b>\n"
+#~ "left/middle click to activate/deactivate the extension\n"
+#~ "right click or press Ctrl key to trigger the tail button"
+#~ msgstr ""
+#~ "<b>菜单</b>\n"
+#~ "按 Alt + 数字键 n 触发第 n 个工具栏按钮\n"
+#~ "<b>菜单项</b>\n"
+#~ "左键/中键启用/停用扩展\n"
+#~ "右键或按 Ctrl 键触发末尾按钮"
+
+#~ msgid "Clear"
+#~ msgstr "清除"
 
 #~ msgid "Toggle ignore/normal menu"
 #~ msgstr "切换忽略/常规菜单"
@@ -201,9 +224,6 @@ msgstr "切换忽略菜单"
 
 #~ msgid "_Pin"
 #~ msgstr "固定(_P)"
-
-#~ msgid "Toggle menu to pin/unpin extensions"
-#~ msgstr "切换固定/排除扩展的菜单"
 
 #~ msgid "URL"
 #~ msgstr "链接"

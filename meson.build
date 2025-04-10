@@ -1,30 +1,37 @@
+# SPDX-FileCopyrightText: tuberry
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 project(
   'gnome-shell-extension-extension-list',
   license: 'GPL-3.0-or-later',
-  version: '47.beta',
+  version: '48.0',
+  meson_version: '>= 1.4.0',
 )
-
-_name = meson.project_name().replace('gnome-shell-extension-', '')
-_version = get_option('version')
-metadata = {
-    'name': 'Extension List',
-    'uuid': _name + '@tu.berry',
-    'gettext': meson.project_name(),
-    'shell': meson.project_version().split('.')[0],
-    'url': 'https://github.com/tuberry' / _name,
-    'schemas': 'org.gnome.shell.extensions.' + _name,
-    'version': (_version != 0) ? _version : run_command('cli/get-version.sh', check: true, env: ['EGO=3088' / _name]).stdout().strip(),
-    'description': 'Simple GNOME Shell extension manager in the top panel'
-      + '\\n\\nFor support, please report issues via the Homepage link below rather than the comments section below it'
-}
 
 fs = import('fs')
 i18n = import('i18n')
 gnome = import('gnome')
 
+_name = 'Extension List'
+_version = get_option('version')
+_title = meson.project_name().replace('gnome-shell-extension-', '')
 target = get_option('target')
-datadir = get_option('datadir')
+
+metadata = {
+  'name': _name,
+  'uuid': _title + '@tu.berry',
+  'gettext': meson.project_name(),
+  'url': 'https://github.com/tuberry' / _title,
+  'shell': meson.project_version().split('.')[0],
+  'rdnn': 'org.gnome.shell.extensions.' + _title,
+  'path': f'/org/gnome/shell/extensions/@_title@/',
+  'version': (_version != 0) ? _version : run_command('cli/get-version.sh', check: true, env: ['EGO=3088' / _title]).stdout().strip(),
+  'description': 'Simple GNOME Shell extension manager in the top panel'
+    + (target == 'zip' ? '\\n\\nFor support, please report issues via the Homepage link below rather than the review section below it' : '')
+}
+
 if(target == 'system')
+  datadir = get_option('datadir')
   locale_dir = get_option('localedir')
   schema_dir = datadir / 'glib-2.0' / 'schemas'
   target_dir = datadir / 'gnome-shell' / 'extensions' / metadata['uuid']
@@ -41,10 +48,10 @@ if(target == 'zip')
     find_program('7z'),
     'a',
     zip_dir / '@0@_v@1@.zip'.format(metadata['gettext'], metadata['version']),
-    target_dir / '*'
+    target_dir / '*',
   )
 endif
 
 subdir('po')
 subdir('res')
-install_subdir('src', install_dir: target_dir, strip_directory: true)
+install_subdir('src', strip_directory: true, install_dir: target_dir)

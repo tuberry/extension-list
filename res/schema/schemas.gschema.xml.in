@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="@gettext@">
+  <schema id="@rdnn@" path="@path@">
+    <key type="u" name="button-icon">
+      <range min="0" max="2"/>
+      <default>0</default>
+      <summary>tail button icon: 0 - prefs, 1 - remove, 2 - url</summary>
+    </key>
+    <key type="s" name="extension-appid">
+      <default>""</default>
+      <summary>open extension app or web</summary>
+    </key>
+    <key type="b" name="enable-tooltip">
+      <default>true</default>
+      <summary>enable toolbar tooltip</summary>
+    </key>
+    <key type="b" name="extension-button">
+      <default>true</default>
+      <summary>show extension button</summary>
+    </key>
+    <key type="b" name="homepage-button">
+      <default>true</default>
+      <summary>show homepage button</summary>
+    </key>
+    <key type="b" name="remove-button">
+      <default>true</default>
+      <summary>show remove button</summary>
+    </key>
+    <key type="b" name="filter-button">
+      <default>true</default>
+      <summary>show filter button</summary>
+    </key>
+    <key type="b" name="enable-filter">
+      <default>true</default>
+      <summary>filter out ignored extensions</summary>
+    </key>
+    <key type="b" name="ignore-button">
+      <default>true</default>
+      <summary>show button for toggling ignore-menu</summary>
+    </key>
+    <key type="b" name="ignore-menu">
+      <default>false</default>
+      <summary>show menu for managing ignore-list</summary>
+    </key>
+    <key type="as" name="ignore-list">
+      <default>[]</default>
+      <summary>list of ignored extensions</summary>
+    </key>
+  </schema>
+</schemalist>
