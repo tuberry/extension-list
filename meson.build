@@ -4,7 +4,7 @@
 project(
   'gnome-shell-extension-extension-list',
   license: 'GPL-3.0-or-later',
-  version: '48.0',
+  version: '49.beta',
   meson_version: '>= 1.4.0',
 )
 
@@ -26,8 +26,8 @@ metadata = {
   'rdnn': 'org.gnome.shell.extensions.' + _title,
   'path': f'/org/gnome/shell/extensions/@_title@/',
   'version': (_version != 0) ? _version : run_command('cli/get-version.sh', check: true, env: ['EGO=3088' / _title]).stdout().strip(),
-  'description': 'Simple GNOME Shell extension manager in the top panel'
-    + (target == 'zip' ? '\\n\\nFor support, please report issues via the Homepage link below rather than the review section below it' : '')
+  'description': 'Manage extensions from the top panel'
+    + (target == 'zip' ? '\\n\\nFor support, please report issues in time via the Homepage link below rather than the review section below it' : '')
 }
 
 if(target == 'system')

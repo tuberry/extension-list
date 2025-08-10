@@ -20,6 +20,7 @@ import * as F from './fubar.js';
 import {Key as K, Icon, EGO} from './const.js';
 
 const {_} = F;
+const {$, $_} = T;
 
 const Tail = {SET: 0, DEL: 1, URL: 2};
 const Show = {true: Icon.HIDE, false: Icon.SHOW};
@@ -31,36 +32,37 @@ class ExtensionItem extends M.DatumItemBase {
     }
 
     constructor(ext, ignore) {
-        super('extension-list-label', 'extension-list-icon', null, ext);
-        this.add_style_class_name('extension-list-item');
-        this.$btn.connect('key-focus-in', () => this.#onKeyFocusIn());
-        this.label.connect('key-focus-in', () => this.#onKeyFocusIn());
+        super('extension-list-label', 'extension-list-icon', null, ext)[$]
+            .add_style_class_name('extension-list-item')[$]
+            .$onIgnoreToggle(meta => {
+                meta.icon = Show[meta.show = !meta.show];
+                this.setup(meta);
+                ignore(meta.uuid);
+            });
+
+        [this.$btn, this.label].forEach(x => x.connect('key-focus-in',
+            () => AnimationUtils.ensureActorVisibleInScrollView(this._parent.actor, this)));
         this.label.clutterText.set_ellipsize(Pango.EllipsizeMode.MIDDLE);
-        this.$onIgnoreToggle = meta => {
-            meta.icon = Show[meta.show = !meta.show];
-            this.setup(meta);
-            ignore(meta.uuid);
-        };
     }
 
     setup(meta) {
         this.$meta = meta;
         let {type, state, update, name, icon, show} = meta;
         let label = type === Type.SYSTEM ? `${name} *` : name;
-        this.setOrnament(state === State.ACTIVE ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-        this.#setLabel(label, Style[state] ?? (update ? 'state-update' : show ? undefined : 'state-ignored'));
-        this.#setButton(icon, meta);
+        this[$].setOrnament(state === State.ACTIVE ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE)[$]
+            .$setLabel(label, Style[state] ?? (update ? 'state-update' : show ? undefined : 'state-ignored'))[$]
+            .$setButton(icon, meta);
     }
 
-    #setLabel(label, state) {
+    $setLabel(label, state) {
         this.label.set_text(label);
         if(this.$state === state) return;
         if(this.$state) this.label.remove_style_pseudo_class(this.$state);
         if((this.$state = state)) this.label.add_style_pseudo_class(state);
     }
 
-    #setButton(icon, meta) {
-        let visible = true;
+    $setButton(icon, meta) {
+        let visible = true; // NOTE: https://github.com/tc39/proposal-pattern-matching
         switch(icon) {
         case Icon.SET: visible = meta.prefs; break;
         case Icon.URL: visible = meta.url; break;
@@ -69,10 +71,6 @@ class ExtensionItem extends M.DatumItemBase {
         if(this.$btn.has_key_focus() && !visible) this.label.grab_key_focus(); // HACK: avoid loss of focus while hiding
         F.view(visible, this.$btn);
         this.$btn.setup(icon);
-    }
-
-    #onKeyFocusIn() {
-        AnimationUtils.ensureActorVisibleInScrollView(this._parent.actor, this);
     }
 
     $onClick(meta = this.$meta) { // NOTE: stash for consistency/immutability
@@ -97,8 +95,7 @@ class ExtensionItem extends M.DatumItemBase {
 
 class ExtensionSection extends M.DatasetSection {
     constructor(...args) {
-        super(...args);
-        this.actor = new St.ScrollView({child: this.box, clipToAllocation: true, styleClass: 'extension-list-view'});
+        super(...args)[$].actor(new St.ScrollView({child: this.box, clipToAllocation: true, styleClass: 'extension-list-view'}));
         this.actor._delegate = this;
     }
 
@@ -113,33 +110,31 @@ class ExtensionSection extends M.DatasetSection {
 
 class ExtensionList extends F.Mortal {
     constructor(gset) {
-        super();
-        this.#bindSettings(gset);
-        this.#buildWidgets();
+        super()[$].$bindSettings(gset).$buildWidgets();
     }
 
-    #buildWidgets() {
+    $buildWidgets() {
         this.$typed = '';
         this.$src = F.Source.tie({
             tray: new M.Systray({
-                ext: new ExtensionSection(x => new ExtensionItem(x, y => {
-                    this[K.IGL].has(y) ? this[K.IGL].delete(y) : this[K.IGL].add(y);
+                ext: new ExtensionSection(x => new ExtensionItem(x, ext => {
+                    this[K.IGL].has(ext) ? this[K.IGL].delete(ext) : this[K.IGL].add(ext);
                     this.$set.set(K.IGL, [...this[K.IGL]]);
                 }), this.getExtensions()),
-                sep: new M.Separator(),
-                bar: (t => t.length ? new M.ToolItem(t) : null)(this.#genTool()),
+                sep: new M.Separator(this[K.TIP] && _('Type to search')),
+                bar: (tool => tool.length ? new M.ToolItem(tool) : null)(this.#genTool()),
             }, Icon.ADN),
         }, this);
-        this.$src.tray.menu.connect('menu-closed', () => this.#onMenuClose());
-        this.$src.tray.menu.actor.connect('key-press-event', (...xs) => this.#onKeyPress(...xs));
-        F.connect(this, Main.extensionManager, 'extension-state-changed', (...xs) => this.#onStateChange(...xs));
+        this.$src.tray.menu[$].connect('menu-closed', () => this.#onMenuClose())
+            .actor.connect('key-press-event', (...xs) => this.#onKeyPress(...xs));
+        F.connect(this, Main.extensionManager, 'extension-state-changed', (...xs) => this.$onStateChange(...xs));
     }
 
     get menu() {
         return this.$src.tray.$menu;
     }
 
-    #bindSettings(gset) {
+    $bindSettings(gset) {
         this.$set = new F.Setting(gset, [
             K.APP, [K.IGL, x => new Set(x), null, false],
             [K.TIP, null, x => { this.menu.bar?.setup(this.#genTool()); this.#updateHint(x); }],
@@ -165,11 +160,10 @@ class ExtensionList extends F.Mortal {
     }
 
     #onTailIconSet(icon) {
-        this.menu.bar?.[K.URL]?.toggleState(icon !== Icon.URL);
-        this.menu.bar?.[K.DEL]?.toggleState(icon !== Icon.DEL);
+        ['URL', 'DEL'].forEach(x => this.menu.bar?.[K[x]]?.toggleState(icon !== Icon[x]));
     }
 
-    #onStateChange(_m, extension) {
+    $onStateChange(_m, extension) {
         let ext = this.extract(extension);
         if(this[K.FLR] && !ext.show && !this[K.IGM]) return;
         this.menu.ext.upsert(ext);
@@ -177,13 +171,12 @@ class ExtensionList extends F.Mortal {
 
     #onMenuClose() {
         this.#refind();
-        this[K.FLR] || this.$set.set(K.FLR, true);
-        this[K.IGM] && this.$set.set(K.IGM, false);
+        this.$set[$_].set(!this[K.FLR], K.FLR, true)[$_].set(this[K.IGM], K.IGM, false);
     }
 
     #onKeyPress(_a, event) {
         let key = event.get_key_symbol();
-        if(M.altNum(key, event, this.menu.bar ?? [])) return;
+        if(M.altNum(event, this.menu.bar ?? [], key)) return;
         if(key >= Clutter.KEY_exclam && key <= Clutter.KEY_asciitilde) return this.#search(this.$typed + String.fromCodePoint(key));
         switch(key) {
         case Clutter.KEY_Shift_R: this.$set.not(K.FLR); break;
@@ -197,16 +190,15 @@ class ExtensionList extends F.Mortal {
     // [1] search with IME issue: https://gitlab.gnome.org/GNOME/gtk/-/issues/2636
     // [2] extension metadata L10N issue: https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/2288
     // [3] PopupMenus cover IBusPopup: https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/2331
+    #match = [(x, y) => x.startsWith(y), (x, y) => x.includes(y), (x, y) => T.search(y, x)];
     #search(text) {
         this.$typed = text;
         this.#updateHint();
-        let items = this.menu.ext._getMenuItems() ?? [], best;
-        if(text) this.#match.some(f => (best = items.filter(x => T.seq(y => F.view(y, x), f(x.$meta.text, text)))[0]?.label));
+        let items = this.menu.ext._getMenuItems() ?? [], first;
+        if(text) this.#match.some(f => (first = items.filter(x => T.seq(f(x.$meta.text, text), y => F.view(y, x)))[0]?.label));
         else F.view(true, ...items);
-        (best ?? this.$src.tray.menu.actor).grab_key_focus();
+        (first ?? this.$src.tray.menu.actor).grab_key_focus();
     }
-
-    #match = [(x, y) => x.startsWith(y), (x, y) => x.includes(y), (x, y) => T.search(y, x)];
 
     #refind(text = '') {
         if(this.$typed) this.#search(text);
@@ -226,14 +218,14 @@ class ExtensionList extends F.Mortal {
             [K.URL, [() => this.$set.set(K.BTN, this[K.BTN] === Icon.URL ? Tail.SET : Tail.URL),
                 [this[K.BTN] !== Icon.URL, Icon.URL, Icon.SET], [_('Toggle homepage button'), _('Toggle setting button')]]],
             [K.IGN, [() => this.$set.not(K.IGM), [this[K.IGM], Icon.HIDE, Icon.SHOW], [_('Toggle normal menu'), _('Toggle ignore menu')]]],
-        ].flatMap(([k, [f, c, t]]) => this[k] ? [[k, new (T.str(t) ? M.Button
-            : M.StateButton)({styleClass: 'extension-list-icon', xExpand: true}, f, c, this[K.TIP] && t)]] : []);
+        ].flatMap(([k, [f, c, t]]) => this[k] ? [[k, new (T.str(t) ? M.Button : M.StateButton)(f, c, this[K.TIP] && t)[$]
+                .set({styleClass: 'extension-list-icon', xExpand: true})]] : []);
     }
 
     getExtensions() {
-        let exts = Array.from(Main.extensionManager._extensions.values()).map(x => this.extract(x)); // TODO: Iter
-        if(!this[K.IGM] && this[K.FLR]) exts = exts.filter(x => x.show);
-        return exts.toSorted((a, b) => a.name.localeCompare(b.name));
+        let ret = Main.extensionManager._extensions.values().map(x => this.extract(x)).toArray();
+        if(!this[K.IGM] && this[K.FLR]) ret = ret.filter(x => x.show);
+        return ret.toSorted((a, b) => a.name.localeCompare(b.name));
     }
 
     extract({uuid, state, type, hasPrefs: prefs, hasUpdate: update, metadata: {name, url}}) {

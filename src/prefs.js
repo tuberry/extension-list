@@ -28,23 +28,21 @@ class ExtensionListPrefs extends UI.Page {
 
     $buildUI() {
         let img = x => new Gtk.Image({iconName: x});
-        this.$add([null, [
-            [[_('Enable _tooltip'), _('Show the tooltip for each toolbar button')],
-                new UI.Help(({m, k, h}) => [h(_('Extension state illustration')), [
-                    [_('active'), '', '\u{2713}'],
-                    [_('inactive')],
-                    [_('system'), '', '', '*'],
-                    [_('ignored'), 'dimmed'],
-                    [_('update'), 'success'],
-                    [_('outdated'), 'warning'],
-                    [_('error'), 'error'],
-                ].map(([x, y, u, v]) => [u, m('Lorem Ipsum', y), v, x]), h(_('Menu shortcuts')), [
-                    [_('trigger the toolbar button'), k('<alt>1 2 3')],
-                ], h(_('Menu item shortcuts')), [
-                    [_('toggle the extension'), k('space Return'), _('primary/middle click')],
-                    [_('trigger the tail button'),  k('Control_L'), _('secondary click')],
-                ]]), K.TIP],
-        ]], [[[_('Toolbar')], new Gtk.Label({label: _('Icon')})], [
+        this.$add([null, [[[_('Enable _tooltip'), _('Show the tooltip for each toolbar button')],
+            new UI.Help(({m, k, h}) => [h(_('Extension state illustration')), [
+                [_('active'), '', '\u{2713}'],
+                [_('inactive')],
+                [_('system'), '', '', '*'],
+                [_('ignored'), 'dimmed'],
+                [_('update'), 'success'],
+                [_('outdated'), 'warning'],
+                [_('error'), 'error'],
+            ].map(([x, y, u, v]) => [u, m('Lorem Ipsum', y), v, x]), h(_('Menu shortcuts')), [
+                [_('trigger the toolbar button'), k('<alt>1...9')],
+            ], h(_('Menu item shortcuts')), [
+                [_('toggle the extension'), k('space Return'), _('primary/middle click')],
+                [_('trigger the tail button'),  k('Control_L'), _('secondary click')],
+            ]]), K.TIP]]], [[[_('Toolbar')], new Gtk.Label({label: _('Icon')})], [
             [K.EXT, [_('_Extension'), _('Open extension <a href="%s">website</a> or app').format(EGO)], K.APP],
             [K.FLT, [_('_Filter'), _('Show/Hide ignored extensions, as pressing right Shift key')], img(Icon.ALL)],
             [K.DEL, [_('_Remove'), _('Toggle remove buttons in menu items')], img(Icon.DEL)],

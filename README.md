@@ -4,7 +4,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 # extension-list
 
-Simple GNOME Shell extension manager in the top panel.
+GNOME Shell extension to manage extensions from the top panel.
 > Keep it simple. —— *stupid*\
 [![license]](/LICENSE.md)
 

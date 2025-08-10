@@ -17,168 +17,168 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ui.js:384
+#: src/ui.js:344
 msgid "Mismatched filetype"
 msgstr "文件类型不匹配"
 
-#: src/ui.js:516
+#: src/ui.js:462
 msgid "Click or press ENTER to apply changes"
 msgstr "单击或按回车应用更改"
 
-#: src/prefs.js:32
+#: src/prefs.js:31
 msgid "Enable _tooltip"
 msgstr "启用提示(_T)"
 
-#: src/prefs.js:32
+#: src/prefs.js:31
 msgid "Show the tooltip for each toolbar button"
 msgstr "显示工具栏按钮提示"
 
-#: src/prefs.js:33
+#: src/prefs.js:32
 msgid "Extension state illustration"
 msgstr "扩展状态一览"
 
-#: src/prefs.js:34
+#: src/prefs.js:33
 msgid "active"
 msgstr "活动中"
 
-#: src/prefs.js:35
+#: src/prefs.js:34
 msgid "inactive"
 msgstr "未活动"
 
-#: src/prefs.js:36
+#: src/prefs.js:35
 msgid "system"
 msgstr "系统级"
 
-#: src/prefs.js:37
+#: src/prefs.js:36
 msgid "ignored"
 msgstr "已忽略"
 
-#: src/prefs.js:38
+#: src/prefs.js:37
 msgid "update"
 msgstr "有更新"
 
-#: src/prefs.js:39
+#: src/prefs.js:38
 msgid "outdated"
 msgstr "已过时"
 
-#: src/prefs.js:40
+#: src/prefs.js:39
 msgid "error"
 msgstr "有错误"
 
-#: src/prefs.js:41
+#: src/prefs.js:40
 msgid "Menu shortcuts"
 msgstr "菜单快捷键"
 
-#: src/prefs.js:42
+#: src/prefs.js:41
 msgid "trigger the toolbar button"
 msgstr "触发工具栏按钮"
 
-#: src/prefs.js:43
+#: src/prefs.js:42
 msgid "Menu item shortcuts"
 msgstr "菜单项快捷键"
 
-#: src/prefs.js:44
+#: src/prefs.js:43
 msgid "toggle the extension"
 msgstr "开关扩展"
 
-#: src/prefs.js:44
+#: src/prefs.js:43
 msgid "primary/middle click"
-msgstr "左/右键"
+msgstr "左/中键"
 
-#: src/prefs.js:45
+#: src/prefs.js:44
 msgid "trigger the tail button"
 msgstr "触发末尾按钮"
 
-#: src/prefs.js:45
+#: src/prefs.js:44
 msgid "secondary click"
 msgstr "右键"
 
-#: src/prefs.js:47
+#: src/prefs.js:45
 msgid "Toolbar"
 msgstr "工具栏"
 
-#: src/prefs.js:47
+#: src/prefs.js:45
 msgid "Icon"
 msgstr "图标"
 
-#: src/prefs.js:48
+#: src/prefs.js:46
 msgid "_Extension"
 msgstr "扩展(_E)"
 
-#: src/prefs.js:48
+#: src/prefs.js:46
 #, javascript-format
 msgid "Open extension <a href=\"%s\">website</a> or app"
 msgstr "打开扩展<a href=\"%s\">网站</a>或应用"
 
-#: src/prefs.js:49
+#: src/prefs.js:47
 msgid "_Filter"
 msgstr "过滤(_F)"
 
-#: src/prefs.js:49
+#: src/prefs.js:47
 msgid "Show/Hide ignored extensions, as pressing right Shift key"
 msgstr "显示或隐藏已忽略扩展，按右 Shift 键同理"
 
-#: src/prefs.js:50
+#: src/prefs.js:48
 msgid "_Remove"
 msgstr "移除(_R)"
 
-#: src/prefs.js:50
+#: src/prefs.js:48
 msgid "Toggle remove buttons in menu items"
 msgstr "切换菜单项的移除按钮"
 
-#: src/prefs.js:51
+#: src/prefs.js:49
 msgid "_Homepage"
 msgstr "主页(_H)"
 
-#: src/prefs.js:51
+#: src/prefs.js:49
 msgid "Toggle homepage buttons in menu items"
 msgstr "切换菜单项的主页按钮"
 
-#: src/prefs.js:52
+#: src/prefs.js:50
 msgid "_Ignore"
 msgstr "忽略(_I)"
 
-#: src/prefs.js:52
+#: src/prefs.js:50
 msgid "Toggle ignore/normal menu, as pressing right Ctrl key"
 msgstr "切换忽略/常规菜单，按右 Ctrl 键同理"
 
-#: src/extension.js:216
-msgid "Typed"
-msgstr "键入"
-
-#: src/extension.js:216
+#: src/extension.js:124 src/extension.js:208
 msgid "Type to search"
 msgstr "键入以搜索"
 
-#: src/extension.js:222
+#: src/extension.js:208
+msgid "Typed"
+msgstr "键入"
+
+#: src/extension.js:214
 msgid "Open extensions website or app"
 msgstr "打开扩展网站或应用"
 
-#: src/extension.js:223
+#: src/extension.js:215
 msgid "Show all extensions"
 msgstr "显示所有扩展"
 
-#: src/extension.js:223
+#: src/extension.js:215
 msgid "Hide ignored extensions"
 msgstr "隐藏已忽略扩展"
 
-#: src/extension.js:225
+#: src/extension.js:217
 msgid "Toggle remove button"
 msgstr "切换移除按钮"
 
-#: src/extension.js:225 src/extension.js:227
+#: src/extension.js:217 src/extension.js:219
 msgid "Toggle setting button"
 msgstr "切换设置按钮"
 
-#: src/extension.js:227
+#: src/extension.js:219
 msgid "Toggle homepage button"
 msgstr "切换主页按钮"
 
-#: src/extension.js:228
+#: src/extension.js:220
 msgid "Toggle normal menu"
 msgstr "切换常规菜单"
 
-#: src/extension.js:228
+#: src/extension.js:220
 msgid "Toggle ignore menu"
 msgstr "切换忽略菜单"
 
