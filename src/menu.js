@@ -19,8 +19,8 @@ export const Separator = PopupMenu.PopupSeparatorMenuItem;
 export function upsert(table, insert, list, update, spread = x => x._getMenuItems()) {
     let items = spread(table);
     let delta = list.length - items.length;
-    if(delta > 0) for(let i = 0; i < delta; i++) insert(table);
-    else if(delta < 0) do items.at(delta).destroy(); while(++delta < 0);
+    if(delta > 0) while(delta-- > 0) insert(table);
+    else while(delta < 0) items.at(delta++).destroy();
     spread(table).forEach((x, i, a) => update(list[i], x, i, a));
 }
 
@@ -29,8 +29,8 @@ export function record(ok, tray, ...args) {
     let {menu, $menu} = tray;
     T.each(([gen, key, pos]) => {
         if(T.xnor(ok, $menu[key])) return;
-        ok ? menu.addMenuItem($menu[key] = gen?.() ?? new Separator(),
-            pos ? menu._getMenuItems().findIndex(x => x === $menu[pos]) : undefined) : F.omit($menu, key);
+        if(ok) menu.addMenuItem($menu[key] = gen?.() ?? new Separator(), pos ? menu._getMenuItems().findIndex(x => x === $menu[pos]) : undefined);
+        else F.omit($menu, key);
     }, args, 3);
 }
 
@@ -228,19 +228,14 @@ export class DatumItemBase extends PopupMenu.PopupMenuItem {
         super.activate(event);
         switch(event.type()) {
         case Clutter.EventType.BUTTON_RELEASE:
-        case Clutter.EventType.PAD_BUTTON_RELEASE:
-            switch(event.get_button()) {
-            case Clutter.BUTTON_SECONDARY: this.#click(); return;
-            default: this.$onActivate(); break;
-            }
-            break;
-        default: this.$onActivate(); break;
+        case Clutter.EventType.PAD_BUTTON_RELEASE: if(event.get_button() === Clutter.BUTTON_SECONDARY) return this.#click();
         }
+        this.$onActivate();
     }
 
-    destroy() { // HACK: workaround for dangling ref & defocus on destroy & focus
-        if(this.active) Reflect.defineProperty(this, 'active', {set: T.nop});
+    destroy() {
         if(this.active || this.label.has_key_focus() || this.$btn.has_key_focus()) this._getTopMenu()?.actor.grab_key_focus();
+        if(this.active) Reflect.defineProperty(this, 'active', {set: T.nop}); // HACK: workaround for dangling ref & defocus on destroy & focus
         super.destroy();
     }
 }

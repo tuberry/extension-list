@@ -7,6 +7,7 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import GLib from 'gi://GLib';
 import Pango from 'gi://Pango';
+import GioUnix from 'gi://GioUnix';
 import GObject from 'gi://GObject';
 import * as Gettext from 'gettext';
 import * as Extensions from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
@@ -209,7 +210,7 @@ export class Sign extends Gtk.Box {
     }
 }
 
-export class Dialog extends Adw.Window { // HACK: revert from Adw.Dialog since https://gitlab.gnome.org/GNOME/libadwaita/-/merge_requests/1415 breaks ECK on close
+export class Dialog extends Adw.Window { // HACK: revert from Adw.Dialog since https://gitlab.gnome.org/GNOME/libadwaita/-/merge_requests/1415 breaks ECK on re-open
     static {
         T.enrol(this, null, {Signals: {chosen: {param_types: [GObject.TYPE_JSOBJECT]}}});
     }
@@ -245,7 +246,9 @@ export class Dialog extends Adw.Window { // HACK: revert from Adw.Dialog since h
         }
     }
 
-    $onChosen(chosen = this.getChosen?.()) { this[$_].emit(chosen !== undefined, 'chosen', [chosen]).close(); }
+    $onChosen(chosen = this.getChosen?.()) {
+        this[$_].emit(chosen !== undefined, 'chosen', [chosen]).close();
+    }
 
     choose(root, init) {
         return this[$_].set_transient_for(this.transientFor !== root, root)[$_]
@@ -267,13 +270,18 @@ export class DialogButtonBase extends Box {
             .$buildDND(gtype(this, 'gvalue'));
     }
 
-    $onClick() { return this.dlg.choose(this.get_root(), this.$getInitial?.() ?? this.value); }
-    $onSetv([value]) { value.constructor === this.value?.constructor ? this[setv](value) : this.gvalue = value; }
+    $onClick() {
+        return this.dlg.choose(this.get_root(), this.$getInitial?.() ?? this.value);
+    }
+
+    $onSetv([value]) {
+        value.constructor === this.value?.constructor ? this[setv](value) : this.gvalue = value;
+    }
 
     $buildDND(gType) {
         if(!gType) return;
         this.$onDrop ??= (_t, v) => { this.gvalue = v; };
-        this.$onDrag ??= src => { T.seq(this.$genSwatch?.(), x => x && src.set_icon(x, 10, 10)); return Gdk.ContentProvider.new_for_value(this.gvalue); };
+        this.$onDrag ??= src => { let [x, y = this.gvalue] = T.unit(this.$genDrag?.()); src.set_icon(x, 8, 8); return Gdk.ContentProvider.new_for_value(y); };
         this[$].$bindv((to, from) => this.bind_property_full('value', this, 'gvalue', BIND, to, from))[$]
             .connect('notify::gvalue', () => this.$onGValueSet?.(this.gvalue))
             .$btn[$$].add_controller([Gtk.DropTarget.new(gType, Gdk.DragAction.COPY)[$].connect('drop', (...xs) => this.$onDrop(...xs)),
@@ -287,22 +295,24 @@ export class DialogButtonBase extends Box {
 
 export class App extends DialogButtonBase {
     static {
-        T.enrol(this, {gvalue: Gio.DesktopAppInfo});
+        T.enrol(this, {gvalue: GioUnix.DesktopAppInfo});
     }
 
     constructor(opt, param) {
         super(opt, new Sign('application-x-executable-symbolic'), true, param)[$]
-            .$bindv((_b, x) => [true, Gio.DesktopAppInfo.new(x)], (_b, x) => [true, x?.get_id() ?? ''])[$]
+            .$bindv((_b, x) => [true, GioUnix.DesktopAppInfo.new(x)], (_b, x) => [true, x?.get_id() ?? ''])[$]
             .$onGValueSet(v => this.$btn.child.setup(...v ? [v.get_icon(), v.get_display_name()] : []));
     }
 
-    $genSwatch() { return Gtk.IconTheme.get_for_display(Gdk.Display.get_default()).lookup_by_gicon(this.gvalue.get_icon(), 32, 1, Gtk.TextDirection.NONE, Gtk.IconLookupFlags.FORCE_SVG); }
+    $genDrag() {
+        return Icon.paintable(this.gvalue.get_icon());
+    }
 
     $genDialog(opt) {
         return new Dialog(dlg => {
             let factory = new Gtk.SignalListItemFactory()[$$].connect([['setup', (_f, x) => x.set_child(new Sign('application-x-executable-symbolic')[$].marginStart(6))],
                     ['bind', (_f, x) => x.get_child().setup(...(y => [y.get_icon() || '', y.get_display_name()])(x.get_item()))]]),
-                filter = Gtk.CustomFilter.new(null)[$].set({set_search: s => filter.set_filter_func(s ? (a => x => a.has(x.get_id()))(new Set(Gio.DesktopAppInfo.search(s).flat())) : null)}),
+                filter = Gtk.CustomFilter.new(null)[$].set({set_search: s => filter.set_filter_func(s ? (a => x => a.has(x.get_id()))(new Set(GioUnix.DesktopAppInfo.search(s).flat())) : null)}),
                 list = new Gio.ListStore()[$].splice(0, 0, opt?.noDisplay ? Gio.AppInfo.get_all() : Gio.AppInfo.get_all().filter(x => x.should_show())),
                 select = new Gtk.SingleSelection({model: new Gtk.FilterListModel({model: list, filter})}),
                 content = new Gtk.ListView({model: select, factory, vexpand: true})[$].connect('activate', () => dlg.$onChosen());
@@ -312,7 +322,7 @@ export class App extends DialogButtonBase {
     }
 }
 
-export class File extends DialogButtonBase { // FIXME: DND impl: Drag is unacceptable for Drop
+export class File extends DialogButtonBase {
     static {
         T.enrol(this, {gvalue: Gio.File});
     }
@@ -321,17 +331,30 @@ export class File extends DialogButtonBase { // FIXME: DND impl: Drag is unaccep
         if(opt.folder) opt.filter = {mimeTypes:  ['inode/directory']};
         super(opt, new Sign(icon), true, param)[$_]
             .$filter(opt.filter, opt.filter && new Gtk.FileFilter(opt.filter))[$_]
-            .insert_child_after(opt.open, opt.open && new Gtk.Button({iconName: 'document-open-symbolic'})[$]
-                .connect('clicked', () => Gtk.FileLauncher.new(this.gvalue).launch(this.get_root(), null, null)), this.$btn)[$]
+            .insert_child_after(opt.open, opt.open && T.seq(new Gtk.Button({iconName: 'document-open-symbolic'})[$]
+                .connect('clicked', () => Gtk.FileLauncher.new(this.gvalue).launch(this.get_root(), null, null)), x =>
+                this.bind_property_full('value', x, 'visible', GObject.BindingFlags.SYNC_CREATE, (_b, v) => [true, !!v], null)), this.$btn)[$]
             .$bindv((_b, x) => [true, T.fopen(x)], (_b, x) => [true, x.get_path()])[$]
             .$onGValueSet(v => T.fquery(v, Gio.FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME, Gio.FILE_ATTRIBUTE_STANDARD_ICON)
                 .then(x => this.setup(x.get_icon(), x.get_display_name())).catch(() => this.setup()));
         if(opt.size) this.$btn.child.$label.set_use_markup(true);
     }
 
-    $onSetv(v) { this.gvalue = v; }
-    $genDialog() { return new Gtk.FileDialog({modal: true, title: this.$opt.title ?? '', defaultFilter: this.$filter ?? null}); }
-    $onClick() { return this.dlg[$].set_initial_file(this.gvalue)[this.$opt?.folder ? 'select_folder' : 'open'](this.get_root(), null); }
+    $onSetv(v) {
+        this.gvalue = v;
+    }
+
+    $genDialog() {
+        return new Gtk.FileDialog({modal: true, title: this.$opt.title ?? '', defaultFilter: this.$filter ?? null});
+    }
+
+    $onClick() {
+        return this.dlg[$].set_initial_file(this.gvalue)[this.$opt?.folder ? 'select_folder' : 'open'](this.get_root(), null);
+    }
+
+    $genDrag() {
+        return [Icon.paintable(this.$btn.child.$icon.gicon), Gdk.FileList.new_from_list([this.gvalue])];
+    }
 
     $onDrop(_t, file) {
         if(!this.$filter) {
@@ -361,13 +384,17 @@ export class Icon extends DialogButtonBase {
 
     static Type = {ALL: 0, NORMAL: 1, SYMBOLIC: 2};
 
+    static paintable = (icon, size = 64) => icon && Gtk.IconTheme.get_for_display(Gdk.Display.get_default()).lookup_by_gicon(icon, size, 1, Gtk.TextDirection.NONE, Gtk.IconLookupFlags.FORCE_SVG);
+
     constructor(opt, param) {
         super(opt, new Sign('image-missing'), true, param)[$]
             .$bindv((_b, x) => [true, Gio.ThemedIcon.new(x)], (_b, x) => [true, x.to_string()])[$]
             .$onGValueSet(v => v ? this.$btn.child.setup(this.gvalue, this.value.replace(/-symbolic$/, '')) : this.$btn.child.setup());
     }
 
-    $genSwatch() { return Gtk.IconTheme.get_for_display(Gdk.Display.get_default()).lookup_by_gicon(this.gvalue, 32, 1, Gtk.TextDirection.NONE, Gtk.IconLookupFlags.FORCE_SVG); }
+    $genDrag() {
+        return Icon.paintable(this.gvalue);
+    }
 
     $genDialog(opt) {
         return new Dialog(dlg => {
@@ -449,15 +476,15 @@ export class Entry extends Gtk.Stack {
         super({valign: Gtk.Align.CENTER, hhomogeneous: true}).$buildWidgets(placeholder, mime, tip);
     }
 
-    $buildWidgets(placeholder = '', mime, tip = '') {
-        let label = new Gtk.Entry({hexpand: true, sensitive: false, placeholderText: placeholder}),
-            apply = w => { label.set_text(w.text); this.set_visible_child(label.parent); },
-            entry = mime ? new Gtk.Entry({hexpand: true, enableUndo: true, secondaryIconName: 'document-open-symbolic', placeholderText: placeholder})[$$]
-                .connect([['activate', w => apply(w)], ['icon-press', w => new Gtk.FileDialog({modal: true, defaultFilter: new Gtk.FileFilter({mimeTypes: mime})})
+    $buildWidgets(placeholderText = '', mime, tip = '') {
+        let label = new Gtk.Entry({hexpand: true, sensitive: false, placeholderText}),
+            apply = x => this.set_visible_child(label[$].set_text(x.text).parent),
+            entry = mime ? new Gtk.Entry({hexpand: true, enableUndo: true, secondaryIconName: 'document-open-symbolic', placeholderText})[$$]
+                .connect([['activate', apply], ['icon-press', w => new Gtk.FileDialog({modal: true, defaultFilter: new Gtk.FileFilter({mimeTypes: mime})})
                     .open(this.get_root(), null).then(x => w.set_text(x.get_path())).catch(T.nop)]])
-                : new Gtk.Entry({hexpand: true, enableUndo: true, placeholderText: placeholder})[$].connect('activate', w => apply(w)),
+                : new Gtk.Entry({hexpand: true, enableUndo: true, placeholderText})[$].connect('activate', apply),
             edit = new Gtk.Button({iconName: 'document-edit-symbolic', tooltipText: tip})[$]
-                .connect('clicked', () => { entry[$].set_text(label.text)[$].grab_focus(); this.set_visible_child(entry.parent); }),
+                .connect('clicked', () => this.set_visible_child(entry[$].set_text(label.text)[$].grab_focus().parent)),
             done = new Gtk.Button({cssClasses: ['suggested-action'], iconName: 'object-select-symbolic', tooltipText: _('Click or press ENTER to apply changes')})[$]
                 .connect('clicked', () => apply(entry));
         this[$].add_controller(new Gtk.EventControllerFocus()[$].connect('leave', () => { if(this.get_visible_child() === done.parent) apply(label); }))[$]

@@ -86,8 +86,7 @@ class ExtensionItem extends M.DatumItemBase {
         switch(meta.icon) {
         case Icon.SET: case Icon.DEL: case Icon.URL:
             if(meta.state === State.ACTIVE) Main.extensionManager.disableExtension(meta.uuid);
-            else Main.extensionManager.enableExtension(meta.uuid);
-            break;
+            else Main.extensionManager.enableExtension(meta.uuid); break;
         default: this.$onIgnoreToggle(meta); break;
         }
     }
@@ -194,10 +193,10 @@ class ExtensionList extends F.Mortal {
     #search(text) {
         this.$typed = text;
         this.#updateHint();
-        let items = this.menu.ext._getMenuItems() ?? [], first;
-        if(text) this.#match.some(f => (first = items.filter(x => T.seq(f(x.$meta.text, text), y => F.view(y, x)))[0]?.label));
+        let items = this.menu.ext._getMenuItems() ?? [], head;
+        if(text) this.#match.some(f => (head = items.filter(x => T.seq(f(x.$meta.text, text), y => F.view(y, x)))[0]?.label));
         else F.view(true, ...items);
-        (first ?? this.$src.tray.menu.actor).grab_key_focus();
+        (head ?? this.$src.tray.menu.actor).grab_key_focus();
     }
 
     #refind(text = '') {

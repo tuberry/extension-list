@@ -21,14 +21,14 @@ export const BIND = GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SY
 
 export const $ = Symbol('Chain Call');
 export const $$ = Symbol('Chain Calls');
-export const $_ = Symbol('Chain If Call'); // ? $_ -> _$
+export const $_ = Symbol('Chain If Call'); // NOTE: https://github.com/RedHatter/proposal-cascade-operator & https://en.wikipedia.org/wiki/Method_cascading
 Reflect.defineProperty(Object.prototype, $, {get() { return new Proxy(this, {get: (t, k) => (...xs) => (t[k] instanceof Function ? t[k](...xs) : ([t[k]] = xs), t)}); }});
 Reflect.defineProperty(Object.prototype, $$, {get() { return new Proxy(this, {get: (t, k) => xs => (xs.forEach(x => Array.isArray(x) ? t[k](...x) : t[k](x)), t)}); }});
 Reflect.defineProperty(Object.prototype, $_, {get() { return new Proxy(this, {get: (t, k) => (b, ...xs) => b ? t[$][k](...xs) : t}); }});
 
 export const id = x => x;
 export const nop = () => {};
-/** @template T * @param {T} x * @return {T} *///  NOTE: see https://github.com/tc39/proposal-type-annotations & https://github.com/jsdoc/jsdoc/issues/1986
+/** @template T * @param {T} x * @return {T} */ // NOTE: https://github.com/tc39/proposal-type-annotations & https://github.com/jsdoc/jsdoc/issues/1986
 export const seq = (x, f) => (f(x), x);
 export const xnor = (x, y) => !x === !y;
 export const Y = f => (...xs) => f(Y(f))(...xs); // Y combinator
@@ -41,13 +41,11 @@ export const esc = (x, i = -1) => GLib.markup_escape_text(x, i);
 export const unit = (x, f = y => [y]) => Array.isArray(x) ? x : f(x);
 export const array = (n, f = id) => Array.from({length: n}, (_x, i) => f(i));
 export const omap = (o, f) => Object.fromEntries(Object.entries(o).flatMap(f));
+export const essay = (f, g = nop) => { try { return f(); } catch(e) { return g(e); } }; // NOTE: https://github.com/arthurfiorette/proposal-try-operator
 export const each = (f, a, s) => { for(let i = 0, n = a.length; i < n;) f(a.slice(i, i += s)); };
 export const upcase = (s, f = x => x.toLowerCase()) => s.charAt(0).toUpperCase() + f(s.slice(1));
 export const type = x => Object.prototype.toString.call(x).replace(/\[object (\w+)\]/, (_m, p) => p.toLowerCase());
 export const format = (x, f) => x.replace(/\{\{(\w+)\}\}|\{(\w+)\}/g, (m, a, b) => b ? f(b) ?? m : f(a) === undefined ? m : `{${a}}`);
-export const essay = (f, g = nop) => { try { return f(); } catch(e) { return g(e); } }; // NOTE: https://github.com/arthurfiorette/proposal-safe-assignment-operator
-export const load = x => exist(x) && Gio.Resource.load(x)._register();
-export const exist = x => GLib.file_test(x, GLib.FileTest.EXISTS);
 
 export const fquery = (x, ...ys) => fopen(x).query_info_async(ys.join(','), Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, null);
 export const fwrite = (x, y, c = null) => fopen(x).replace_contents_async(encode(y), null, false, Gio.FileCreateFlags.NONE, c);
@@ -55,18 +53,21 @@ export const fcopy = (x, y, c = null) => fopen(x).copy_async(fopen(y), Gio.FileC
 export const fopen = x => str(x) ? x ? Gio.File.new_for_commandline_arg(x) : Gio.File.new_for_path(x) : x;
 export const fdelete = (x, c = null) => fopen(x).delete_async(GLib.PRIORITY_DEFAULT, c);
 export const fread = (x, c = null) => fopen(x).load_contents_async(c);
+export const load = x => exist(x) && Gio.Resource.load(x)._register();
+export const exist = x => GLib.file_test(x, GLib.FileTest.EXISTS);
 
 export async function readdir(dir, func, attr = Gio.FILE_ATTRIBUTE_STANDARD_NAME, cancel = null) {
     return Array.fromAsync(await fopen(dir).enumerate_children_async(attr, Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, cancel), func);
 }
 
-export function search(needle, haystack) { // Ref: https://github.com/bevacqua/fuzzysearch
-    let tmp, i = 0, j = -1, k, iter = Iterator.from(haystack); // k for empty needle
-    out: for(let char of needle) {
-        while(!(j++, tmp = iter.next()).done) if(tmp.value === char) { k ??= i = j; continue out; }
+export function search(needle, haystack) { // non unicode safe: https://github.com/bevacqua/fuzzysearch/issues/18
+    let i, j, k, c, n = needle.length, m = haystack.length;
+    out: for(i = 0, j = -1; i < n; i++) {
+        c = needle[i];
+        while(++j < m) if(haystack[j] === c) { k ??= j; continue out; }
         return;
     }
-    return [i, j - i - needle.length + 1]; // [index, error]
+    return (i = j - n - k + 1) && (j = haystack.indexOf(needle, k)) > 0 ? [j, 0] : [k, i]; // [index, error]
 }
 
 export function enrol(klass, pspec, param) {
