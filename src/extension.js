@@ -8,7 +8,6 @@ import Clutter from 'gi://Clutter';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
-
 import * as AnimationUtils from 'resource:///org/gnome/shell/misc/animationUtils.js';
 import * as ExtensionDownloader from 'resource:///org/gnome/shell/ui/extensionDownloader.js';
 import {ExtensionType as Type, ExtensionState as State} from 'resource:///org/gnome/shell/misc/extensionUtils.js';
@@ -20,7 +19,7 @@ import * as F from './fubar.js';
 import {Key as K, Icon, EGO} from './const.js';
 
 const {_} = F;
-const {$, $_} = T;
+const {$, $_, $$} = T;
 
 const Tail = {SET: 0, DEL: 1, URL: 2};
 const Show = {true: Icon.HIDE, false: Icon.SHOW};
@@ -39,7 +38,6 @@ class ExtensionItem extends M.DatumItemBase {
                 this.setup(meta);
                 ignore(meta.uuid);
             });
-
         [this.$btn, this.label].forEach(x => x.connect('key-focus-in',
             () => AnimationUtils.ensureActorVisibleInScrollView(this._parent.actor, this)));
         this.label.clutterText.set_ellipsize(Pango.EllipsizeMode.MIDDLE);
@@ -50,7 +48,7 @@ class ExtensionItem extends M.DatumItemBase {
         let {type, state, update, name, icon, show} = meta;
         let label = type === Type.SYSTEM ? `${name} *` : name;
         this[$].setOrnament(state === State.ACTIVE ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE)[$]
-            .$setLabel(label, Style[state] ?? (update ? 'state-update' : show ? undefined : 'state-ignored'))[$]
+            .$setLabel(label, Style[state] ?? (update ? 'state-update' : show ? undefined : 'state-ignored'))
             .$setButton(icon, meta);
     }
 
@@ -70,10 +68,10 @@ class ExtensionItem extends M.DatumItemBase {
         }
         if(this.$btn.has_key_focus() && !visible) this.label.grab_key_focus(); // HACK: avoid loss of focus while hiding
         F.view(visible, this.$btn);
-        this.$btn.setup(icon);
+        this.$btn.setIcon(icon);
     }
 
-    $onClick(meta = this.$meta) { // NOTE: stash for consistency/immutability
+    $onClick(meta = this.$meta) { // stash for consistency/immutability
         switch(meta.icon) {
         case Icon.SET: this._getTopMenu().close(); Main.extensionManager.openExtensionPrefs(meta.uuid, '', {}); break;
         case Icon.DEL: this._getTopMenu().close(); ExtensionDownloader.uninstallExtension(meta.uuid); break;
@@ -108,57 +106,52 @@ class ExtensionSection extends M.DatasetSection {
 }
 
 class ExtensionList extends F.Mortal {
-    constructor(gset) {
-        super()[$].$bindSettings(gset).$buildWidgets();
+    $bindSettings(gset) {
+        this.$set = new F.Setting(gset, this, [
+            K.APP, [K.IGL, x => new Set(x), null, false],
+            [K.TIP, null, x => { this.menu.bar?.setup(this.$genTool()); this.$updateHint(x); }],
+        ], [
+            K.EXT, K.URL, K.DEL, K.IGN, K.FLT,
+        ], null, () => this.$onToolbarSet(), [
+            [K.IGM, null, x => this.menu.bar?.[K.IGN]?.toggleState(x)],
+            [K.FLR, null, x => this.menu.bar?.[K.FLT]?.toggleState(x)],
+            [K.BTN, x => [Icon.SET, Icon.DEL, Icon.URL][x], x => this.$onTailIconSet(x)],
+        ], null, (_v, f) => this.$onMenuChange(f === K.IGM));
     }
 
-    $buildWidgets() {
+    $buildSources() {
         this.$typed = '';
-        this.$src = F.Source.tie({
+        this.$src = F.Source.tie(this, {
             tray: new M.Systray({
                 ext: new ExtensionSection(x => new ExtensionItem(x, ext => {
                     this[K.IGL].has(ext) ? this[K.IGL].delete(ext) : this[K.IGL].add(ext);
                     this.$set.set(K.IGL, [...this[K.IGL]]);
                 }), this.getExtensions()),
                 sep: new M.Separator(this[K.TIP] && _('Type to search')),
-                bar: (tool => tool.length ? new M.ToolItem(tool) : null)(this.#genTool()),
+                bar: (tool => tool.length ? new M.ToolItem(tool) : null)(this.$genTool()),
             }, Icon.ADN),
-        }, this);
-        this.$src.tray.menu[$].connect('menu-closed', () => this.#onMenuClose())
-            .actor.connect('key-press-event', (...xs) => this.#onKeyPress(...xs));
-        F.connect(this, Main.extensionManager, 'extension-state-changed', (...xs) => this.$onStateChange(...xs));
+        }, F.Source.newHandler(Main.extensionManager, 'extension-state-changed', (...xs) => this.$onStateChange(...xs)));
+        this.$src.tray.menu[$].connect('menu-closed', () => this.$onMenuClose())
+            .actor.connect('key-press-event', (...xs) => this.$onKeyPress(...xs));
     }
 
     get menu() {
         return this.$src.tray.$menu;
     }
 
-    $bindSettings(gset) {
-        this.$set = new F.Setting(gset, [
-            K.APP, [K.IGL, x => new Set(x), null, false],
-            [K.TIP, null, x => { this.menu.bar?.setup(this.#genTool()); this.#updateHint(x); }],
-        ], this).tie([
-            K.EXT, K.URL, K.DEL, K.IGN, K.FLT,
-        ], this, null, () => this.#onToolbarSet()).tie([
-            [K.IGM, null, x => this.menu.bar?.[K.IGN]?.toggleState(x)],
-            [K.FLR, null, x => this.menu.bar?.[K.FLT]?.toggleState(x)],
-            [K.BTN, x => [Icon.SET, Icon.DEL, Icon.URL][x], x => this.#onTailIconSet(x)],
-        ], this, null, (_v, f) => this.#onMenuChange(f === K.IGM));
-    }
-
-    #onToolbarSet() {
-        let tool = this.#genTool();
+    $onToolbarSet() {
+        let tool = this.$genTool();
         if(T.xnor(tool.length, this.menu.bar)) this.menu.bar?.setup(tool);
-        else M.record(tool.length, this.$src.tray, () => new M.ToolItem(tool), 'bar', null);
+        else this.$src.tray.$record(tool.length, 'bar', () => new M.ToolItem(tool));
     }
 
-    #onMenuChange(ignoring) {
+    $onMenuChange(ignoring) {
         if(!ignoring && this[K.IGM]) this.$set.set(K.IGM, false);
         this.menu.ext.setup(this.getExtensions());
-        this.#refind(ignoring ? '' : this.$typed);
+        this.$refind(ignoring ? '' : this.$typed);
     }
 
-    #onTailIconSet(icon) {
+    $onTailIconSet(icon) {
         ['URL', 'DEL'].forEach(x => this.menu.bar?.[K[x]]?.toggleState(icon !== Icon[x]));
     }
 
@@ -168,20 +161,20 @@ class ExtensionList extends F.Mortal {
         this.menu.ext.upsert(ext);
     }
 
-    #onMenuClose() {
-        this.#refind();
+    $onMenuClose() {
+        this.$refind();
         this.$set[$_].set(!this[K.FLR], K.FLR, true)[$_].set(this[K.IGM], K.IGM, false);
     }
 
-    #onKeyPress(_a, event) {
+    $onKeyPress(_a, event) {
         let key = event.get_key_symbol();
         if(M.altNum(event, this.menu.bar ?? [], key)) return;
-        if(key >= Clutter.KEY_exclam && key <= Clutter.KEY_asciitilde) return this.#search(this.$typed + String.fromCodePoint(key));
+        if(key >= Clutter.KEY_exclam && key <= Clutter.KEY_asciitilde) return this.$search(this.$typed + String.fromCodePoint(key));
         switch(key) {
         case Clutter.KEY_Shift_R: this.$set.not(K.FLR); break;
         case Clutter.KEY_Control_R: this.$set.not(K.IGM); break;
-        case Clutter.KEY_BackSpace: this.#refind(this.$typed.slice(0, -1)); break;
-        case Clutter.KEY_Delete: this.#refind(); break;
+        case Clutter.KEY_BackSpace: this.$refind(this.$typed.slice(0, -1)); break;
+        case Clutter.KEY_Delete: this.$refind(); break;
         }
     }
 
@@ -189,27 +182,27 @@ class ExtensionList extends F.Mortal {
     // [1] search with IME issue: https://gitlab.gnome.org/GNOME/gtk/-/issues/2636
     // [2] extension metadata L10N issue: https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/2288
     // [3] PopupMenus cover IBusPopup: https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/2331
-    #match = [(x, y) => x.startsWith(y), (x, y) => x.includes(y), (x, y) => T.search(y, x)];
-    #search(text) {
+    $match = [(x, y) => x.startsWith(y), (x, y) => x.includes(y), (x, y) => !!T.search(y, x)];
+    $search(text) {
         this.$typed = text;
-        this.#updateHint();
+        this.$updateHint();
         let items = this.menu.ext._getMenuItems() ?? [], head;
-        if(text) this.#match.some(f => (head = items.filter(x => T.seq(f(x.$meta.text, text), y => F.view(y, x)))[0]?.label));
+        if(text) this.$match.some(f => (head = items.filter(x => f(x.$meta.text, text)[$$](y => F.view(y, x)))[0]?.label));
         else F.view(true, ...items);
         (head ?? this.$src.tray.menu.actor).grab_key_focus();
     }
 
-    #refind(text = '') {
-        if(this.$typed) this.#search(text);
+    $refind(text = '') {
+        if(this.$typed) this.$search(text);
     }
 
-    #updateHint() {
+    $updateHint() {
         this.menu.sep.label.set_text(this.$typed ? `${_('Typed')}: ${this.$typed}` : this[K.TIP] ? _('Type to search') : '');
         if(!this.menu.bar) F.view(this.$typed, this.menu.sep);
     }
 
-    #genTool() {
-        return [
+    $genTool() {
+        return [[
             [K.EXT, [() => this.openExtensionApp(), Icon.ADN, _('Open extensions website or app')]],
             [K.FLT, [() => this.$set.not(K.FLR), [this[K.FLR], Icon.ALL, Icon.IGN], [_('Show all extensions'), _('Hide ignored extensions')]]],
             [K.DEL, [() => this.$set.set(K.BTN, this[K.BTN] === Icon.DEL ? Tail.SET : Tail.DEL),
@@ -217,8 +210,7 @@ class ExtensionList extends F.Mortal {
             [K.URL, [() => this.$set.set(K.BTN, this[K.BTN] === Icon.URL ? Tail.SET : Tail.URL),
                 [this[K.BTN] !== Icon.URL, Icon.URL, Icon.SET], [_('Toggle homepage button'), _('Toggle setting button')]]],
             [K.IGN, [() => this.$set.not(K.IGM), [this[K.IGM], Icon.HIDE, Icon.SHOW], [_('Toggle normal menu'), _('Toggle ignore menu')]]],
-        ].flatMap(([k, [f, c, t]]) => this[k] ? [[k, new (T.str(t) ? M.Button : M.StateButton)(f, c, this[K.TIP] && t)[$]
-                .set({styleClass: 'extension-list-icon', xExpand: true})]] : []);
+        ].filter(([k, v]) => this[k] && v[$][2](this[K.TIP] && v[2])), 'extension-list-icon'];
     }
 
     getExtensions() {
