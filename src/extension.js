@@ -210,7 +210,7 @@ class ExtensionList extends F.Mortal {
             [K.URL, [() => this.$set.set(K.BTN, this[K.BTN] === Icon.URL ? Tail.SET : Tail.URL),
                 [this[K.BTN] !== Icon.URL, Icon.URL, Icon.SET], [_('Toggle homepage button'), _('Toggle setting button')]]],
             [K.IGN, [() => this.$set.not(K.IGM), [this[K.IGM], Icon.HIDE, Icon.SHOW], [_('Toggle normal menu'), _('Toggle ignore menu')]]],
-        ].filter(([k, v]) => this[k] && v[$][2](this[K.TIP] && v[2])), 'extension-list-icon'];
+        ].filter(([k, v]) => this[k] && v[$_][2](!this[K.TIP],  null)), 'extension-list-icon'];
     }
 
     getExtensions() {
