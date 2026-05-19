@@ -4,6 +4,6 @@
 configure_file(
   input: 'metadata.json.in',
   output: 'metadata.json',
-  configuration: metadata,
+  configuration: me,
   install_dir: target_dir,
 )
