@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ui.js:364
+#: src/ui.js:379
 msgid "Mismatched filetype"
 msgstr "文件类型不匹配"
 
-#: src/ui.js:481
+#: src/ui.js:559
 msgid "Click or press ENTER to apply changes"
 msgstr "单击或按回车应用更改"
 

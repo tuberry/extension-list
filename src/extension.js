@@ -19,7 +19,7 @@ import * as F from './fubar.js';
 import {Key as K, Icon, EGO} from './const.js';
 
 const {_} = F;
-const {$, $_, $$} = T;
+const {$, $$, $_} = T;
 
 const Tail = {SET: 0, DEL: 1, URL: 2};
 const Show = {true: Icon.HIDE, false: Icon.SHOW};
@@ -163,7 +163,7 @@ class ExtensionList extends F.Mortal {
 
     $onMenuClose() {
         this.$refind();
-        this.$set[$_].set(!this[K.FLR], K.FLR, true)[$_].set(this[K.IGM], K.IGM, false);
+        this.$set[$$].set(!this[K.FLR] && [[K.FLR, true]])[$$].set(this[K.IGM] && [[K.IGM, false]]);
     }
 
     $onKeyPress(_a, event) {
@@ -186,8 +186,8 @@ class ExtensionList extends F.Mortal {
     $search(text) {
         this.$typed = text;
         this.$updateHint();
-        let items = this.menu.ext._getMenuItems() ?? [], head;
-        if(text) this.$match.some(f => (head = items.filter(x => f(x.$meta.text, text)[$$](y => F.view(y, x)))[0]?.label));
+        let items = this.menu.ext._getMenuItems(), head;
+        if(text) this.$match.some(f => (head = items.filter(x => f(x.$meta.text, text)[$_](y => F.view(y, x)))[0]?.label));
         else F.view(true, ...items);
         (head ?? this.$src.tray.menu.actor).grab_key_focus();
     }
@@ -210,7 +210,7 @@ class ExtensionList extends F.Mortal {
             [K.URL, [() => this.$set.set(K.BTN, this[K.BTN] === Icon.URL ? Tail.SET : Tail.URL),
                 [this[K.BTN] !== Icon.URL, Icon.URL, Icon.SET], [_('Toggle homepage button'), _('Toggle setting button')]]],
             [K.IGN, [() => this.$set.not(K.IGM), [this[K.IGM], Icon.HIDE, Icon.SHOW], [_('Toggle normal menu'), _('Toggle ignore menu')]]],
-        ].filter(([k, v]) => this[k] && v[$_][2](!this[K.TIP],  null)), 'extension-list-icon'];
+        ].filter(([k, v]) => this[k] && v[$$][2](!this[K.TIP] && [[null]])), 'extension-list-icon'];
     }
 
     getExtensions() {
