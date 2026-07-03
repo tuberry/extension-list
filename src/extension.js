@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import St from 'gi://St';
-import Shell from 'gi://Shell';
 import Pango from 'gi://Pango';
 import Clutter from 'gi://Clutter';
 
@@ -107,11 +106,9 @@ class ExtensionSection extends M.DatasetSection {
 
 class ExtensionList extends F.Mortal {
     $bindSettings(gset) {
-        this.$set = new F.Setting(gset, this, [
-            K.APP, [K.IGL, x => new Set(x), null, false],
-            [K.TIP, null, x => { this.menu.bar?.setup(this.$genTool()); this.$updateHint(x); }],
-        ], [
-            K.EXT, K.URL, K.DEL, K.IGN, K.FLT,
+        this.$set = new F.Setting(gset).tie(this, [K.APP], [
+            [K.TIP, null, x => this.$updateHint(x)],
+            [K.IGL, x => new Set(x)], K.EXT, K.URL, K.DEL, K.IGN, K.FLT,
         ], null, () => this.$onToolbarSet(), [
             [K.IGM, null, x => this.menu.bar?.[K.IGN]?.toggleState(x)],
             [K.FLR, null, x => this.menu.bar?.[K.FLT]?.toggleState(x)],
@@ -125,24 +122,23 @@ class ExtensionList extends F.Mortal {
             tray: new M.Systray({
                 ext: new ExtensionSection(x => new ExtensionItem(x, ext => {
                     this[K.IGL].has(ext) ? this[K.IGL].delete(ext) : this[K.IGL].add(ext);
-                    this.$set.set(K.IGL, [...this[K.IGL]]);
+                    this.$set.set(K.IGL, [...this[K.IGL].keys().filter(id => Main.extensionManager.lookup(id))]);
                 }), this.getExtensions()),
                 sep: new M.Separator(this[K.TIP] && _('Type to search')),
                 bar: (tool => tool.length ? new M.ToolItem(tool) : null)(this.$genTool()),
             }, Icon.ADN),
-        }, F.Source.newHandler(Main.extensionManager, 'extension-state-changed', (...xs) => this.$onStateChange(...xs)));
+        }, new F.Source.Handler(Main.extensionManager, 'extension-state-changed', (...xs) => this.$onStateChange(...xs)));
         this.$src.tray.menu[$].connect('menu-closed', () => this.$onMenuClose())
-            .actor.connect('key-press-event', (...xs) => this.$onKeyPress(...xs));
+            .actor.add_action(new Clutter.KeyController()[$].connect('key-press', (...xs) => this.$onKeyPress(...xs)));
     }
 
-    get menu() {
-        return this.$src.tray.$menu;
-    }
+    get menu() { return this.$src.tray.$menu; }
 
     $onToolbarSet() {
         let tool = this.$genTool();
-        if(T.xnor(tool.length, this.menu.bar)) this.menu.bar?.setup(tool);
-        else this.$src.tray.$record(tool.length, 'bar', () => new M.ToolItem(tool));
+        if(T.xnor(tool[0].length, this.menu.bar)) this.menu.bar?.setup(tool);
+        else this.$src.tray.$record(tool[0].length, 'bar', () => new M.ToolItem(tool));
+        this.$src.tray.menu._updateSeparatorVisibility(this.menu.sep);
     }
 
     $onMenuChange(ignoring) {
@@ -166,10 +162,10 @@ class ExtensionList extends F.Mortal {
         this.$set[$$].set(!this[K.FLR] && [[K.FLR, true]])[$$].set(this[K.IGM] && [[K.IGM, false]]);
     }
 
-    $onKeyPress(_a, event) {
-        let key = event.get_key_symbol();
-        if(M.altNum(event, this.menu.bar ?? [], key)) return;
-        if(key >= Clutter.KEY_exclam && key <= Clutter.KEY_asciitilde) return this.$search(this.$typed + String.fromCodePoint(key));
+    $onKeyPress(actor) {
+        let [, key] = actor.get_key();
+        if(M.altNum(actor, this.menu.bar ?? [], key)) return;
+        if(key >= Clutter.KEY_exclam && key <= Clutter.KEY_asciitilde) return this.$search(this.$typed + String.fromCodePoint(key).toLowerCase());
         switch(key) {
         case Clutter.KEY_Shift_R: this.$set.not(K.FLR); break;
         case Clutter.KEY_Control_R: this.$set.not(K.IGM); break;
@@ -204,13 +200,14 @@ class ExtensionList extends F.Mortal {
     $genTool() {
         return [[
             [K.EXT, [() => this.openExtensionApp(), Icon.ADN, _('Open extensions website or app')]],
-            [K.FLT, [() => this.$set.not(K.FLR), [this[K.FLR], Icon.ALL, Icon.IGN], [_('Show all extensions'), _('Hide ignored extensions')]]],
+            [this[K.IGL].size && K.FLT, [() => this.$set.not(K.FLR),
+                [this[K.FLR], Icon.ALL, Icon.IGN], [_('Show all extensions'), _('Hide ignored extensions')]]],
             [K.DEL, [() => this.$set.set(K.BTN, this[K.BTN] === Icon.DEL ? Tail.SET : Tail.DEL),
                 [this[K.BTN] !== Icon.DEL, Icon.DEL, Icon.SET], [_('Toggle remove button'), _('Toggle setting button')]]],
             [K.URL, [() => this.$set.set(K.BTN, this[K.BTN] === Icon.URL ? Tail.SET : Tail.URL),
                 [this[K.BTN] !== Icon.URL, Icon.URL, Icon.SET], [_('Toggle homepage button'), _('Toggle setting button')]]],
             [K.IGN, [() => this.$set.not(K.IGM), [this[K.IGM], Icon.HIDE, Icon.SHOW], [_('Toggle normal menu'), _('Toggle ignore menu')]]],
-        ].filter(([k, v]) => this[k] && v[$$][2](!this[K.TIP] && [[null]])), 'extension-list-icon'];
+        ].filter(([k, v]) => k && this[k] && v[$$][2](!this[K.TIP] && [[null]])), 'extension-list-icon'];
     }
 
     getExtensions() {
@@ -227,8 +224,7 @@ class ExtensionList extends F.Mortal {
 
     openExtensionApp() {
         this.$src.tray.menu.close();
-        if(this[K.APP]) Shell.AppSystem.get_default().lookup_app(this[K.APP])?.activate();
-        else F.open(EGO);
+        this[K.APP] ? F.app(this[K.APP])?.activate() : F.open(EGO);
     }
 }
 

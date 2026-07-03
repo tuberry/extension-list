@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ui.js:379
+#: src/ui.js:375
 msgid "Mismatched filetype"
 msgstr "文件类型不匹配"
 
-#: src/ui.js:559
+#: src/ui.js:564
 msgid "Click or press ENTER to apply changes"
 msgstr "单击或按回车应用更改"
 
@@ -78,7 +78,7 @@ msgid "Menu item shortcuts"
 msgstr "菜单项快捷键"
 
 #: src/prefs.js:43
-msgid "toggle the extension"
+msgid "toggle extension"
 msgstr "开关扩展"
 
 #: src/prefs.js:43
@@ -86,7 +86,7 @@ msgid "primary/middle click"
 msgstr "主/中键"
 
 #: src/prefs.js:44
-msgid "trigger the tail button"
+msgid "trigger tail button"
 msgstr "触发末尾按钮"
 
 #: src/prefs.js:44
@@ -142,43 +142,43 @@ msgstr "忽略(_I)"
 msgid "Toggle ignore/normal menu, as pressing right Ctrl key"
 msgstr "切换忽略/常规菜单，按右 Ctrl 键同理"
 
-#: src/extension.js:130 src/extension.js:200
+#: src/extension.js:127 src/extension.js:196
 msgid "Type to search"
 msgstr "键入以搜索"
 
-#: src/extension.js:200
+#: src/extension.js:196
 msgid "Typed"
 msgstr "键入"
 
-#: src/extension.js:206
+#: src/extension.js:202
 msgid "Open extensions website or app"
 msgstr "打开扩展网站或应用"
 
-#: src/extension.js:207
+#: src/extension.js:204
 msgid "Show all extensions"
 msgstr "显示所有扩展"
 
-#: src/extension.js:207
+#: src/extension.js:204
 msgid "Hide ignored extensions"
 msgstr "隐藏已忽略扩展"
 
-#: src/extension.js:209
+#: src/extension.js:206
 msgid "Toggle remove button"
 msgstr "切换移除按钮"
 
-#: src/extension.js:209 src/extension.js:211
+#: src/extension.js:206 src/extension.js:208
 msgid "Toggle setting button"
 msgstr "切换设置按钮"
 
-#: src/extension.js:211
+#: src/extension.js:208
 msgid "Toggle homepage button"
 msgstr "切换主页按钮"
 
-#: src/extension.js:212
+#: src/extension.js:209
 msgid "Toggle normal menu"
 msgstr "切换常规菜单"
 
-#: src/extension.js:212
+#: src/extension.js:209
 msgid "Toggle ignore menu"
 msgstr "切换忽略菜单"
 

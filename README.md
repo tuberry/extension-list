@@ -18,8 +18,8 @@ The latest and supported version should only work on the [current stable version
 
 ```bash
 git clone https://github.com/tuberry/extension-list.git && cd extension-list
-meson setup build && meson install -C build
-# meson setup build -Dtarget=system && meson install -C build # system-wide, default --prefix=/usr/local
+just install || (meson setup build && meson compile -C build && meson install -C build)
+# meson setup build -Dtarget=system && meson install -C build # system-wide
 ```
 
 For older versions, it's recommended to install via:
@@ -39,20 +39,11 @@ It's quite the same as installing from:
 
 Feel free to open an issue in the repo for any questions or ideas, **particularly before making significant changes or introducing new features**.
 
-### Translations
-
-To initialize or update the po file from sources:
+Also, *just* so you know:
 
 ```bash
-bash ./cli/update-po.sh (your_lang_code) # like `./cli/update-po.sh zh_CN`, default to $LANG
-```
+just --list
 
-### Developments
-
-To install GJS TypeScript type [definitions](https://www.npmjs.com/package/@girs/gnome-shell):
-
-```bash
-npm install @girs/gnome-shell --save-dev
 ```
 
 ## Acknowledgements

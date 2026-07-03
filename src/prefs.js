@@ -37,11 +37,11 @@ class ExtensionListPrefs extends UI.Page {
                 [_('update'), 'success'],
                 [_('outdated'), 'warning'],
                 [_('error'), 'error'],
-            ].map(([x, y, u, v]) => [u, m('Lorem Ipsum', y), v, x]), h(_('Menu shortcuts')), [
+            ].map(([state, style, prefix, suffix]) => [prefix, m('Lorem Ipsum', style), suffix, state]), h(_('Menu shortcuts')), [
                 [_('trigger the toolbar button'), k('<alt>1...9')],
             ], h(_('Menu item shortcuts')), [
-                [_('toggle the extension'), k('space Return'), _('primary/middle click')],
-                [_('trigger the tail button'),  k('Control_L'), _('secondary click')],
+                [_('toggle extension'), k('space Return'), _('primary/middle click')],
+                [_('trigger tail button'),  k('Control_L'), _('secondary click')],
             ]]), K.TIP]]], [[[_('Toolbar')], new Gtk.Label({label: _('Icon')})], [
             [K.EXT, [_('_Extension'), _('Open extension <a href="%s">website</a> or app').format(EGO)], K.APP],
             [K.FLT, [_('_Filter'), _('Show/Hide ignored extensions, as pressing right Shift key')], img(Icon.ALL)],
