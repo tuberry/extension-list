@@ -200,10 +200,9 @@ export class DatumItemBase extends PopupMenu.PopupMenuItem {
     }
 
     constructor(label, icon, func, datum) {
-        super('')[$].can_focus(false)[$$].$onActivate(func && [[func]])[$$].setup(datum && [[datum]])[$]
-            .connect('destroy', x => { if(x.active || x.label.has_key_focus() || x.$btn.has_key_focus()) x._getTopMenu()?.actor.grab_key_focus(); })[$]
-            .add_child(this.$btn = new Button(() => this.$onClick())[$].set({styleClass: icon}))
-            .label[$].add_style_class_name(label).set({xExpand: true, canFocus: true});
+        super('')[$].can_focus(false)[$].add_child(this.$btn = new Button(() => this.$onClick())[$].set({styleClass: icon}))[$]
+            .connect('destroy', x => { if(x.active || Iterator.from(x).some(y => y.has_key_focus())) x._getTopMenu()?.actor.grab_key_focus(); })[$$]
+            .$onActivate(func && [[func]])[$$].setup(datum && [[datum]]).label[$].add_style_class_name(label).set({xExpand: true, canFocus: true});
     }
 
     $activateTail() {
